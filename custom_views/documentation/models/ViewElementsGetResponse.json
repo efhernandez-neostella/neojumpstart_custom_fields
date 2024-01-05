@@ -1,0 +1,39 @@
+{
+    "type": "object",
+    "properties": {
+        "views" : {
+            "type" : "array",
+            "description": "Array of views",
+            "items": {
+                "type": "object",
+                "properties" :{
+                    "view_element_id": {
+                        "type": "string",
+                        "description": "Unique identifier for the view element"
+                    },
+                    "view_element_name": {
+                        "type": "string",
+                        "description": "Name of the view element"
+                    },
+                    "key_attributes": {
+                        "type" : "array",
+                        "description": "Array of views",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "element_attribute": {
+                                    "type": "string",
+                                    "description": "Name of the element attribute"
+                                },
+                                "acceptable_values": {
+                                    "type": "object",
+                                    "description": "Key value pair for acceptable values and their description"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

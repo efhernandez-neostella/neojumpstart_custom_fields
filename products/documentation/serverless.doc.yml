@@ -1,0 +1,116 @@
+documentation:
+  info:
+    version: ${file(./../../serverless.apptemplate.common.yml):documentation.info.version}
+    title: ${file(./../../serverless.apptemplate.common.yml):documentation.info.title}
+    description: ${file(./../../serverless.apptemplate.common.yml):documentation.info.description}
+  models:
+    # - name: "ObjectDeleteResponse"
+    #   description: "Response received after deleting a new user"
+    #   contentType: "application/json"
+    #   schema: ${file(./../../open_api_doc/models/ObjectDeleteResponse.json)}
+    # - name: "ErrorResponse"
+    #   description: "Model for the error response"
+    #   contentType: "application/json"
+    #   schema: ${file(./../../open_api_doc/models/ErrorResponse.json)}
+    # - name: "PermissionDeniedResponse"
+    #   description: "Model for the permission denied response"
+    #   contentType: "application/json"
+    #   schema: ${file(./../../open_api_doc/models/PermissionDeniedResponse.json)}
+    # - name: "ObjectCreationResponse"
+    #   description: "Response received after creating a new object"
+    #   contentType: "application/json"
+    #   schema: ${file(./../../open_api_doc/models/ObjectCreationResponse.json)}
+    # - name: "ObjectEditionResponse"
+    #   description: "Response received after updating an object"
+    #   contentType: "application/json"
+    #   schema: ${file(./../../open_api_doc/models/ObjectEditionResponse.json)}
+    - name: "ProductsGetResponse"
+      description: "Model for get products data response."
+      contentType: "application/json"
+      schema: ${file(./documentation/models/ProductsGetResponse.json)}
+    - name: "ProductsPostRequest"
+      description: "Model for creating a new product"
+      contentType: "application/json"
+      schema: ${file(./documentation/models/ProductsPostRequest.json)}
+    - name: "ProductsPutRequest"
+      description: "Model for updating a product"
+      contentType: "application/json"
+      schema: ${file(./documentation/models/ProductsPutRequest.json)}
+
+functions:
+  ProductsGet:
+    summary: "Get Product(s) DATA"
+    description: "Get List of products data. Also can receive the product price overridden and/or prorrated"
+    tags:
+      - "Products"
+    requestHeaders: ${file(./../../open_api_doc/models/RequestHeaders.json)}
+    queryParams:
+      - name: "data"
+        description: "'products' to return products data"
+      - name: "product_id"
+        description: "uuid of the product to be searched"
+      - name: "product_name"
+        description: "name of the product"
+      - name: "product_type"
+        description: "type of the product. Values: workato_recipe/neostella_service"
+      - name: "account_id"
+        description: "When sent, the products will change its default prices attributed for a price in the currency of the account and the price overridden of the product for that account"
+      - name: "order_id"
+        description: "Required with the account_id. When sent, the products will change its default prices attributed for a price in the currency of the account and the price overridden for that account and prorated if the product can be prorated"
+    methodResponses:
+      - statusCode: "200"
+        description: "Products data returned"
+        responseModels:
+          "application/json": "ProductsGetResponse"
+      # - statusCode: "403"
+      #   description: "Permission denied"
+      #   responseModels:
+      #     "application/json": "PermissionDeniedResponse"
+      # - statusCode: "500"
+      #   description: "Unexpected error"
+      #   responseModels:
+      #     "application/json": "ErrorResponse"
+
+  ProductsPost:
+    summary: "Create Product"
+    description: "Creates a new product"
+    tags:
+      - "Products"
+    requestHeaders: ${file(./../../open_api_doc/models/RequestHeaders.json)}
+    requestModels:
+      "application/json": "ProductsPostRequest"
+    methodResponses:
+      - statusCode: "200"
+        description: "Product created"
+      #   responseModels:
+      #     "application/json": "ObjectCreationResponse"
+      # - statusCode: "403"
+      #   description: "Permission denied"
+      #   responseModels:
+      #     "application/json": "PermissionDeniedResponse"
+      # - statusCode: "500"
+      #   description: "Unexpected error"
+      #   responseModels:
+      #     "application/json": "ErrorResponse"
+
+  ProductsPut:
+    summary: "Update Product"
+    description: "Updated a product"
+    tags:
+      - "Products"
+    requestHeaders: ${file(./../../open_api_doc/models/RequestHeaders.json)}
+    requestModels:
+      "application/json": "ProductsPutRequest"
+    methodResponses:
+      - statusCode: "200"
+        description: "Product Updated"
+      #   responseModels:
+      #     "application/json": "ObjectEditionResponse"
+      # - statusCode: "403"
+      #   description: "Permission denied"
+      #   responseModels:
+      #     "application/json": "PermissionDeniedResponse"
+      # - statusCode: "500"
+      #   description: "Unexpected error"
+      #   responseModels:
+      #     "application/json": "ErrorResponse"

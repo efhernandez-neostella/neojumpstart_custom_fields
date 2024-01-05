@@ -1,0 +1,55 @@
+functions:
+  #Products
+  ProductsGet:
+    handler: controllers/ProductsGet.lambda_handler
+    environment:
+      RESOURCE_METHOD: ProductsGet
+    events:
+      - http:
+          path: products
+          cors: True
+          method: get
+          documentation: ${file(./documentation/serverless.doc.yml):functions.ProductsGet}
+          authorizer:
+            type: COGNITO_USER_POOLS
+            scopes:
+              - aws.cognito.signin.user.admin
+              - apiauthidentifier/json.read
+            authorizerId:
+              "Fn::ImportValue": ${self:custom.common.service}coreinfra-${self:provider.stage}-ApiGatewayAuthorizer
+
+  ProductsPost:
+    handler: controllers/ProductsPost.lambda_handler
+    environment:
+      RESOURCE_METHOD: ProductsPost
+    events:
+      - http:
+          path: products
+          cors: True
+          method: post
+          documentation: ${file(./documentation/serverless.doc.yml):functions.ProductsPost}
+          authorizer:
+            type: COGNITO_USER_POOLS
+            scopes:
+              - aws.cognito.signin.user.admin
+              - apiauthidentifier/json.read
+            authorizerId:
+              "Fn::ImportValue": ${self:custom.common.service}coreinfra-${self:provider.stage}-ApiGatewayAuthorizer
+
+  ProductsPut:
+    handler: controllers/ProductsPut.lambda_handler
+    environment:
+      RESOURCE_METHOD: ProductsPut
+    events:
+      - http:
+          path: products
+          cors: True
+          method: put
+          documentation: ${file(./documentation/serverless.doc.yml):functions.ProductsPut}
+          authorizer:
+            type: COGNITO_USER_POOLS
+            scopes:
+              - aws.cognito.signin.user.admin
+              - apiauthidentifier/json.read
+            authorizerId:
+              "Fn::ImportValue": ${self:custom.common.service}coreinfra-${self:provider.stage}-ApiGatewayAuthorizer

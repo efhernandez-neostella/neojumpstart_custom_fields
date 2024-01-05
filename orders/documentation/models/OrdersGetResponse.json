@@ -1,0 +1,132 @@
+{
+    "type":"object",
+    "properties": {
+        "count" : {
+            "type": "integer",
+            "description": "Number of records without the pagination"
+        },
+        "records": {
+            "type": "array",
+            "description": "An array with the data of orders",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "order_id": {
+                        "type": "string",
+                        "description": "UUID of the order"
+                    },
+                    "contract_id": {
+                        "type": "string",
+                        "description": "UUID of the contract related to the order"
+                    },
+                    "order_name": {
+                        "type": "string",
+                        "description": "Name of the order"
+                    },
+                    "order_number": {
+                        "type": "string",
+                        "description": "Number of the  order"
+                    },
+                    "status": {
+                        "type": "string",
+                        "description": "Status of the order. Draft/Submitted"
+                    },
+                    "start_date": {
+                        "type": "string",
+                        "description": "Start date of the order in format %Y-%m-%d."
+                    },
+                    "end_date": {
+                        "type": "string",
+                        "description": "End date of the order in format %Y-%m-%d."
+                    },
+                    "account_id": {
+                        "type": "string",
+                        "description": "UUID of the account related to the order"
+                    },
+                    "account_name": {
+                        "type": "string",
+                        "description": "Name of the account related to the order"
+                    },
+                    "account_number": {
+                        "type": "string",
+                        "description": "Number of the account related to the order"
+                    },
+                    "total": {
+                        "type": "number",
+                        "description": "Total cost of the order"
+                    },
+                    "currency": {
+                        "type": "string",
+                        "description": "Currency of the account related to the order. USD/GBP/COP/MXN/BRL"
+                    },
+                    "created_by": {
+                        "type": "string",
+                        "description": "Unique identifier for the user who created the user"
+                    },
+                    "updated_by": {
+                        "type": "string",
+                        "description": "Unique identifier for the last user who updated the user"
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "description": "Creation date of the user in %Y-%m-%d %H:%M:%S format"
+                    },
+                    "updated_at": {
+                        "type": "string",
+                        "description": "Last modification date of the user in %Y-%m-%d %H:%M:%S format"
+                    },
+                    "products": {
+                        "type":"object",
+                        "properties": {
+                            "count" : {
+                                "type": "integer",
+                                "description": "Number of records without the pagination"
+                            },
+                            "records": {
+                                "type": "array",
+                                "description": "An array with the data of products related to the orders",
+                                "items": {
+                                    "type": "object",
+                                    "properties": {
+                                        "order_products_id": {
+                                            "type" : "string",
+                                            "description" : "UUID of the table that connects order with the product"
+                                        },
+                                        "product_id": {
+                                            "type" : "string",
+                                            "description" : "UUID of the product"
+                                        },
+                                        "quantity": {
+                                            "type" : "integer",
+                                            "description" : "Quantity of the product in the order"
+                                        },
+                                        "price": {
+                                            "type" : "number",
+                                            "description" : "Unit price of the product in the order"
+                                        },
+                                        "subtotal": {
+                                            "type" : "number",
+                                            "description" : "Subtotal of the product that is unit price multiplicated with the quantity"
+                                        },
+                                        "product_name": {
+                                            "type" : "string",
+                                            "description" : "Name of the product"
+                                        },
+                                        "sku": {
+                                            "type" : "string",
+                                            "description" : "SKU of the product"
+                                        },
+                                        "currency": {
+                                            "type": "string",
+                                            "description": "Currency of the product of the order. USD/GBP/COP/MXN/BRL"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

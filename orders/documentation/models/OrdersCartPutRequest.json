@@ -1,0 +1,27 @@
+{
+    "type": "object",
+    "required": [
+        "order_id",
+        "product_id",
+        "quantity",
+        "action"
+    ],
+    "properties": {
+        "order_id": {
+            "type": "string",
+            "description": "UUID of the order"
+        },
+        "product_id": {
+            "type": "string",
+            "description": "UUID of the product"
+        },
+        "quantity": {
+            "type": "integer",
+            "description": "Quantity of the product in the order date of the order"
+        },
+        "action": {
+            "type": "string",
+            "description": "Action to be done with the product. update/delete"
+        }
+    }
+}

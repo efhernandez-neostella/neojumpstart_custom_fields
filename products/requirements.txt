@@ -1,0 +1,9 @@
+cryptography==3.3.2
+requests==2.26.0
+deepdiff==5.8.1
+jinja2==3.0.3
+pandas==1.4.4
+numpy==1.23.3
+openpyxl==2.5.14
+matplotlib==3.6.0
+python-dotenv==0.21.0

@@ -1,0 +1,38 @@
+{
+    "type": "object",
+    "properties": {
+        "views" : {
+            "type" : "array",
+            "description": "Array of views",
+            "items": {
+                "type": "object",
+                "properties" :{
+                    "view_id": {
+                        "type": "string",
+                        "description": "Unique identifier for the view"
+                    },
+                    "view_name": {
+                        "type": "string",
+                        "description": "Name of the view"
+                    },
+                    "view_endpoint": {
+                        "type": "string",
+                        "description": "Endpoint url for the view"
+                    },
+                    "view_route": {
+                        "type": "string",
+                        "description": "View API path"
+                    },
+                    "entity_id": {
+                        "type": "string",
+                        "description": "UUID of the view entity"
+                    },
+                    "is_active": {
+                        "type": "boolean",
+                        "description": "Indicates whether the view is active or inactive"
+                    }
+                }
+            }
+        }
+    }
+}

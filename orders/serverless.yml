@@ -1,0 +1,151 @@
+service: ${self:custom.common.service}orders
+frameworkVersion: ${self:custom.common.frameworkVersion}
+
+plugins:
+  - serverless-python-requirements
+  - serverless-aws-documentation
+  - serverless-export-env
+  - serverless-prune-plugin
+  - serverless-offline
+  - serverless-deployment-bucket
+
+provider:
+  name: aws
+  runtime: ${self:custom.common.provider.runtime}
+
+  region: ${self:custom.common.provider.region}
+  stage: ${self:custom.common.provider.stage}
+  # profile: ${self:custom.common.provider.profile}
+
+  deploymentBucket:
+    name: ${self:custom.common.service}-${self:provider.stage}-artifacts-s3bucket
+
+  memorySize: ${self:custom.common.provider.memorySize}
+  timeout: ${self:custom.common.provider.timeout}
+
+  environment:
+    SERVICE_NAME: ${self:service}-${self:provider.stage}
+    PROFILE: ${self:custom.common.provider.profile}
+    RESOURCE_METHOD: ${self:custom.common.provider.environment.RESOURCE_METHOD}
+    REGION_NAME: ${self:provider.region}
+    DATABASE_NAME:
+      "Fn::ImportValue": ${self:custom.common.service}coreinfra-${self:provider.stage}-DatabaseName
+    DB_CLUSTER_ARN:
+      "Fn::ImportValue": ${self:custom.common.service}coreinfra-${self:provider.stage}-DbClusterARN
+    CORALOGIX_SECRET:
+      "Fn::ImportValue": ${self:custom.common.service}coreinfra-${self:provider.stage}-CoralogixSecret
+    DB_CREDENTIALS_SECRETS_STORE_ARN:
+      "Fn::ImportValue": ${self:custom.common.service}coreinfra-${self:provider.stage}-DbCredentialsSecretsStoreARN
+    APPKEY_SECRET_ARN:
+      "Fn::ImportValue": ${self:custom.common.service}coreinfra-${self:provider.stage}-AppKeySecretARN
+    SNS_ARN:
+      "Fn::ImportValue": ${self:custom.common.service}eventsinfra-${self:provider.stage}-snsARN
+    WEBHOOK_LOGS_TABLE:
+      "Fn::ImportValue": ${self:custom.common.service}eventsinfra-${self:provider.stage}-WebhookLogsTable
+
+    AUDIT_LOGS_TABLE:
+      "Fn::ImportValue": ${self:custom.common.service}eventsinfra-${self:provider.stage}-AuditLogsTable
+
+    # GRIDS_TABLE:
+    #   "Fn::ImportValue": ${self:custom.common.service}grids-${self:provider.stage}-snsARN
+
+  httpApi:
+    cors:
+      allowedOrigins:
+        - "*"
+      allowedHeaders:
+        - Access-Control-Allow-Headers
+        - Origin
+        - Accept
+        - X-Requested-With
+        - Content-Type
+        - Access-Control-Request-Method
+        - Access-Control-Request-Headers
+        - Authorization
+      allowedMethods:
+        - GET
+        - HEAD
+        - OPTIONS
+        - POST
+        - PUT
+        - DELETE
+      allowCredentials: true
+      exposedResponseHeaders:
+        - Special-Response-Header
+      maxAge: 6000 # In seconds
+
+  apiGateway:
+    restApiId:
+      "Fn::ImportValue": ${self:custom.common.service}coreinfra-${self:provider.stage}-ExtApiGatewayRestApiId
+    restApiRootResourceId:
+      "Fn::ImportValue": ${self:custom.common.service}coreinfra-${self:provider.stage}-ExtApiGatewayRestApiRootResourceId
+
+  iam:
+    role:
+      managedPolicies:
+        - arn:aws:iam::aws:policy/AmazonRDSDataFullAccess
+        - arn:aws:iam::aws:policy/AmazonCognitoPowerUser
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+        - arn:aws:iam::aws:policy/SecretsManagerReadWrite
+        - arn:aws:iam::aws:policy/AmazonS3FullAccess
+        - arn:aws:iam::aws:policy/IAMFullAccess
+        - arn:aws:iam::aws:policy/AmazonSNSFullAccess
+        - arn:aws:iam::aws:policy/AmazonDynamoDBFullAccess
+        - arn:aws:iam::aws:policy/AWSLambda_FullAccess
+        - arn:aws:iam::aws:policy/AmazonEventBridgeFullAccess
+
+      statements:
+        - Effect: "Allow"
+          Resource: "*"
+          Action:
+            - ses:SendRawEmail
+
+        - Effect: "Allow"
+          Resource: "*"
+          Action:
+            - sqs:SendMessage
+
+  layers:
+    - Ref: PythonRequirementsLambdaLayer
+    - Ref: CoreUtilsLambdaLayer
+    - Ref: SqlHandlerLambdaLayer
+    - Ref: UtilsLambdaLayer
+
+package: ${self:custom.common.package}
+
+layers:
+  CoreUtils:
+    name: ${self:service}-${self:provider.stage}-core-utils
+    package:
+      artifact: ${self:custom.common.layers.core_utils}
+  SqlHandler:
+    name: ${self:service}-${self:provider.stage}-sql-handler
+    package:
+      artifact: ${self:custom.common.layers.sql_handler}
+  Utils:
+    name: ${self:service}-${self:provider.stage}-utils
+    package:
+      artifact: ${self:custom.common.layers.utils}
+
+functions:
+  - ${file(./controllers/serverless.yml):functions}
+
+custom:
+  common: ${file(./../../serverless.apptemplate.common.yml)}
+  pythonRequirements:
+    dockerizePip: true
+    layer:
+      name: ${self:service}-${self:provider.stage}-python-libraries
+      description: Layer containing the python libraries necessary for project ${self:service}
+      compatibleRuntimes:
+        - python3.8
+
+  documentation: ${file(./documentation/serverless.doc.yml):documentation}
+  export-env:
+    filename: aws_data.env
+    overwrite: true
+
+  prune:
+    automatic: true
+    includeLayers: true
+    number: 5

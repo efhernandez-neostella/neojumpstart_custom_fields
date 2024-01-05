@@ -1,0 +1,92 @@
+documentation:
+  info:
+    version: ${file(./../../serverless.apptemplate.common.yml):documentation.info.version}
+    title: ${file(./../../serverless.apptemplate.common.yml):documentation.info.title}
+    description: ${file(./../../serverless.apptemplate.common.yml):documentation.info.description}
+  models:
+    - name: "ViewsGetResponse"
+      description: "Model for get views data response."
+      contentType: "application/json"
+      schema: ${file(./documentation/models/ViewsGetResponse.json)}
+    - name: "ViewGetResponse"
+      description: "Model for get view data response."
+      contentType: "application/json"
+      schema: ${file(./documentation/models/ViewGetResponse.json)}
+    - name: "ViewsPutRequest"
+      description: "Model for updating a view"
+      contentType: "application/json"
+      schema: ${file(./documentation/models/ViewsPutRequest.json)}
+    - name: "ViewElementsGetResponse"
+      description: "Model for get view elements data response."
+      contentType: "application/json"
+      schema: ${file(./documentation/models/ViewElementsGetResponse.json)}
+
+functions:
+  ViewsGet:
+    summary: "Get data of views"
+    description: "Get list of views "
+    tags:
+      - "Views"
+    requestHeaders: ${file(./../../open_api_doc/models/RequestHeaders.json)}
+    queryParams:
+      - name: "view_id"
+        description: "View UUID"
+      - name: "view_name"
+        description: "View name"
+      - name: "view_endpoint"
+        description: "View endpoint name"
+      - name: "view_route"
+        description: "view API path"
+      - name: "entity_id"
+        description: "View entity UUID"
+      - name: "is_active"
+        description: "true/false value"
+    methodResponses:
+      - statusCode: "200"
+        description: "Get views success"
+        responseModels:
+          "application/json": "ViewsGetResponse"
+
+  ViewGet:
+    summary: "Get view data"
+    description: "Get view"
+    tags:
+      - "Views"
+    requestHeaders: ${file(./../../open_api_doc/models/RequestHeaders.json)}
+    pathParams:
+      - name: "view_id"
+        description: "UUID of the specific view"
+    methodResponses:
+      - statusCode: "200"
+        description: "Get view success"
+        responseModels:
+          "application/json": "ViewGetResponse"
+
+  ViewsPut:
+    summary: "Update a view"
+    description: "Update an existing view"
+    tags:
+      - "Views"
+    requestHeaders: ${file(./../../open_api_doc/models/RequestHeaders.json)}
+    requestModels:
+      "application/json": "ViewsPutRequest"
+    methodResponses:
+      - statusCode: "200"
+        description: "Updated view"
+
+  ViewElementsGet:
+    summary: "Get data of view elements"
+    description: "Get list of view elements "
+    tags:
+      - "ViewElements"
+    requestHeaders: ${file(./../../open_api_doc/models/RequestHeaders.json)}
+    queryParams:
+      - name: "view_element_id"
+        description: "View element UUID"
+      - name: "view_element_name"
+        description: "View element name"
+    methodResponses:
+      - statusCode: "200"
+        description: "Get view elements success"
+        responseModels:
+          "application/json": "ViewElementsGetResponse"

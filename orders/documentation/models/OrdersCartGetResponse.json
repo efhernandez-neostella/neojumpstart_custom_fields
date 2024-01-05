@@ -1,0 +1,151 @@
+{
+    "type":"object",
+    "properties": {
+        "records": {
+            "type": "array",
+            "description": "An array with the data of orders",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "order_products_id": {
+                        "type": "string",
+                        "description": "UUID of the order product record"
+                    },
+                    "quantity":{
+                        "type":"integer",
+                        "description":"quantity of the product in the order"
+                    },
+                    "price":{
+                        "type":"number",
+                        "description":"unit price of the product in the order"
+                    },
+                    "subtotal":{
+                        "type":"number",
+                        "description":"subtotal of the product in the order. Quantity*Price"
+                    },
+                    "order_id": {
+                        "type": "string",
+                        "description": "UUID of the order"
+                    },
+                    "contract_id": {
+                        "type": "string",
+                        "description": "UUID of the contract related to the order"
+                    },
+                    "order_name": {
+                        "type": "string",
+                        "description": "Name of the order"
+                    },
+                    "order_number": {
+                        "type": "string",
+                        "description": "Number of the  order"
+                    },
+                    "status": {
+                        "type": "string",
+                        "description": "Status of the order. Draft/Submitted"
+                    },
+                    "start_date": {
+                        "type": "string",
+                        "description": "Start date of the order in format %Y-%m-%d."
+                    },
+                    "end_date": {
+                        "type": "string",
+                        "description": "End date of the order in format %Y-%m-%d."
+                    },
+                    "total": {
+                        "type": "number",
+                        "description": "Total cost of the order"
+                    },
+                    "currency": {
+                        "type": "string",
+                        "description": "Currency of the account related to the order. USD/GBP/COP/MXN/BRL"
+                    },
+                    "created_by": {
+                        "type": "string",
+                        "description": "Unique identifier for the user who created the user"
+                    },
+                    "updated_by": {
+                        "type": "string",
+                        "description": "Unique identifier for the last user who updated the user"
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "description": "Creation date of the user in %Y-%m-%d %H:%M:%S format"
+                    },
+                    "updated_at": {
+                        "type": "string",
+                        "description": "Last modification date of the user in %Y-%m-%d %H:%M:%S format"
+                    },
+                    "product_id": {
+                        "type": "string",
+                        "description": "UUID of the product"
+                    },
+                    "product_name": {
+                        "type": "string",
+                        "description": "Name of the product"
+                    },
+                    "sku": {
+                        "type": "string",
+                        "description": "Sku of the product"
+                    },
+                    "product_cost_usd": {
+                        "type": "number",
+                        "description": "Cost of the product in USD"
+                    },
+                    "product_cost_gbp": {
+                        "type": "number",
+                        "description": "Cost of the product in GBP"
+                    },
+                    "product_cost_cop": {
+                        "type": "number",
+                        "description": "Cost of the product in COP"
+                    },
+                    "product_cost_mxn": {
+                        "type": "number",
+                        "description": "Cost of the product in MXN"
+                    },
+                    "product_cost_brl": {
+                        "type": "number",
+                        "description": "Cost of the product in BRL"
+                    },
+                    "prorated": {
+                        "type": "boolean",
+                        "description": "Check if a product can be prorated"
+                    },
+                    "description": {
+                        "type": "string",
+                        "description": "Description of the product"
+                    },
+                    "product_type": {
+                        "type": "string",
+                        "description": "Product type of the product. Values: workato_recipe/neostella_service"
+                    },
+                    "is_active": {
+                        "type": "boolean",
+                        "description": "Status of the product related to the order"
+                    },
+                    "account_id": {
+                        "type": "string",
+                        "description": "UUID of the account related to the order"
+                    },
+                    "account_name": {
+                        "type": "string",
+                        "description": "Name of the account related to the order"
+                    },
+                    "account_number": {
+                        "type": "string",
+                        "description": "Number of the account related to the order"
+                    },          
+                    "dinvy_id": {
+                        "type": "string",
+                        "description": "Dinvy id related to the account"
+                    },
+                    "salesforce_id": {
+                        "type": "string",
+                        "description": "Salesforce id related to the account"
+                    }
+
+                }
+            }
+        }
+    }
+}

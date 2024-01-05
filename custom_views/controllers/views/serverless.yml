@@ -1,0 +1,76 @@
+functions:
+  ViewsGet:
+    handler: controllers/views/ViewsGet.lambda_handler
+    environment:
+      RESOURCE_METHOD: ViewsGet
+    events:
+      - http:
+          path: views
+          cors: True
+          method: get
+          documentation: ${file(./documentation/serverless.doc.yml):functions.ViewsGet}
+          authorizer:
+            type: COGNITO_USER_POOLS
+            scopes:
+              - aws.cognito.signin.user.admin
+              - apiauthidentifier/json.read
+            authorizerId:
+              "Fn::ImportValue": ${self:custom.common.service}coreinfra-${self:provider.stage}-ApiGatewayAuthorizer
+
+  ViewGet:
+    handler: controllers/views/ViewGet.lambda_handler
+    environment:
+      RESOURCE_METHOD: ViewGet
+    events:
+      - http:
+          path: views/{view_id}
+          cors: True
+          method: get
+          request:
+            parameters:
+              paths:
+                view_id: true
+          documentation: ${file(./documentation/serverless.doc.yml):functions.ViewGet}
+          authorizer:
+            type: COGNITO_USER_POOLS
+            scopes:
+              - aws.cognito.signin.user.admin
+              - apiauthidentifier/json.read
+            authorizerId:
+              "Fn::ImportValue": ${self:custom.common.service}coreinfra-${self:provider.stage}-ApiGatewayAuthorizer
+
+  ViewsPut:
+    handler: controllers/views/ViewsPut.lambda_handler
+    environment:
+      RESOURCE_METHOD: ViewsPut
+    events:
+      - http:
+          path: views
+          cors: True
+          method: put
+          documentation: ${file(./documentation/serverless.doc.yml):functions.ViewsPut}
+          authorizer:
+            type: COGNITO_USER_POOLS
+            scopes:
+              - aws.cognito.signin.user.admin
+              - apiauthidentifier/json.read
+            authorizerId:
+              "Fn::ImportValue": ${self:custom.common.service}coreinfra-${self:provider.stage}-ApiGatewayAuthorizer
+
+  ViewElementsGet:
+    handler: controllers/views/ViewElementsGet.lambda_handler
+    environment:
+      RESOURCE_METHOD: ViewElementsGet
+    events:
+      - http:
+          path: view-elements
+          cors: True
+          method: get
+          documentation: ${file(./documentation/serverless.doc.yml):functions.ViewElementsGet}
+          authorizer:
+            type: COGNITO_USER_POOLS
+            scopes:
+              - aws.cognito.signin.user.admin
+              - apiauthidentifier/json.read
+            authorizerId:
+              "Fn::ImportValue": ${self:custom.common.service}coreinfra-${self:provider.stage}-ApiGatewayAuthorizer

@@ -1,0 +1,5 @@
+requests==2.26.0
+deepdiff==5.8.1
+python-dotenv==0.21.0
+aws-lambda-powertools[all]
+pydantic

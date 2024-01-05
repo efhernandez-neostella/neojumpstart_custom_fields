@@ -1,0 +1,42 @@
+{
+    "type": "object",
+    "required": [
+        "action",
+        "order_id",
+        "contract_id",
+        "order_name",
+        "start_date",
+        "end_date",
+        "account_id"
+    ],
+    "properties": {
+        "action": {
+            "type": "string",
+            "description": "edit/submit. If action is submited, the order status will be changed and an email will be sent from workato."
+        },
+        "order_id": {
+            "type": "string",
+            "description": "UUID of the order to be updated"
+        },
+        "contract_id": {
+            "type": "string",
+            "description": "UUID of the contract related to the order to be updated"
+        },
+        "order_name": {
+            "type": "string",
+            "description": "New Name ID of the order to be updated"
+        },
+        "start_date": {
+            "type": "string",
+            "description": "New Start date of the order in format %Y-%m-%d. Must be higher than the contract start date and the last start date"
+        },
+        "end_date": {
+            "type": "string",
+            "description": "New End date of the order in format %Y-%m-%d. Must be lower than the contract end date"
+        },
+        "account_id": {
+            "type": "string",
+            "description": "UUID of the account related to the order to be updated"
+        }
+    }
+}

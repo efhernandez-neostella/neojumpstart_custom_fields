@@ -1,0 +1,67 @@
+{
+    "type": "object",
+    "required": [
+        "product_id"
+    ],
+    "properties": {
+        "product_id": {
+            "type": "string",
+            "description": "Id of the product to be updated"
+        },
+        "product_name": {
+            "type": "string",
+            "description": "Name of the product to be updated"
+        },
+        "dinvy_id": {
+            "type": "string",
+            "description": "Dinvy ID of the product to be updated"
+        },
+        "sku": {
+            "type": "string",
+            "description": "SKU of the product to be updated"
+        },
+        "product_type": {
+            "type": "string",
+            "description": "Product type of the product to be updated. accepted values: workato_recipe/neostella_service"
+        },
+        "product_cost":{
+            "type": "object",
+            "description": "json with the cost of the products by the currency",
+            "properties": {
+                "product_cost_usd": {
+                    "type": "number",
+                    "description": "Cost of the product to be updated in USD"
+                },
+                "product_cost_gbp": {
+                    "type": "number",
+                    "description": "Cost of the product to be updated in GBP"
+                },
+                "product_cost_cop": {
+                    "type": "number",
+                    "description": "Cost of the product to be updated in COP"
+                },
+                "product_cost_mxn": {
+                    "type": "number",
+                    "description": "Cost of the product to be updated in MXN"
+                },
+                "product_cost_brl": {
+                    "type": "number",
+                    "description": "Cost of the product to be updated in BRL"
+                }
+
+            }
+        },
+        "prorated": {
+            "type": "boolean",
+            "description": "Bool to check if the product to be updated can be prorated"
+        },
+        "is_active": {
+            "type": "boolean",
+            "description": "Status of the product to be updated"
+        },
+        "description": {
+            "type": "string",
+            "description": "Description of the product"
+        }
+    }
+}

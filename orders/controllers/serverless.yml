@@ -1,0 +1,110 @@
+functions:
+   #Orders
+  OrdersPost:
+    handler: controllers/OrdersPost.lambda_handler
+    environment:
+      RESOURCE_METHOD: OrdersPost
+    events:
+      - http:
+          path: orders
+          cors: True
+          method: post
+          documentation: ${file(./documentation/serverless.doc.yml):functions.OrdersPost}
+          authorizer:
+            type: COGNITO_USER_POOLS
+            scopes:
+              - aws.cognito.signin.user.admin
+              - apiauthidentifier/json.read
+            authorizerId:
+              "Fn::ImportValue": ${self:custom.common.service}coreinfra-${self:provider.stage}-ApiGatewayAuthorizer
+
+  OrdersPut:
+    handler: controllers/OrdersPut.lambda_handler
+    environment:
+      RESOURCE_METHOD: OrdersPut
+    events:
+      - http:
+          path: orders
+          cors: True
+          method: put
+          documentation: ${file(./documentation/serverless.doc.yml):functions.OrdersPut}
+          authorizer:
+            type: COGNITO_USER_POOLS
+            scopes:
+              - aws.cognito.signin.user.admin
+              - apiauthidentifier/json.read
+            authorizerId:
+              "Fn::ImportValue": ${self:custom.common.service}coreinfra-${self:provider.stage}-ApiGatewayAuthorizer
+
+  OrdersGet:
+    handler: controllers/OrdersGet.lambda_handler
+    environment:
+      RESOURCE_METHOD: OrdersGet
+    events:
+      - http:
+          path: orders
+          cors: True
+          method: get
+          documentation: ${file(./documentation/serverless.doc.yml):functions.OrdersGet}
+          authorizer:
+            type: COGNITO_USER_POOLS
+            scopes:
+              - aws.cognito.signin.user.admin
+              - apiauthidentifier/json.read
+            authorizerId:
+              "Fn::ImportValue": ${self:custom.common.service}coreinfra-${self:provider.stage}-ApiGatewayAuthorizer
+
+  #Orders/shopping_cart
+  OrdersCartPost:
+    handler: controllers/OrdersCartPost.lambda_handler
+    environment:
+      RESOURCE_METHOD: OrdersCartPost
+    events:
+      - http:
+          path: orders/shopping_cart
+          cors: True
+          method: post
+          documentation: ${file(./documentation/serverless.doc.yml):functions.OrdersCartPost}
+          authorizer:
+            type: COGNITO_USER_POOLS
+            scopes:
+              - aws.cognito.signin.user.admin
+              - apiauthidentifier/json.read
+            authorizerId:
+              "Fn::ImportValue": ${self:custom.common.service}coreinfra-${self:provider.stage}-ApiGatewayAuthorizer
+                
+  OrdersCartPut:
+    handler: controllers/OrdersCartPut.lambda_handler
+    environment:
+      RESOURCE_METHOD: OrdersCartPut
+    events:
+      - http:
+          path: orders/shopping_cart
+          cors: True
+          method: put
+          documentation: ${file(./documentation/serverless.doc.yml):functions.OrdersCartPut}
+          authorizer:
+            type: COGNITO_USER_POOLS
+            scopes:
+              - aws.cognito.signin.user.admin
+              - apiauthidentifier/json.read
+            authorizerId:
+              "Fn::ImportValue": ${self:custom.common.service}coreinfra-${self:provider.stage}-ApiGatewayAuthorizer
+
+  OrdersCartGet:
+    handler: controllers/OrdersCartGet.lambda_handler
+    environment:
+      RESOURCE_METHOD: OrdersCartGet
+    events:
+      - http:
+          path: orders/shopping_cart
+          cors: True
+          method: get
+          documentation: ${file(./documentation/serverless.doc.yml):functions.OrdersCartGet}
+          authorizer:
+            type: COGNITO_USER_POOLS
+            scopes:
+              - aws.cognito.signin.user.admin
+              - apiauthidentifier/json.read
+            authorizerId:
+              "Fn::ImportValue": ${self:custom.common.service}coreinfra-${self:provider.stage}-ApiGatewayAuthorizer

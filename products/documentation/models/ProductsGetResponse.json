@@ -1,0 +1,67 @@
+{
+    "type": "object",
+    "properties": {
+        "products":{
+            "type":"object",
+            "properties": {
+                "count" : {
+                    "type": "integer",
+                    "description": "Number of records without the pagination"
+                },
+                "records": {
+                    "type": "array",
+                    "description": "An array the data of products",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "product_id": {
+                                "type": "string",
+                                "description": "UUID of the product"
+                            },
+                            "product_name": {
+                                "type": "string",
+                                "description": "Name of the product"
+                            },
+                            "sku": {
+                                "type": "string",
+                                "description": "Sku of the product"
+                            },
+                            "product_cost_usd": {
+                                "type": "number",
+                                "description": "Cost of the product in USD"
+                            },
+                            "product_cost_gbp": {
+                                "type": "number",
+                                "description": "Cost of the product in GBP"
+                            },
+                            "product_cost_cop": {
+                                "type": "number",
+                                "description": "Cost of the product in COP"
+                            },
+                            "product_cost_mxn": {
+                                "type": "number",
+                                "description": "Cost of the product in MXN"
+                            },
+                            "product_cost_brl": {
+                                "type": "number",
+                                "description": "Cost of the product in BRL"
+                            },
+                            "prorated": {
+                                "type": "boolean",
+                                "description": "Check if a product can be prorated"
+                            },
+                            "product_type": {
+                                "type": "string",
+                                "description": "Product type of the product. Values: workato_recipe/neostella_service"
+                            },
+                            "description": {
+                                "type": "string",
+                                "description": "Description of the product"
+                            }
+                        }
+                    }
+                }
+            }
+        }    
+    }
+}

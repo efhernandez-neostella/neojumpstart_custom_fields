@@ -1,0 +1,57 @@
+{
+    "type": "object",
+    "required": [
+        "product_name",
+        "dinvy_id",
+        "sku",
+        "product_type",
+        "currencies"
+    ],
+    "properties": {
+        "product_name": {
+            "type": "string",
+            "description": "Name of the new product to be created"
+        },
+        "dinvy_id": {
+            "type": "string",
+            "description": "Dinvy ID of the new product to be created"
+        },
+        "sku": {
+            "type": "string",
+            "description": "SKU of the new product to be created"
+        },
+        "product_type": {
+            "type": "string",
+            "description": "Product type of the new product to be created. accepted values: workato_recipe/neostella_service"
+        },
+        "currencies": {
+            "type": "array",
+            "description": "array with json files with the currencies and cost of the product",
+            "items": {
+                "type":"object",
+                "properties": {
+                    "currency_id": {
+                        "type": "string",
+                        "description": "uuid for the currency"
+                    },
+                    "cost":{
+                        "type": "number",
+                        "description": "cost of the product for that currency"
+                    }
+                }
+            }
+        },
+        "prorated": {
+            "type": "boolean",
+            "description": "Bool to check if the new product to be created can be prorated"
+        },
+        "is_active": {
+            "type": "boolean",
+            "description": "Status of the new product to be created"
+        },
+        "description": {
+            "type": "string",
+            "description": "Description of the product"
+        }
+    }
+}

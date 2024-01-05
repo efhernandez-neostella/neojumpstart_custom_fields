@@ -1,0 +1,213 @@
+documentation:
+  info:
+    version: ${file(./../../serverless.apptemplate.common.yml):documentation.info.version}
+    title: ${file(./../../serverless.apptemplate.common.yml):documentation.info.title}
+    description: ${file(./../../serverless.apptemplate.common.yml):documentation.info.description}
+  models:
+    # - name: "ObjectDeleteResponse"
+    #   description: "Response received after deleting a new user"
+    #   contentType: "application/json"
+    #   schema: ${file(./../../open_api_doc/models/ObjectDeleteResponse.json)}
+    # - name: "ErrorResponse"
+    #   description: "Model for the error response"
+    #   contentType: "application/json"
+    #   schema: ${file(./../../open_api_doc/models/ErrorResponse.json)}
+    # - name: "PermissionDeniedResponse"
+    #   description: "Model for the permission denied response"
+    #   contentType: "application/json"
+    #   schema: ${file(./../../open_api_doc/models/PermissionDeniedResponse.json)}
+    # - name: "ObjectCreationResponse"
+    #   description: "Response received after creating a new object"
+    #   contentType: "application/json"
+    #   schema: ${file(./../../open_api_doc/models/ObjectCreationResponse.json)}
+    # - name: "ObjectEditionResponse"
+    #   description: "Response received after updating an object"
+    #   contentType: "application/json"
+    #   schema: ${file(./../../open_api_doc/models/ObjectEditionResponse.json)}
+    - name: "OrdersGetResponse"
+      description: "Model for get order data response."
+      contentType: "application/json"
+      schema: ${file(./documentation/models/OrdersGetResponse.json)}
+    - name: "OrdersPostRequest"
+      description: "Model for creating a new order"
+      contentType: "application/json"
+      schema: ${file(./documentation/models/OrdersPostRequest.json)}
+    - name: "OrdersPutRequest"
+      description: "Model for updating an order"
+      contentType: "application/json"
+      schema: ${file(./documentation/models/OrdersPutRequest.json)}
+    - name: "OrdersCartGetResponse"
+      description: "Model for get order product data response."
+      contentType: "application/json"
+      schema: ${file(./documentation/models/OrdersCartGetResponse.json)}
+    - name: "OrdersCartPostRequest"
+      description: "Model for creating a new order product"
+      contentType: "application/json"
+      schema: ${file(./documentation/models/OrdersCartPostRequest.json)}
+    - name: "OrdersCartPutRequest"
+      description: "Model for updating an order order product"
+      contentType: "application/json"
+      schema: ${file(./documentation/models/OrdersCartPutRequest.json)}
+
+functions:
+  OrdersGet:
+    summary: "Get Order(s) DATA"
+    description: "Get List of order data. "
+    tags:
+      - "Orders"
+    requestHeaders: ${file(./../../open_api_doc/models/RequestHeaders.json)}
+    queryParams:
+      - name: "order_id"
+        description: "UUID of the order to be searched"
+      - name: "order_number"
+        description: "Number of the order to be searched"
+      - name: "order_name"
+        description: "Name of the order to be searched"
+      - name: "start_date"
+        description: "Start date of the order in format %Y-%m-%d."
+      - name: "end_date"
+        description: "End date of the order in format %Y-%m-%d."
+      - name: "account_id"
+        description: "uuid of the account related to the order to be searched"
+      - name: "account_name"
+        description: "Name of the account related to the order to be searched"
+      - name: "account_number"
+        description: "Number of the account related to the order to be searched"
+      - name: "status"
+        description: "Status of the order to be searched. draft/submitted"
+      - name: "created_by"
+        description: "UUID of the user that created the order to be searched"
+      - name: "product_name"
+        description: "Name of the product related to the order to be searched"
+      - name: "created_to"
+        description: "Search for orders created before the date in format %Y-%m-%d."
+      - name: "created_from"
+        description: "Search for orders created after the date in format %Y-%m-%d."
+      - name: "limit"
+        description: "limit of records to be returned"
+      - name: "page"
+        description: "page of the pagination"
+    methodResponses:
+      - statusCode: "200"
+        description: "Orders data returned"
+        responseModels:
+          "application/json": "OrdersGetResponse"
+      # - statusCode: "403"
+      #   description: "Permission denied"
+      #   responseModels:
+      #     "application/json": "PermissionDeniedResponse"
+      # - statusCode: "500"
+      #   description: "Unexpected error"
+      #   responseModels:
+      #     "application/json": "ErrorResponse"
+
+  OrdersPost:
+    summary: "Create Order"
+    description: "Creates a new order"
+    tags:
+      - "Orders"
+    requestHeaders: ${file(./../../open_api_doc/models/RequestHeaders.json)}
+    requestModels:
+      "application/json": "OrdersPostRequest"
+    methodResponses:
+      - statusCode: "200"
+        description: "Order created"
+        # responseModels:
+        #   "application/json": "ObjectCreationResponse"
+      # - statusCode: "403"
+      #   description: "Permission denied"
+      #   responseModels:
+      #     "application/json": "PermissionDeniedResponse"
+      # - statusCode: "500"
+      #   description: "Unexpected error"
+      #   responseModels:
+      #     "application/json": "ErrorResponse"
+
+  OrdersPut:
+    summary: "Update Order"
+    description: "Update an order"
+    tags:
+      - "Orders"
+    requestHeaders: ${file(./../../open_api_doc/models/RequestHeaders.json)}
+    requestModels:
+      "application/json": "OrdersPutRequest"
+    methodResponses:
+      - statusCode: "200"
+        description: "Order Updated"
+      #   responseModels:
+      #     "application/json": "ObjectEditionResponse"
+      # - statusCode: "403"
+      #   description: "Permission denied"
+      #   responseModels:
+      #     "application/json": "PermissionDeniedResponse"
+      # - statusCode: "500"
+      #   description: "Unexpected error"
+      #   responseModels:
+      #     "application/json": "ErrorResponse"
+
+  OrdersCartGet:
+    summary: "Get data of products related to an order"
+    description: "Get List of products related to an order. "
+    tags:
+      - "OrdersCart"
+    requestHeaders: ${file(./../../open_api_doc/models/RequestHeaders.json)}
+    queryParams:
+      - name: "order_products_id"
+        description: "UUID of the order product to be searched"
+    methodResponses:
+      - statusCode: "200"
+        description: "Order products data returned"
+        responseModels:
+          "application/json": "OrdersCartGetResponse"
+      # - statusCode: "403"
+      #   description: "Permission denied"
+      #   responseModels:
+      #     "application/json": "PermissionDeniedResponse"
+      # - statusCode: "500"
+      #   description: "Unexpected error"
+      #   responseModels:
+      #     "application/json": "ErrorResponse"
+
+  OrdersCartPost:
+    summary: "Create shopping cart product"
+    description: "Creates a new shopping cart product"
+    tags:
+      - "OrdersCart"
+    requestHeaders: ${file(./../../open_api_doc/models/RequestHeaders.json)}
+    requestModels:
+      "application/json": "OrdersCartPostRequest"
+    methodResponses:
+      - statusCode: "200"
+        description: "Product added"
+      #   responseModels:
+      #     "application/json": "ObjectCreationResponse"
+      # - statusCode: "403"
+      #   description: "Permission denied"
+      #   responseModels:
+      #     "application/json": "PermissionDeniedResponse"
+      # - statusCode: "500"
+      #   description: "Unexpected error"
+      #   responseModels:
+      #     "application/json": "ErrorResponse"
+
+  OrdersCartPut:
+    summary: "Update shopping cart product"
+    description: "Update a shopping cart product"
+    tags:
+      - "OrdersCart"
+    requestHeaders: ${file(./../../open_api_doc/models/RequestHeaders.json)}
+    requestModels:
+      "application/json": "OrdersCartPutRequest"
+    methodResponses:
+      - statusCode: "200"
+        description: "Product Edited"
+      #   responseModels:
+      #     "application/json": "ObjectEditionResponse"
+      # - statusCode: "403"
+      #   description: "Permission denied"
+      #   responseModels:
+      #     "application/json": "PermissionDeniedResponse"
+      # - statusCode: "500"
+      #   description: "Unexpected error"
+      #   responseModels:
+      #     "application/json": "ErrorResponse"

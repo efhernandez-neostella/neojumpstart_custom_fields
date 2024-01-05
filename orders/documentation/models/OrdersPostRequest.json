@@ -1,0 +1,32 @@
+{
+    "type": "object",
+    "required": [
+        "contract_id",
+        "order_name",
+        "start_date",
+        "end_date",
+        "account_id"
+    ],
+    "properties": {
+        "contract_id": {
+            "type": "string",
+            "description": "UUID of the contract related to the new order to be created"
+        },
+        "order_name": {
+            "type": "string",
+            "description": "Name of the new order to be created"
+        },
+        "start_date": {
+            "type": "string",
+            "description": "Start date of the order in format %Y-%m-%d. Must be higher than the contract start date and actual date"
+        },
+        "end_date": {
+            "type": "string",
+            "description": "End date of the order in format %Y-%m-%d. Must be lower than the contract end date"
+        },
+        "account_id": {
+            "type": "string",
+            "description": "UUID of the account related to the order to be created"
+        }
+    }
+}

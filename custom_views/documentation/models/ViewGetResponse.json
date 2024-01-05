@@ -1,0 +1,235 @@
+{
+    "type": "object",
+    "properties": {
+        "view" : {    
+            "type" : "object",
+            "properties": {
+                "view_id": {
+                    "type": "string",
+                    "description": "Unique identifier for the view"
+                },
+                "view_name": {
+                    "type": "string",
+                    "description": "Name of the view"
+                },
+                "view_endpoint": {
+                    "type": "string",
+                    "description": "Endpoint url for the view"
+                },
+                "entity": {
+                    "type": "object",
+                    "properties" :{
+                        "variant": {
+                            "type": "string",
+                            "description": "button variant"
+                        },
+                        "text": {
+                            "type": "string",
+                            "description": "button label text"
+                        }
+                    }
+                },
+                "view_route": {
+                    "type": "string",
+                    "description": "View API path"
+                },
+                "json_content": {
+                    "type": "object",
+                    "properties":{
+                        "cards": {
+                            "type" : "array",
+                            "description": "Array of UI cards",
+                            "items": {
+                                "type": "object",
+                                "properties" :{
+                                    "buttons": {
+                                        "type" : "array",
+                                        "description": "Array of UI buttons",
+                                        "items": {
+                                            "type": "object",
+                                            "properties" :{
+                                                "variant": {
+                                                    "type": "string",
+                                                    "description": "button variant"
+                                                },
+                                                "text": {
+                                                    "type": "string",
+                                                    "description": "button label text"
+                                                }
+                                            }
+                                        }
+                                    },
+                                    "title": {
+                                        "type": "string",
+                                        "description": "Section title"
+                                    },
+                                    "card_type": {
+                                        "type": "string",
+                                        "description": "card type. form/grid/widget"
+                                    },
+                                    "card_id": {
+                                        "type": "string",
+                                        "description": "card id given by the UI"
+                                    },
+                                    "sections": {
+                                        "type" : "array",
+                                        "description": "Array of UI sections",
+                                        "items": {
+                                            "type": "object",
+                                            "properties" :{
+                                                "buttons": {
+                                                    "type" : "array",
+                                                    "description": "Array of UI buttons",
+                                                    "items": {
+                                                        "type": "object",
+                                                        "properties" :{
+                                                            "variant": {
+                                                                "type": "string",
+                                                                "description": "button variant"
+                                                            },
+                                                            "text": {
+                                                                "type": "string",
+                                                                "description": "button label text"
+                                                            }
+                                                        }
+                                                    }
+                                                },
+                                                "section_id": {
+                                                    "type": "string",
+                                                    "description": "section id given by the UI"
+                                                },
+                                                "title": {
+                                                    "type": "string",
+                                                    "description": "section title"
+                                                },
+                                                "fields": {
+                                                    "type" : "array",
+                                                    "description": "Array of fields",
+                                                    "items": {
+                                                        "type": "object",
+                                                        "properties" :{
+                                                            "custom_field_id": {
+                                                                "type": "string",
+                                                                "description": "Unique identifier for the field"
+                                                            },
+                                                            "is_active": {
+                                                                "type": "boolean",
+                                                                "description": "Indicates whether the field is active or inactive"
+                                                            },
+                                                            "name": {
+                                                                "type": "string",
+                                                                "description": "Name of the field"
+                                                            },
+                                                            "column_name": {
+                                                                "type": "string",
+                                                                "description": "Tenant column name"
+                                                            },
+                                                            "parent_object_id": {
+                                                                "type": "string",
+                                                                "description": "UUID of the parent object"
+                                                            },
+                                                            "parent_object_name": {
+                                                                "type": "string",
+                                                                "description": "Name of the parent object"
+                                                            },
+                                                            "input": {
+                                                                "type": "string",
+                                                                "description": "Input type of custom field"
+                                                            },
+                                                            "format": {
+                                                                "type": "string",
+                                                                "description": "UI format"
+                                                            },
+                                                            "is_required": {
+                                                                "type": "boolean",
+                                                                "description": "Field require value"
+                                                            },
+                                                            "description": {
+                                                                "type": "string",
+                                                                "description": "Field description"
+                                                            },
+                                                            "width": {
+                                                                "type": "string",
+                                                                "description": "Width of the field box"
+                                                            },
+                                                            "height": {
+                                                                "type": "string",
+                                                                "description": "height of the field box"
+                                                            },
+                                                            "acceptable_values": {
+                                                                "type": "array",
+                                                                "description": "acceptable values for the field",
+                                                                "items": {
+                                                                    "type": "string",
+                                                                    "description": "acceptable values"
+                                                                }
+                                                            },
+                                                            "tenant_id": {
+                                                                "type": "string",
+                                                                "description": "Field tenant UUID"
+                                                            },
+                                                            "data_type": {
+                                                                "type": "string",
+                                                                "description": "Data type of custom field"
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "is_active": {
+                    "type": "boolean",
+                    "description": "Indicates whether the view is active or inactive"
+                },
+                "audit_data": {
+                    "type": "object",
+                    "description": "Audit data object",
+                    "properties": {
+                        "created": {
+                            "type": "object",
+                            "description": "Creation data",
+                            "properties": {
+                                "created_by_user_id": {
+                                    "type" : "string",
+                                    "description" : "Create user UUID"
+                                },
+                                "created_by_user_name": {
+                                    "type" : "string",
+                                    "description" : "Create user full name"
+                                },
+                                "created_at": {
+                                    "type" : "string",
+                                    "description" : "Create date"
+                                }
+                            }
+                        },
+                        "updated": {
+                            "type": "object",
+                            "description": "Audit data object",
+                            "properties": {
+                                "updated_by_user_id": {
+                                    "type" : "string",
+                                    "description" : "Update user uuid"
+                                },
+                                "updated_by_user_name": {
+                                    "type" : "string",
+                                    "description" : "Update user full name"
+                                },
+                                "updated_at": {
+                                    "type" : "string",
+                                    "description" : "Update date"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

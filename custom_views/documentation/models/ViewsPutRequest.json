@@ -1,0 +1,123 @@
+{
+    "type": "object",
+    "required": [
+        "view_id"
+    ],
+    "properties": {
+        "view_id": {
+            "type": "string",
+            "description": "Unique identifier for the view"
+        },
+        "view_name": {
+            "type": "string",
+            "description": "Name of the view"
+        },
+        "view_endpoint": {
+            "type": "string",
+            "description": "Endpoint url for the view"
+        },
+        "view_route": {
+            "type": "string",
+            "description": "View API path"
+        },
+        "entity_id": {
+            "type": "string",
+            "description": "UUID of the view entity"
+        },
+        "json_content": {
+            "type": "object",
+            "description": "json object used to render the view in the UI",
+            "properties":{
+                "cards": {
+                    "type" : "array",
+                    "description": "Array of UI cards",
+                    "items": {
+                        "type": "object",
+                        "properties" :{
+                            "buttons": {
+                                "type" : "array",
+                                "description": "Array of UI buttons",
+                                "items": {
+                                    "type": "object",
+                                    "properties" :{
+                                        "variant": {
+                                            "type": "string",
+                                            "description": "button variant"
+                                        },
+                                        "text": {
+                                            "type": "string",
+                                            "description": "button label text"
+                                        }
+                                    }
+                                }
+                            },
+                            "title": {
+                                "type": "string",
+                                "description": "Section title"
+                            },
+                            "card_type": {
+                                "type": "string",
+                                "description": "card type. form/grid/widget"
+                            },
+                            "card_id": {
+                                "type": "string",
+                                "description": "card id given by the UI"
+                            },
+                            "sections": {
+                                "type" : "array",
+                                "description": "Array of UI sections",
+                                "items": {
+                                    "type": "object",
+                                    "properties" :{
+                                        "buttons": {
+                                            "type" : "array",
+                                            "description": "Array of UI buttons",
+                                            "items": {
+                                                "type": "object",
+                                                "properties" :{
+                                                    "variant": {
+                                                        "type": "string",
+                                                        "description": "button variant"
+                                                    },
+                                                    "text": {
+                                                        "type": "string",
+                                                        "description": "button label text"
+                                                    }
+                                                }
+                                            }
+                                        },
+                                        "section_id": {
+                                            "type": "string",
+                                            "description": "section id given by the UI"
+                                        },
+                                        "title": {
+                                            "type": "string",
+                                            "description": "section title"
+                                        },
+                                        "fields": {
+                                            "type" : "array",
+                                            "description": "Array of fielkds",
+                                            "items": {
+                                                "type": "object",
+                                                "properties" :{
+                                                    "custom_field_id": {
+                                                        "type": "string",
+                                                        "description": "Unique identifier for the field"
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "is_active": {
+            "type": "boolean",
+            "description": "Indicates whether the view is active or inactive"
+        }
+    }
+}
