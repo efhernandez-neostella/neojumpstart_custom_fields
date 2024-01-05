@@ -1,0 +1,181 @@
+service: ${self:custom.common.service}customfields
+frameworkVersion: ${self:custom.common.frameworkVersion}
+
+plugins:
+  - serverless-python-requirements
+  - serverless-aws-documentation
+  - serverless-export-env
+  - serverless-prune-plugin
+  - serverless-offline
+  - serverless-deployment-bucket
+
+provider:
+  name: aws
+  runtime: ${self:custom.common.provider.runtime}
+
+  region: ${self:custom.common.provider.region}
+  stage: ${self:custom.common.provider.stage}
+
+  deploymentBucket:
+    name: ${self:custom.common.service}-${self:provider.stage}-artifacts-s3bucket
+
+  memorySize: ${self:custom.common.provider.memorySize}
+  timeout: ${self:custom.common.provider.timeout}
+
+  environment:
+    SERVICE_NAME: ${self:service}-${self:provider.stage}
+    PROFILE: ${self:custom.common.provider.profile}
+    RESOURCE_METHOD: ${self:custom.common.provider.environment.RESOURCE_METHOD}
+    REGION_NAME: ${self:provider.region}
+    STAGE: ${self:provider.stage}
+    REST_API_ID: ${self:provider.apiGateway.restApiId}
+    FIELDS_TABLE:
+      Ref: CustomFields
+    DATABASE_NAME:
+      "Fn::ImportValue": ${self:custom.common.service}coreinfra-${self:provider.stage}-DatabaseName
+    DB_CLUSTER_ARN:
+      "Fn::ImportValue": ${self:custom.common.service}coreinfra-${self:provider.stage}-DbClusterARN
+    CORALOGIX_SECRET:
+      "Fn::ImportValue": ${self:custom.common.service}coreinfra-${self:provider.stage}-CoralogixSecret
+    DB_CREDENTIALS_SECRETS_STORE_ARN:
+      "Fn::ImportValue": ${self:custom.common.service}coreinfra-${self:provider.stage}-DbCredentialsSecretsStoreARN
+    APPKEY_SECRET_ARN:
+      "Fn::ImportValue": ${self:custom.common.service}coreinfra-${self:provider.stage}-AppKeySecretARN
+    SNS_ARN:
+      "Fn::ImportValue": ${self:custom.common.service}eventsinfra-${self:provider.stage}-snsARN
+    WEBHOOK_LOGS_TABLE:
+      "Fn::ImportValue": ${self:custom.common.service}eventsinfra-${self:provider.stage}-WebhookLogsTable
+    AUDIT_LOGS_TABLE:
+      "Fn::ImportValue": ${self:custom.common.service}eventsinfra-${self:provider.stage}-AuditLogsTable
+    GATEWAY_AUTHORIZER_ID:
+      "Fn::ImportValue": ${self:custom.common.service}coreinfra-${self:provider.stage}-GatewayAuthorizerId
+
+  httpApi: True
+
+  apiGateway:
+    restApiId:
+      "Fn::ImportValue": ${self:custom.common.service}coreinfra-${self:provider.stage}-ExtApiGatewayRestApiId
+    restApiRootResourceId:
+      "Fn::ImportValue": ${self:custom.common.service}coreinfra-${self:provider.stage}-ExtApiGatewayRestApiRootResourceId
+
+  iam:
+    role:
+      managedPolicies:
+        - arn:aws:iam::aws:policy/AmazonRDSDataFullAccess
+        - arn:aws:iam::aws:policy/AmazonCognitoPowerUser
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+        - arn:aws:iam::aws:policy/SecretsManagerReadWrite
+        - arn:aws:iam::aws:policy/AmazonS3FullAccess
+        - arn:aws:iam::aws:policy/IAMFullAccess
+        - arn:aws:iam::aws:policy/AmazonSNSFullAccess
+        - arn:aws:iam::aws:policy/AmazonRoute53FullAccess
+        - arn:aws:iam::aws:policy/AmazonRDSFullAccess
+        - arn:aws:iam::aws:policy/AmazonAPIGatewayAdministrator
+
+      statements:
+        - Effect: "Allow"
+          Resource: "*"
+          Action:
+            - sqs:SendMessage
+            - lambda:InvokeFunction
+            - lambda:InvokeAsync
+            - dynamodb:*
+            - dynamodb:PartiQLSelect
+
+  layers:
+    - Ref: PythonRequirementsLambdaLayer
+    - Ref: CoreUtilsLambdaLayer
+    - Ref: SqlHandlerLambdaLayer
+    - Ref: UtilsLambdaLayer
+
+package: ${self:custom.common.package}
+
+layers:
+  CoreUtils:
+    name: ${self:service}-${self:provider.stage}-core-utils
+    package:
+      artifact: ${self:custom.common.layers.core_utils}
+  SqlHandler:
+    name: ${self:service}-${self:provider.stage}-sql-handler
+    package:
+      artifact: ${self:custom.common.layers.sql_handler}
+  Utils:
+    name: ${self:service}-${self:provider.stage}-utils
+    package:
+      artifact: ${self:custom.common.layers.utils}
+
+functions:
+  - ${file(./controllers/fields/serverless.yml):functions}
+
+resources:
+  - Resources:
+      # DynamoDB CustomFields Metadata Table
+      CustomFields:
+        Type: AWS::DynamoDB::Table
+        Properties:
+          AttributeDefinitions:
+            - AttributeName: custom_field_id
+              AttributeType: S
+            - AttributeName: tenant_id
+              AttributeType: S
+            - AttributeName: parent_object_id
+              AttributeType: S
+          KeySchema:
+            - AttributeName: custom_field_id
+              KeyType: HASH
+            - AttributeName: tenant_id
+              KeyType: RANGE
+          GlobalSecondaryIndexes:
+            - IndexName: tenant_id_idx
+              KeySchema:
+                - AttributeName: tenant_id
+                  KeyType: HASH
+                - AttributeName: custom_field_id
+                  KeyType: RANGE
+              Projection:
+                ProjectionType: ALL
+              ProvisionedThroughput:
+                ReadCapacityUnits: 10
+                WriteCapacityUnits: 10
+            - IndexName: parent_object_id_idx
+              KeySchema:
+                - AttributeName: parent_object_id
+                  KeyType: HASH
+                - AttributeName: custom_field_id
+                  KeyType: RANGE
+              Projection:
+                ProjectionType: ALL
+              ProvisionedThroughput:
+                ReadCapacityUnits: 10
+                WriteCapacityUnits: 10
+          ProvisionedThroughput:
+            ReadCapacityUnits: 10
+            WriteCapacityUnits: 10
+          TableName: ${self:service}-${self:provider.stage}-CustomFields
+
+  - Outputs:
+      CustomFields:
+            Value:
+              Ref: CustomFields
+            Export:
+              Name: ${self:service}-${self:provider.stage}-CustomFields
+
+custom:
+  common: ${file(./../../serverless.apptemplate.common.yml)}
+  pythonRequirements:
+    dockerizePip: true
+    layer:
+      name: ${self:service}-${self:provider.stage}-python-libraries
+      description: Layer containing the python libraries necessary for project ${self:service}
+      compatibleRuntimes:
+        - python3.8
+
+  #documentation: ${file(./documentation/serverless.doc.yml):documentation}
+  export-env:
+    filename: aws_data.env
+    overwrite: true
+
+  prune:
+    automatic: true
+    includeLayers: true
+    number: 5

@@ -1,0 +1,75 @@
+{
+    "type": "object",
+    "properties": {
+        "fields" : {
+            "type" : "array",
+            "description": "Array of fields",
+            "items": {
+                "type": "object",
+                "properties" :{
+                    "field_id": {
+                        "type": "string",
+                        "description": "Unique identifier for the field"
+                    },
+                    "is_active": {
+                        "type": "boolean",
+                        "description": "Indicates whether the field is active or inactive"
+                    },
+                    "name": {
+                        "type": "string",
+                        "description": "Name of the field"
+                    },
+                    "column_name": {
+                        "type": "string",
+                        "description": "Tenant column name"
+                    },
+                    "parent_object_id": {
+                        "type": "string",
+                        "description": "UUID of the parent object"
+                    },
+                    "input": {
+                        "type": "string",
+                        "description": "Input type of custom field"
+                    },
+                    "data_type": {
+                        "type": "string",
+                        "description": "Data type of custom field"
+                    },
+                    "max_characters": {
+                        "type": "number",
+                        "description": "Max quantity of characters"
+                    },
+                    "dimensions": {
+                        "type": "object",
+                        "properties": {
+                            "height": {
+                                "type": "number",
+                                "description": "Height value on front end input"
+                            },
+                            "wide": {
+                                "type": "number",
+                                "description": "Wide value on front end input"
+                            }
+                        }
+                    },
+                    "created_by": {
+                        "type": "string",
+                        "description": "Unique identifier for the user who created the field"
+                    },
+                    "updated_by": {
+                        "type": "string",
+                        "description": "Unique identifier for the last user who updated the field"
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "description": "Creation date of the field in %Y-%m-%d %H:%M:%S format"
+                    },
+                    "updated_at": {
+                        "type": "string",
+                        "description": "Last modification date of the field in %Y-%m-%d %H:%M:%S format"
+                    }
+                }
+            }
+        }
+    }
+}

@@ -1,0 +1,1892 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "The AWS CloudFormation template for this Serverless application",
+  "Resources": {
+    "ViewsGetLogGroup": {
+      "Type": "AWS::Logs::LogGroup",
+      "Properties": {
+        "LogGroupName": "/aws/lambda/apptemplatecustomviews-dev-ViewsGet"
+      }
+    },
+    "ViewGetLogGroup": {
+      "Type": "AWS::Logs::LogGroup",
+      "Properties": {
+        "LogGroupName": "/aws/lambda/apptemplatecustomviews-dev-ViewGet"
+      }
+    },
+    "ViewsPutLogGroup": {
+      "Type": "AWS::Logs::LogGroup",
+      "Properties": {
+        "LogGroupName": "/aws/lambda/apptemplatecustomviews-dev-ViewsPut"
+      }
+    },
+    "ViewElementsGetLogGroup": {
+      "Type": "AWS::Logs::LogGroup",
+      "Properties": {
+        "LogGroupName": "/aws/lambda/apptemplatecustomviews-dev-ViewElementsGet"
+      }
+    },
+    "IamRoleLambdaExecution": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Principal": {
+                "Service": [
+                  "lambda.amazonaws.com"
+                ]
+              },
+              "Action": [
+                "sts:AssumeRole"
+              ]
+            }
+          ]
+        },
+        "Policies": [
+          {
+            "PolicyName": {
+              "Fn::Join": [
+                "-",
+                [
+                  "apptemplatecustomviews",
+                  "dev",
+                  "lambda"
+                ]
+              ]
+            },
+            "PolicyDocument": {
+              "Version": "2012-10-17",
+              "Statement": [
+                {
+                  "Effect": "Allow",
+                  "Action": [
+                    "logs:CreateLogStream",
+                    "logs:CreateLogGroup"
+                  ],
+                  "Resource": [
+                    {
+                      "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/apptemplatecustomviews-dev*:*"
+                    }
+                  ]
+                },
+                {
+                  "Effect": "Allow",
+                  "Action": [
+                    "logs:PutLogEvents"
+                  ],
+                  "Resource": [
+                    {
+                      "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/apptemplatecustomviews-dev*:*:*"
+                    }
+                  ]
+                },
+                {
+                  "Effect": "Allow",
+                  "Resource": "*",
+                  "Action": [
+                    "sqs:SendMessage",
+                    "lambda:InvokeFunction",
+                    "lambda:InvokeAsync",
+                    "dynamodb:*",
+                    "dynamodb:PartiQLSelect"
+                  ]
+                }
+              ]
+            }
+          }
+        ],
+        "Path": "/",
+        "RoleName": {
+          "Fn::Join": [
+            "-",
+            [
+              "apptemplatecustomviews",
+              "dev",
+              {
+                "Ref": "AWS::Region"
+              },
+              "lambdaRole"
+            ]
+          ]
+        },
+        "ManagedPolicyArns": [
+          "arn:aws:iam::aws:policy/AmazonRDSDataFullAccess",
+          "arn:aws:iam::aws:policy/AmazonCognitoPowerUser",
+          "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+          "arn:aws:iam::aws:policy/SecretsManagerReadWrite",
+          "arn:aws:iam::aws:policy/AmazonS3FullAccess",
+          "arn:aws:iam::aws:policy/IAMFullAccess",
+          "arn:aws:iam::aws:policy/AmazonSNSFullAccess",
+          "arn:aws:iam::aws:policy/AmazonRoute53FullAccess",
+          "arn:aws:iam::aws:policy/AmazonRDSFullAccess",
+          "arn:aws:iam::aws:policy/AmazonAPIGatewayAdministrator"
+        ]
+      }
+    },
+    "SqlHandlerLambdaLayer": {
+      "Type": "AWS::Lambda::LayerVersion",
+      "Properties": {
+        "Content": {
+          "S3Bucket": "apptemplate-dev-artifacts-s3bucket",
+          "S3Key": "serverless/apptemplatecustomviews/dev/1704468207223-2024-01-05T15:23:27.223Z/./../../SqlHandler.zip"
+        },
+        "LayerName": "apptemplatecustomviews-dev-sql-handler"
+      }
+    },
+    "UtilsLambdaLayer": {
+      "Type": "AWS::Lambda::LayerVersion",
+      "Properties": {
+        "Content": {
+          "S3Bucket": "apptemplate-dev-artifacts-s3bucket",
+          "S3Key": "serverless/apptemplatecustomviews/dev/1704468207223-2024-01-05T15:23:27.223Z/./../../Utils.zip"
+        },
+        "LayerName": "apptemplatecustomviews-dev-utils"
+      }
+    },
+    "CoreUtilsLambdaLayer": {
+      "Type": "AWS::Lambda::LayerVersion",
+      "Properties": {
+        "Content": {
+          "S3Bucket": "apptemplate-dev-artifacts-s3bucket",
+          "S3Key": "serverless/apptemplatecustomviews/dev/1704468207223-2024-01-05T15:23:27.223Z/./../../CoreUtils.zip"
+        },
+        "LayerName": "apptemplatecustomviews-dev-core-utils"
+      }
+    },
+    "PythonRequirementsLambdaLayer": {
+      "Type": "AWS::Lambda::LayerVersion",
+      "Properties": {
+        "Content": {
+          "S3Bucket": "apptemplate-dev-artifacts-s3bucket",
+          "S3Key": "serverless/apptemplatecustomviews/dev/1704468207223-2024-01-05T15:23:27.223Z/pythonRequirements.zip"
+        },
+        "LayerName": "apptemplatecustomviews-dev-python-libraries",
+        "Description": "Layer containing the python libraries necessary for project apptemplatecustomviews",
+        "CompatibleRuntimes": [
+          "python3.8"
+        ]
+      }
+    },
+    "ViewsGetLambdaFunction": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": "apptemplate-dev-artifacts-s3bucket",
+          "S3Key": "serverless/apptemplatecustomviews/dev/1704468207223-2024-01-05T15:23:27.223Z/ViewsGet.zip"
+        },
+        "Handler": "controllers/views/ViewsGet.lambda_handler",
+        "Runtime": "python3.8",
+        "FunctionName": "apptemplatecustomviews-dev-ViewsGet",
+        "MemorySize": 1024,
+        "Timeout": 30,
+        "Environment": {
+          "Variables": {
+            "SERVICE_NAME": "apptemplatecustomviews-dev",
+            "PROFILE": "AppTemplate",
+            "RESOURCE_METHOD": "ViewsGet",
+            "REGION_NAME": "us-east-2",
+            "STAGE": "dev",
+            "REST_API_ID": {
+              "Fn::ImportValue": "apptemplatecoreinfra-dev-ExtApiGatewayRestApiId"
+            },
+            "DATABASE_NAME": {
+              "Fn::ImportValue": "apptemplatecoreinfra-dev-DatabaseName"
+            },
+            "DB_CLUSTER_ARN": {
+              "Fn::ImportValue": "apptemplatecoreinfra-dev-DbClusterARN"
+            },
+            "CORALOGIX_SECRET": {
+              "Fn::ImportValue": "apptemplatecoreinfra-dev-CoralogixSecret"
+            },
+            "DB_CREDENTIALS_SECRETS_STORE_ARN": {
+              "Fn::ImportValue": "apptemplatecoreinfra-dev-DbCredentialsSecretsStoreARN"
+            },
+            "APPKEY_SECRET_ARN": {
+              "Fn::ImportValue": "apptemplatecoreinfra-dev-AppKeySecretARN"
+            },
+            "SNS_ARN": {
+              "Fn::ImportValue": "apptemplateeventsinfra-dev-snsARN"
+            },
+            "WEBHOOK_LOGS_TABLE": {
+              "Fn::ImportValue": "apptemplateeventsinfra-dev-WebhookLogsTable"
+            },
+            "AUDIT_LOGS_TABLE": {
+              "Fn::ImportValue": "apptemplateeventsinfra-dev-AuditLogsTable"
+            },
+            "GATEWAY_AUTHORIZER_ID": {
+              "Fn::ImportValue": "apptemplatecoreinfra-dev-GatewayAuthorizerId"
+            },
+            "VIEWS_TABLE": {
+              "Ref": "CustomViews"
+            },
+            "FIELDS_TABLE": {
+              "Fn::ImportValue": "apptemplatecustomfields-dev-CustomFields"
+            }
+          }
+        },
+        "Role": {
+          "Fn::GetAtt": [
+            "IamRoleLambdaExecution",
+            "Arn"
+          ]
+        },
+        "Layers": [
+          {
+            "Ref": "PythonRequirementsLambdaLayer"
+          },
+          {
+            "Ref": "CoreUtilsLambdaLayer"
+          },
+          {
+            "Ref": "SqlHandlerLambdaLayer"
+          },
+          {
+            "Ref": "UtilsLambdaLayer"
+          }
+        ]
+      },
+      "DependsOn": [
+        "ViewsGetLogGroup"
+      ]
+    },
+    "ViewGetLambdaFunction": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": "apptemplate-dev-artifacts-s3bucket",
+          "S3Key": "serverless/apptemplatecustomviews/dev/1704468207223-2024-01-05T15:23:27.223Z/ViewGet.zip"
+        },
+        "Handler": "controllers/views/ViewGet.lambda_handler",
+        "Runtime": "python3.8",
+        "FunctionName": "apptemplatecustomviews-dev-ViewGet",
+        "MemorySize": 1024,
+        "Timeout": 30,
+        "Environment": {
+          "Variables": {
+            "SERVICE_NAME": "apptemplatecustomviews-dev",
+            "PROFILE": "AppTemplate",
+            "RESOURCE_METHOD": "ViewGet",
+            "REGION_NAME": "us-east-2",
+            "STAGE": "dev",
+            "REST_API_ID": {
+              "Fn::ImportValue": "apptemplatecoreinfra-dev-ExtApiGatewayRestApiId"
+            },
+            "DATABASE_NAME": {
+              "Fn::ImportValue": "apptemplatecoreinfra-dev-DatabaseName"
+            },
+            "DB_CLUSTER_ARN": {
+              "Fn::ImportValue": "apptemplatecoreinfra-dev-DbClusterARN"
+            },
+            "CORALOGIX_SECRET": {
+              "Fn::ImportValue": "apptemplatecoreinfra-dev-CoralogixSecret"
+            },
+            "DB_CREDENTIALS_SECRETS_STORE_ARN": {
+              "Fn::ImportValue": "apptemplatecoreinfra-dev-DbCredentialsSecretsStoreARN"
+            },
+            "APPKEY_SECRET_ARN": {
+              "Fn::ImportValue": "apptemplatecoreinfra-dev-AppKeySecretARN"
+            },
+            "SNS_ARN": {
+              "Fn::ImportValue": "apptemplateeventsinfra-dev-snsARN"
+            },
+            "WEBHOOK_LOGS_TABLE": {
+              "Fn::ImportValue": "apptemplateeventsinfra-dev-WebhookLogsTable"
+            },
+            "AUDIT_LOGS_TABLE": {
+              "Fn::ImportValue": "apptemplateeventsinfra-dev-AuditLogsTable"
+            },
+            "GATEWAY_AUTHORIZER_ID": {
+              "Fn::ImportValue": "apptemplatecoreinfra-dev-GatewayAuthorizerId"
+            },
+            "VIEWS_TABLE": {
+              "Ref": "CustomViews"
+            },
+            "FIELDS_TABLE": {
+              "Fn::ImportValue": "apptemplatecustomfields-dev-CustomFields"
+            }
+          }
+        },
+        "Role": {
+          "Fn::GetAtt": [
+            "IamRoleLambdaExecution",
+            "Arn"
+          ]
+        },
+        "Layers": [
+          {
+            "Ref": "PythonRequirementsLambdaLayer"
+          },
+          {
+            "Ref": "CoreUtilsLambdaLayer"
+          },
+          {
+            "Ref": "SqlHandlerLambdaLayer"
+          },
+          {
+            "Ref": "UtilsLambdaLayer"
+          }
+        ]
+      },
+      "DependsOn": [
+        "ViewGetLogGroup"
+      ]
+    },
+    "ViewsPutLambdaFunction": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": "apptemplate-dev-artifacts-s3bucket",
+          "S3Key": "serverless/apptemplatecustomviews/dev/1704468207223-2024-01-05T15:23:27.223Z/ViewsPut.zip"
+        },
+        "Handler": "controllers/views/ViewsPut.lambda_handler",
+        "Runtime": "python3.8",
+        "FunctionName": "apptemplatecustomviews-dev-ViewsPut",
+        "MemorySize": 1024,
+        "Timeout": 30,
+        "Environment": {
+          "Variables": {
+            "SERVICE_NAME": "apptemplatecustomviews-dev",
+            "PROFILE": "AppTemplate",
+            "RESOURCE_METHOD": "ViewsPut",
+            "REGION_NAME": "us-east-2",
+            "STAGE": "dev",
+            "REST_API_ID": {
+              "Fn::ImportValue": "apptemplatecoreinfra-dev-ExtApiGatewayRestApiId"
+            },
+            "DATABASE_NAME": {
+              "Fn::ImportValue": "apptemplatecoreinfra-dev-DatabaseName"
+            },
+            "DB_CLUSTER_ARN": {
+              "Fn::ImportValue": "apptemplatecoreinfra-dev-DbClusterARN"
+            },
+            "CORALOGIX_SECRET": {
+              "Fn::ImportValue": "apptemplatecoreinfra-dev-CoralogixSecret"
+            },
+            "DB_CREDENTIALS_SECRETS_STORE_ARN": {
+              "Fn::ImportValue": "apptemplatecoreinfra-dev-DbCredentialsSecretsStoreARN"
+            },
+            "APPKEY_SECRET_ARN": {
+              "Fn::ImportValue": "apptemplatecoreinfra-dev-AppKeySecretARN"
+            },
+            "SNS_ARN": {
+              "Fn::ImportValue": "apptemplateeventsinfra-dev-snsARN"
+            },
+            "WEBHOOK_LOGS_TABLE": {
+              "Fn::ImportValue": "apptemplateeventsinfra-dev-WebhookLogsTable"
+            },
+            "AUDIT_LOGS_TABLE": {
+              "Fn::ImportValue": "apptemplateeventsinfra-dev-AuditLogsTable"
+            },
+            "GATEWAY_AUTHORIZER_ID": {
+              "Fn::ImportValue": "apptemplatecoreinfra-dev-GatewayAuthorizerId"
+            },
+            "VIEWS_TABLE": {
+              "Ref": "CustomViews"
+            },
+            "FIELDS_TABLE": {
+              "Fn::ImportValue": "apptemplatecustomfields-dev-CustomFields"
+            }
+          }
+        },
+        "Role": {
+          "Fn::GetAtt": [
+            "IamRoleLambdaExecution",
+            "Arn"
+          ]
+        },
+        "Layers": [
+          {
+            "Ref": "PythonRequirementsLambdaLayer"
+          },
+          {
+            "Ref": "CoreUtilsLambdaLayer"
+          },
+          {
+            "Ref": "SqlHandlerLambdaLayer"
+          },
+          {
+            "Ref": "UtilsLambdaLayer"
+          }
+        ]
+      },
+      "DependsOn": [
+        "ViewsPutLogGroup"
+      ]
+    },
+    "ViewElementsGetLambdaFunction": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": "apptemplate-dev-artifacts-s3bucket",
+          "S3Key": "serverless/apptemplatecustomviews/dev/1704468207223-2024-01-05T15:23:27.223Z/ViewElementsGet.zip"
+        },
+        "Handler": "controllers/views/ViewElementsGet.lambda_handler",
+        "Runtime": "python3.8",
+        "FunctionName": "apptemplatecustomviews-dev-ViewElementsGet",
+        "MemorySize": 1024,
+        "Timeout": 30,
+        "Environment": {
+          "Variables": {
+            "SERVICE_NAME": "apptemplatecustomviews-dev",
+            "PROFILE": "AppTemplate",
+            "RESOURCE_METHOD": "ViewElementsGet",
+            "REGION_NAME": "us-east-2",
+            "STAGE": "dev",
+            "REST_API_ID": {
+              "Fn::ImportValue": "apptemplatecoreinfra-dev-ExtApiGatewayRestApiId"
+            },
+            "DATABASE_NAME": {
+              "Fn::ImportValue": "apptemplatecoreinfra-dev-DatabaseName"
+            },
+            "DB_CLUSTER_ARN": {
+              "Fn::ImportValue": "apptemplatecoreinfra-dev-DbClusterARN"
+            },
+            "CORALOGIX_SECRET": {
+              "Fn::ImportValue": "apptemplatecoreinfra-dev-CoralogixSecret"
+            },
+            "DB_CREDENTIALS_SECRETS_STORE_ARN": {
+              "Fn::ImportValue": "apptemplatecoreinfra-dev-DbCredentialsSecretsStoreARN"
+            },
+            "APPKEY_SECRET_ARN": {
+              "Fn::ImportValue": "apptemplatecoreinfra-dev-AppKeySecretARN"
+            },
+            "SNS_ARN": {
+              "Fn::ImportValue": "apptemplateeventsinfra-dev-snsARN"
+            },
+            "WEBHOOK_LOGS_TABLE": {
+              "Fn::ImportValue": "apptemplateeventsinfra-dev-WebhookLogsTable"
+            },
+            "AUDIT_LOGS_TABLE": {
+              "Fn::ImportValue": "apptemplateeventsinfra-dev-AuditLogsTable"
+            },
+            "GATEWAY_AUTHORIZER_ID": {
+              "Fn::ImportValue": "apptemplatecoreinfra-dev-GatewayAuthorizerId"
+            },
+            "VIEWS_TABLE": {
+              "Ref": "CustomViews"
+            },
+            "FIELDS_TABLE": {
+              "Fn::ImportValue": "apptemplatecustomfields-dev-CustomFields"
+            }
+          }
+        },
+        "Role": {
+          "Fn::GetAtt": [
+            "IamRoleLambdaExecution",
+            "Arn"
+          ]
+        },
+        "Layers": [
+          {
+            "Ref": "PythonRequirementsLambdaLayer"
+          },
+          {
+            "Ref": "CoreUtilsLambdaLayer"
+          },
+          {
+            "Ref": "SqlHandlerLambdaLayer"
+          },
+          {
+            "Ref": "UtilsLambdaLayer"
+          }
+        ]
+      },
+      "DependsOn": [
+        "ViewElementsGetLogGroup"
+      ]
+    },
+    "ViewsGetLambdaVersion8fhU8yD1FddSs7dxM1GJaMh92gY8gCfXPI5BYPRUtKw": {
+      "Type": "AWS::Lambda::Version",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "FunctionName": {
+          "Ref": "ViewsGetLambdaFunction"
+        },
+        "CodeSha256": "LHLsomBEs+yDq9WAQvAaM+MdjnYpk9yNqLEd2Rq9wew="
+      }
+    },
+    "ViewElementsGetLambdaVersion5gWdjp8EcIlj5KccWNnXXGhENubshg07ZGvBe3RrOs": {
+      "Type": "AWS::Lambda::Version",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "FunctionName": {
+          "Ref": "ViewElementsGetLambdaFunction"
+        },
+        "CodeSha256": "LHLsomBEs+yDq9WAQvAaM+MdjnYpk9yNqLEd2Rq9wew="
+      }
+    },
+    "ViewGetLambdaVersionruvX0fFymoGytYJQwAhRCMqcd9WTiAfKeb36GZ7pp0": {
+      "Type": "AWS::Lambda::Version",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "FunctionName": {
+          "Ref": "ViewGetLambdaFunction"
+        },
+        "CodeSha256": "LHLsomBEs+yDq9WAQvAaM+MdjnYpk9yNqLEd2Rq9wew="
+      }
+    },
+    "ViewsPutLambdaVersionpQpUzo6CxXhNWsh3GsedR0zpIPNbuLiPzL69Ch4FM": {
+      "Type": "AWS::Lambda::Version",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "FunctionName": {
+          "Ref": "ViewsPutLambdaFunction"
+        },
+        "CodeSha256": "LHLsomBEs+yDq9WAQvAaM+MdjnYpk9yNqLEd2Rq9wew="
+      }
+    },
+    "ApiGatewayResourceViews": {
+      "Type": "AWS::ApiGateway::Resource",
+      "Properties": {
+        "ParentId": {
+          "Fn::ImportValue": "apptemplatecoreinfra-dev-ExtApiGatewayRestApiRootResourceId"
+        },
+        "PathPart": "views",
+        "RestApiId": {
+          "Fn::ImportValue": "apptemplatecoreinfra-dev-ExtApiGatewayRestApiId"
+        }
+      }
+    },
+    "ApiGatewayResourceViewsViewidVar": {
+      "Type": "AWS::ApiGateway::Resource",
+      "Properties": {
+        "ParentId": {
+          "Ref": "ApiGatewayResourceViews"
+        },
+        "PathPart": "{view_id}",
+        "RestApiId": {
+          "Fn::ImportValue": "apptemplatecoreinfra-dev-ExtApiGatewayRestApiId"
+        }
+      }
+    },
+    "ApiGatewayResourceViewDashelements": {
+      "Type": "AWS::ApiGateway::Resource",
+      "Properties": {
+        "ParentId": {
+          "Fn::ImportValue": "apptemplatecoreinfra-dev-ExtApiGatewayRestApiRootResourceId"
+        },
+        "PathPart": "view-elements",
+        "RestApiId": {
+          "Fn::ImportValue": "apptemplatecoreinfra-dev-ExtApiGatewayRestApiId"
+        }
+      }
+    },
+    "ApiGatewayMethodViewsOptions": {
+      "Type": "AWS::ApiGateway::Method",
+      "Properties": {
+        "AuthorizationType": "NONE",
+        "HttpMethod": "OPTIONS",
+        "MethodResponses": [
+          {
+            "StatusCode": "200",
+            "ResponseParameters": {
+              "method.response.header.Access-Control-Allow-Origin": true,
+              "method.response.header.Access-Control-Allow-Headers": true,
+              "method.response.header.Access-Control-Allow-Methods": true
+            },
+            "ResponseModels": {}
+          }
+        ],
+        "RequestParameters": {},
+        "Integration": {
+          "Type": "MOCK",
+          "RequestTemplates": {
+            "application/json": "{statusCode:200}"
+          },
+          "ContentHandling": "CONVERT_TO_TEXT",
+          "IntegrationResponses": [
+            {
+              "StatusCode": "200",
+              "ResponseParameters": {
+                "method.response.header.Access-Control-Allow-Origin": "'*'",
+                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,X-Amz-User-Agent,X-Amzn-Trace-Id'",
+                "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,PUT,GET'"
+              },
+              "ResponseTemplates": {
+                "application/json": ""
+              }
+            }
+          ]
+        },
+        "ResourceId": {
+          "Ref": "ApiGatewayResourceViews"
+        },
+        "RestApiId": {
+          "Fn::ImportValue": "apptemplatecoreinfra-dev-ExtApiGatewayRestApiId"
+        }
+      }
+    },
+    "ApiGatewayMethodViewsViewidVarOptions": {
+      "Type": "AWS::ApiGateway::Method",
+      "Properties": {
+        "AuthorizationType": "NONE",
+        "HttpMethod": "OPTIONS",
+        "MethodResponses": [
+          {
+            "StatusCode": "200",
+            "ResponseParameters": {
+              "method.response.header.Access-Control-Allow-Origin": true,
+              "method.response.header.Access-Control-Allow-Headers": true,
+              "method.response.header.Access-Control-Allow-Methods": true
+            },
+            "ResponseModels": {}
+          }
+        ],
+        "RequestParameters": {},
+        "Integration": {
+          "Type": "MOCK",
+          "RequestTemplates": {
+            "application/json": "{statusCode:200}"
+          },
+          "ContentHandling": "CONVERT_TO_TEXT",
+          "IntegrationResponses": [
+            {
+              "StatusCode": "200",
+              "ResponseParameters": {
+                "method.response.header.Access-Control-Allow-Origin": "'*'",
+                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,X-Amz-User-Agent,X-Amzn-Trace-Id'",
+                "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,GET'"
+              },
+              "ResponseTemplates": {
+                "application/json": ""
+              }
+            }
+          ]
+        },
+        "ResourceId": {
+          "Ref": "ApiGatewayResourceViewsViewidVar"
+        },
+        "RestApiId": {
+          "Fn::ImportValue": "apptemplatecoreinfra-dev-ExtApiGatewayRestApiId"
+        }
+      }
+    },
+    "ApiGatewayMethodViewDashelementsOptions": {
+      "Type": "AWS::ApiGateway::Method",
+      "Properties": {
+        "AuthorizationType": "NONE",
+        "HttpMethod": "OPTIONS",
+        "MethodResponses": [
+          {
+            "StatusCode": "200",
+            "ResponseParameters": {
+              "method.response.header.Access-Control-Allow-Origin": true,
+              "method.response.header.Access-Control-Allow-Headers": true,
+              "method.response.header.Access-Control-Allow-Methods": true
+            },
+            "ResponseModels": {}
+          }
+        ],
+        "RequestParameters": {},
+        "Integration": {
+          "Type": "MOCK",
+          "RequestTemplates": {
+            "application/json": "{statusCode:200}"
+          },
+          "ContentHandling": "CONVERT_TO_TEXT",
+          "IntegrationResponses": [
+            {
+              "StatusCode": "200",
+              "ResponseParameters": {
+                "method.response.header.Access-Control-Allow-Origin": "'*'",
+                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,X-Amz-User-Agent,X-Amzn-Trace-Id'",
+                "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,GET'"
+              },
+              "ResponseTemplates": {
+                "application/json": ""
+              }
+            }
+          ]
+        },
+        "ResourceId": {
+          "Ref": "ApiGatewayResourceViewDashelements"
+        },
+        "RestApiId": {
+          "Fn::ImportValue": "apptemplatecoreinfra-dev-ExtApiGatewayRestApiId"
+        }
+      }
+    },
+    "ApiGatewayMethodViewsGet": {
+      "Type": "AWS::ApiGateway::Method",
+      "Properties": {
+        "HttpMethod": "GET",
+        "RequestParameters": {
+          "method.request.header.Authorization": "true",
+          "method.request.header.Content-Type": "true",
+          "method.request.header.App-Key": "false",
+          "method.request.header.Tenant-Key": "false",
+          "method.request.header.tenant_id": "false",
+          "method.request.header.version": "false",
+          "method.request.querystring.view_id": false,
+          "method.request.querystring.view_name": false,
+          "method.request.querystring.view_endpoint": false,
+          "method.request.querystring.view_route": false,
+          "method.request.querystring.entity_id": false,
+          "method.request.querystring.is_active": false
+        },
+        "ResourceId": {
+          "Ref": "ApiGatewayResourceViews"
+        },
+        "RestApiId": {
+          "Fn::ImportValue": "apptemplatecoreinfra-dev-ExtApiGatewayRestApiId"
+        },
+        "ApiKeyRequired": false,
+        "AuthorizationType": "COGNITO_USER_POOLS",
+        "AuthorizerId": {
+          "Fn::ImportValue": "apptemplatecoreinfra-dev-ApiGatewayAuthorizer"
+        },
+        "AuthorizationScopes": [
+          "aws.cognito.signin.user.admin",
+          "apiauthidentifier/json.read"
+        ],
+        "Integration": {
+          "IntegrationHttpMethod": "POST",
+          "Type": "AWS_PROXY",
+          "Uri": {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":apigateway:",
+                {
+                  "Ref": "AWS::Region"
+                },
+                ":lambda:path/2015-03-31/functions/",
+                {
+                  "Fn::GetAtt": [
+                    "ViewsGetLambdaFunction",
+                    "Arn"
+                  ]
+                },
+                "/invocations"
+              ]
+            ]
+          }
+        },
+        "MethodResponses": [
+          {
+            "StatusCode": "200",
+            "ResponseModels": {
+              "application/json": "ViewsGetResponse"
+            }
+          }
+        ]
+      },
+      "DependsOn": [
+        "ViewsGetResponseModel"
+      ]
+    },
+    "ApiGatewayMethodViewsViewidVarGet": {
+      "Type": "AWS::ApiGateway::Method",
+      "Properties": {
+        "HttpMethod": "GET",
+        "RequestParameters": {
+          "method.request.path.view_id": true,
+          "method.request.header.Authorization": "true",
+          "method.request.header.Content-Type": "true",
+          "method.request.header.App-Key": "false",
+          "method.request.header.Tenant-Key": "false",
+          "method.request.header.tenant_id": "false",
+          "method.request.header.version": "false"
+        },
+        "ResourceId": {
+          "Ref": "ApiGatewayResourceViewsViewidVar"
+        },
+        "RestApiId": {
+          "Fn::ImportValue": "apptemplatecoreinfra-dev-ExtApiGatewayRestApiId"
+        },
+        "ApiKeyRequired": false,
+        "AuthorizationType": "COGNITO_USER_POOLS",
+        "AuthorizerId": {
+          "Fn::ImportValue": "apptemplatecoreinfra-dev-ApiGatewayAuthorizer"
+        },
+        "AuthorizationScopes": [
+          "aws.cognito.signin.user.admin",
+          "apiauthidentifier/json.read"
+        ],
+        "Integration": {
+          "IntegrationHttpMethod": "POST",
+          "Type": "AWS_PROXY",
+          "Uri": {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":apigateway:",
+                {
+                  "Ref": "AWS::Region"
+                },
+                ":lambda:path/2015-03-31/functions/",
+                {
+                  "Fn::GetAtt": [
+                    "ViewGetLambdaFunction",
+                    "Arn"
+                  ]
+                },
+                "/invocations"
+              ]
+            ]
+          }
+        },
+        "MethodResponses": [
+          {
+            "StatusCode": "200",
+            "ResponseModels": {
+              "application/json": "ViewGetResponse"
+            }
+          }
+        ],
+        "RequestValidatorId": {
+          "Ref": "ApiGatewayApptemplatecustomviewsRequestValidator"
+        }
+      },
+      "DependsOn": [
+        "ViewGetResponseModel"
+      ]
+    },
+    "ApiGatewayMethodViewsPut": {
+      "Type": "AWS::ApiGateway::Method",
+      "Properties": {
+        "HttpMethod": "PUT",
+        "RequestParameters": {
+          "method.request.header.Authorization": "true",
+          "method.request.header.Content-Type": "true",
+          "method.request.header.App-Key": "false",
+          "method.request.header.Tenant-Key": "false",
+          "method.request.header.tenant_id": "false",
+          "method.request.header.version": "false"
+        },
+        "ResourceId": {
+          "Ref": "ApiGatewayResourceViews"
+        },
+        "RestApiId": {
+          "Fn::ImportValue": "apptemplatecoreinfra-dev-ExtApiGatewayRestApiId"
+        },
+        "ApiKeyRequired": false,
+        "AuthorizationType": "COGNITO_USER_POOLS",
+        "AuthorizerId": {
+          "Fn::ImportValue": "apptemplatecoreinfra-dev-ApiGatewayAuthorizer"
+        },
+        "AuthorizationScopes": [
+          "aws.cognito.signin.user.admin",
+          "apiauthidentifier/json.read"
+        ],
+        "Integration": {
+          "IntegrationHttpMethod": "POST",
+          "Type": "AWS_PROXY",
+          "Uri": {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":apigateway:",
+                {
+                  "Ref": "AWS::Region"
+                },
+                ":lambda:path/2015-03-31/functions/",
+                {
+                  "Fn::GetAtt": [
+                    "ViewsPutLambdaFunction",
+                    "Arn"
+                  ]
+                },
+                "/invocations"
+              ]
+            ]
+          }
+        },
+        "MethodResponses": [
+          {
+            "StatusCode": "200"
+          }
+        ],
+        "RequestModels": {
+          "application/json": "ViewsPutRequest"
+        }
+      },
+      "DependsOn": [
+        "ViewsPutRequestModel"
+      ]
+    },
+    "ApiGatewayMethodViewDashelementsGet": {
+      "Type": "AWS::ApiGateway::Method",
+      "Properties": {
+        "HttpMethod": "GET",
+        "RequestParameters": {
+          "method.request.header.Authorization": "true",
+          "method.request.header.Content-Type": "true",
+          "method.request.header.App-Key": "false",
+          "method.request.header.Tenant-Key": "false",
+          "method.request.header.tenant_id": "false",
+          "method.request.header.version": "false",
+          "method.request.querystring.view_element_id": false,
+          "method.request.querystring.view_element_name": false
+        },
+        "ResourceId": {
+          "Ref": "ApiGatewayResourceViewDashelements"
+        },
+        "RestApiId": {
+          "Fn::ImportValue": "apptemplatecoreinfra-dev-ExtApiGatewayRestApiId"
+        },
+        "ApiKeyRequired": false,
+        "AuthorizationType": "COGNITO_USER_POOLS",
+        "AuthorizerId": {
+          "Fn::ImportValue": "apptemplatecoreinfra-dev-ApiGatewayAuthorizer"
+        },
+        "AuthorizationScopes": [
+          "aws.cognito.signin.user.admin",
+          "apiauthidentifier/json.read"
+        ],
+        "Integration": {
+          "IntegrationHttpMethod": "POST",
+          "Type": "AWS_PROXY",
+          "Uri": {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":apigateway:",
+                {
+                  "Ref": "AWS::Region"
+                },
+                ":lambda:path/2015-03-31/functions/",
+                {
+                  "Fn::GetAtt": [
+                    "ViewElementsGetLambdaFunction",
+                    "Arn"
+                  ]
+                },
+                "/invocations"
+              ]
+            ]
+          }
+        },
+        "MethodResponses": [
+          {
+            "StatusCode": "200",
+            "ResponseModels": {
+              "application/json": "ViewElementsGetResponse"
+            }
+          }
+        ]
+      },
+      "DependsOn": [
+        "ViewElementsGetResponseModel"
+      ]
+    },
+    "ApiGatewayApptemplatecustomviewsRequestValidator": {
+      "Type": "AWS::ApiGateway::RequestValidator",
+      "Properties": {
+        "RestApiId": {
+          "Fn::ImportValue": "apptemplatecoreinfra-dev-ExtApiGatewayRestApiId"
+        },
+        "ValidateRequestBody": true,
+        "ValidateRequestParameters": true,
+        "Name": "apptemplatecustomviews-dev | Validate request body and querystring parameters"
+      }
+    },
+    "ApiGatewayDeployment1704468053441": {
+      "Type": "AWS::ApiGateway::Deployment",
+      "Properties": {
+        "RestApiId": {
+          "Fn::ImportValue": "apptemplatecoreinfra-dev-ExtApiGatewayRestApiId"
+        },
+        "StageName": "dev"
+      },
+      "DependsOn": [
+        "ApiGatewayMethodViewsOptions",
+        "ApiGatewayMethodViewsViewidVarOptions",
+        "ApiGatewayMethodViewDashelementsOptions",
+        "ApiGatewayMethodViewsGet",
+        "ApiGatewayMethodViewsViewidVarGet",
+        "ApiGatewayMethodViewsPut",
+        "ApiGatewayMethodViewDashelementsGet"
+      ]
+    },
+    "ViewsGetLambdaPermissionApiGateway": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "ViewsGetLambdaFunction",
+            "Arn"
+          ]
+        },
+        "Action": "lambda:InvokeFunction",
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": {
+          "Fn::Join": [
+            "",
+            [
+              "arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":execute-api:",
+              {
+                "Ref": "AWS::Region"
+              },
+              ":",
+              {
+                "Ref": "AWS::AccountId"
+              },
+              ":",
+              {
+                "Fn::ImportValue": "apptemplatecoreinfra-dev-ExtApiGatewayRestApiId"
+              },
+              "/*/*"
+            ]
+          ]
+        }
+      }
+    },
+    "ViewGetLambdaPermissionApiGateway": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "ViewGetLambdaFunction",
+            "Arn"
+          ]
+        },
+        "Action": "lambda:InvokeFunction",
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": {
+          "Fn::Join": [
+            "",
+            [
+              "arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":execute-api:",
+              {
+                "Ref": "AWS::Region"
+              },
+              ":",
+              {
+                "Ref": "AWS::AccountId"
+              },
+              ":",
+              {
+                "Fn::ImportValue": "apptemplatecoreinfra-dev-ExtApiGatewayRestApiId"
+              },
+              "/*/*"
+            ]
+          ]
+        }
+      }
+    },
+    "ViewsPutLambdaPermissionApiGateway": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "ViewsPutLambdaFunction",
+            "Arn"
+          ]
+        },
+        "Action": "lambda:InvokeFunction",
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": {
+          "Fn::Join": [
+            "",
+            [
+              "arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":execute-api:",
+              {
+                "Ref": "AWS::Region"
+              },
+              ":",
+              {
+                "Ref": "AWS::AccountId"
+              },
+              ":",
+              {
+                "Fn::ImportValue": "apptemplatecoreinfra-dev-ExtApiGatewayRestApiId"
+              },
+              "/*/*"
+            ]
+          ]
+        }
+      }
+    },
+    "ViewElementsGetLambdaPermissionApiGateway": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "ViewElementsGetLambdaFunction",
+            "Arn"
+          ]
+        },
+        "Action": "lambda:InvokeFunction",
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": {
+          "Fn::Join": [
+            "",
+            [
+              "arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":execute-api:",
+              {
+                "Ref": "AWS::Region"
+              },
+              ":",
+              {
+                "Ref": "AWS::AccountId"
+              },
+              ":",
+              {
+                "Fn::ImportValue": "apptemplatecoreinfra-dev-ExtApiGatewayRestApiId"
+              },
+              "/*/*"
+            ]
+          ]
+        }
+      }
+    },
+    "ViewsGetResponseModel": {
+      "Type": "AWS::ApiGateway::Model",
+      "Properties": {
+        "RestApiId": {
+          "Fn::ImportValue": "apptemplatecoreinfra-dev-ExtApiGatewayRestApiId"
+        },
+        "ContentType": "application/json",
+        "Name": "ViewsGetResponse",
+        "Schema": {
+          "type": "object",
+          "properties": {
+            "views": {
+              "type": "array",
+              "description": "Array of views",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "view_id": {
+                    "type": "string",
+                    "description": "Unique identifier for the view"
+                  },
+                  "view_name": {
+                    "type": "string",
+                    "description": "Name of the view"
+                  },
+                  "view_endpoint": {
+                    "type": "string",
+                    "description": "Endpoint url for the view"
+                  },
+                  "view_route": {
+                    "type": "string",
+                    "description": "View API path"
+                  },
+                  "entity_id": {
+                    "type": "string",
+                    "description": "UUID of the view entity"
+                  },
+                  "is_active": {
+                    "type": "boolean",
+                    "description": "Indicates whether the view is active or inactive"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "ViewGetResponseModel": {
+      "Type": "AWS::ApiGateway::Model",
+      "Properties": {
+        "RestApiId": {
+          "Fn::ImportValue": "apptemplatecoreinfra-dev-ExtApiGatewayRestApiId"
+        },
+        "ContentType": "application/json",
+        "Name": "ViewGetResponse",
+        "Schema": {
+          "type": "object",
+          "properties": {
+            "view": {
+              "type": "object",
+              "properties": {
+                "view_id": {
+                  "type": "string",
+                  "description": "Unique identifier for the view"
+                },
+                "view_name": {
+                  "type": "string",
+                  "description": "Name of the view"
+                },
+                "view_endpoint": {
+                  "type": "string",
+                  "description": "Endpoint url for the view"
+                },
+                "entity": {
+                  "type": "object",
+                  "properties": {
+                    "variant": {
+                      "type": "string",
+                      "description": "button variant"
+                    },
+                    "text": {
+                      "type": "string",
+                      "description": "button label text"
+                    }
+                  }
+                },
+                "view_route": {
+                  "type": "string",
+                  "description": "View API path"
+                },
+                "json_content": {
+                  "type": "object",
+                  "properties": {
+                    "cards": {
+                      "type": "array",
+                      "description": "Array of UI cards",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "buttons": {
+                            "type": "array",
+                            "description": "Array of UI buttons",
+                            "items": {
+                              "type": "object",
+                              "properties": {
+                                "variant": {
+                                  "type": "string",
+                                  "description": "button variant"
+                                },
+                                "text": {
+                                  "type": "string",
+                                  "description": "button label text"
+                                }
+                              }
+                            }
+                          },
+                          "title": {
+                            "type": "string",
+                            "description": "Section title"
+                          },
+                          "card_type": {
+                            "type": "string",
+                            "description": "card type. form/grid/widget"
+                          },
+                          "card_id": {
+                            "type": "string",
+                            "description": "card id given by the UI"
+                          },
+                          "sections": {
+                            "type": "array",
+                            "description": "Array of UI sections",
+                            "items": {
+                              "type": "object",
+                              "properties": {
+                                "buttons": {
+                                  "type": "array",
+                                  "description": "Array of UI buttons",
+                                  "items": {
+                                    "type": "object",
+                                    "properties": {
+                                      "variant": {
+                                        "type": "string",
+                                        "description": "button variant"
+                                      },
+                                      "text": {
+                                        "type": "string",
+                                        "description": "button label text"
+                                      }
+                                    }
+                                  }
+                                },
+                                "section_id": {
+                                  "type": "string",
+                                  "description": "section id given by the UI"
+                                },
+                                "title": {
+                                  "type": "string",
+                                  "description": "section title"
+                                },
+                                "fields": {
+                                  "type": "array",
+                                  "description": "Array of fields",
+                                  "items": {
+                                    "type": "object",
+                                    "properties": {
+                                      "custom_field_id": {
+                                        "type": "string",
+                                        "description": "Unique identifier for the field"
+                                      },
+                                      "is_active": {
+                                        "type": "boolean",
+                                        "description": "Indicates whether the field is active or inactive"
+                                      },
+                                      "name": {
+                                        "type": "string",
+                                        "description": "Name of the field"
+                                      },
+                                      "column_name": {
+                                        "type": "string",
+                                        "description": "Tenant column name"
+                                      },
+                                      "parent_object_id": {
+                                        "type": "string",
+                                        "description": "UUID of the parent object"
+                                      },
+                                      "parent_object_name": {
+                                        "type": "string",
+                                        "description": "Name of the parent object"
+                                      },
+                                      "input": {
+                                        "type": "string",
+                                        "description": "Input type of custom field"
+                                      },
+                                      "format": {
+                                        "type": "string",
+                                        "description": "UI format"
+                                      },
+                                      "is_required": {
+                                        "type": "boolean",
+                                        "description": "Field require value"
+                                      },
+                                      "description": {
+                                        "type": "string",
+                                        "description": "Field description"
+                                      },
+                                      "width": {
+                                        "type": "string",
+                                        "description": "Width of the field box"
+                                      },
+                                      "height": {
+                                        "type": "string",
+                                        "description": "height of the field box"
+                                      },
+                                      "acceptable_values": {
+                                        "type": "array",
+                                        "description": "acceptable values for the field",
+                                        "items": {
+                                          "type": "string",
+                                          "description": "acceptable values"
+                                        }
+                                      },
+                                      "tenant_id": {
+                                        "type": "string",
+                                        "description": "Field tenant UUID"
+                                      },
+                                      "data_type": {
+                                        "type": "string",
+                                        "description": "Data type of custom field"
+                                      }
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "is_active": {
+                  "type": "boolean",
+                  "description": "Indicates whether the view is active or inactive"
+                },
+                "audit_data": {
+                  "type": "object",
+                  "description": "Audit data object",
+                  "properties": {
+                    "created": {
+                      "type": "object",
+                      "description": "Creation data",
+                      "properties": {
+                        "created_by_user_id": {
+                          "type": "string",
+                          "description": "Create user UUID"
+                        },
+                        "created_by_user_name": {
+                          "type": "string",
+                          "description": "Create user full name"
+                        },
+                        "created_at": {
+                          "type": "string",
+                          "description": "Create date"
+                        }
+                      }
+                    },
+                    "updated": {
+                      "type": "object",
+                      "description": "Audit data object",
+                      "properties": {
+                        "updated_by_user_id": {
+                          "type": "string",
+                          "description": "Update user uuid"
+                        },
+                        "updated_by_user_name": {
+                          "type": "string",
+                          "description": "Update user full name"
+                        },
+                        "updated_at": {
+                          "type": "string",
+                          "description": "Update date"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "ViewsPutRequestModel": {
+      "Type": "AWS::ApiGateway::Model",
+      "Properties": {
+        "RestApiId": {
+          "Fn::ImportValue": "apptemplatecoreinfra-dev-ExtApiGatewayRestApiId"
+        },
+        "ContentType": "application/json",
+        "Name": "ViewsPutRequest",
+        "Schema": {
+          "type": "object",
+          "required": [
+            "view_id"
+          ],
+          "properties": {
+            "view_id": {
+              "type": "string",
+              "description": "Unique identifier for the view"
+            },
+            "view_name": {
+              "type": "string",
+              "description": "Name of the view"
+            },
+            "view_endpoint": {
+              "type": "string",
+              "description": "Endpoint url for the view"
+            },
+            "view_route": {
+              "type": "string",
+              "description": "View API path"
+            },
+            "entity_id": {
+              "type": "string",
+              "description": "UUID of the view entity"
+            },
+            "json_content": {
+              "type": "object",
+              "description": "json object used to render the view in the UI",
+              "properties": {
+                "cards": {
+                  "type": "array",
+                  "description": "Array of UI cards",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "buttons": {
+                        "type": "array",
+                        "description": "Array of UI buttons",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "variant": {
+                              "type": "string",
+                              "description": "button variant"
+                            },
+                            "text": {
+                              "type": "string",
+                              "description": "button label text"
+                            }
+                          }
+                        }
+                      },
+                      "title": {
+                        "type": "string",
+                        "description": "Section title"
+                      },
+                      "card_type": {
+                        "type": "string",
+                        "description": "card type. form/grid/widget"
+                      },
+                      "card_id": {
+                        "type": "string",
+                        "description": "card id given by the UI"
+                      },
+                      "sections": {
+                        "type": "array",
+                        "description": "Array of UI sections",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "buttons": {
+                              "type": "array",
+                              "description": "Array of UI buttons",
+                              "items": {
+                                "type": "object",
+                                "properties": {
+                                  "variant": {
+                                    "type": "string",
+                                    "description": "button variant"
+                                  },
+                                  "text": {
+                                    "type": "string",
+                                    "description": "button label text"
+                                  }
+                                }
+                              }
+                            },
+                            "section_id": {
+                              "type": "string",
+                              "description": "section id given by the UI"
+                            },
+                            "title": {
+                              "type": "string",
+                              "description": "section title"
+                            },
+                            "fields": {
+                              "type": "array",
+                              "description": "Array of fielkds",
+                              "items": {
+                                "type": "object",
+                                "properties": {
+                                  "custom_field_id": {
+                                    "type": "string",
+                                    "description": "Unique identifier for the field"
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "is_active": {
+              "type": "boolean",
+              "description": "Indicates whether the view is active or inactive"
+            }
+          }
+        }
+      }
+    },
+    "ViewElementsGetResponseModel": {
+      "Type": "AWS::ApiGateway::Model",
+      "Properties": {
+        "RestApiId": {
+          "Fn::ImportValue": "apptemplatecoreinfra-dev-ExtApiGatewayRestApiId"
+        },
+        "ContentType": "application/json",
+        "Name": "ViewElementsGetResponse",
+        "Schema": {
+          "type": "object",
+          "properties": {
+            "views": {
+              "type": "array",
+              "description": "Array of views",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "view_element_id": {
+                    "type": "string",
+                    "description": "Unique identifier for the view element"
+                  },
+                  "view_element_name": {
+                    "type": "string",
+                    "description": "Name of the view element"
+                  },
+                  "key_attributes": {
+                    "type": "array",
+                    "description": "Array of views",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "element_attribute": {
+                          "type": "string",
+                          "description": "Name of the element attribute"
+                        },
+                        "acceptable_values": {
+                          "type": "object",
+                          "description": "Key value pair for acceptable values and their description"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "CustomViews": {
+      "Type": "AWS::DynamoDB::Table",
+      "Properties": {
+        "AttributeDefinitions": [
+          {
+            "AttributeName": "view_id",
+            "AttributeType": "S"
+          },
+          {
+            "AttributeName": "tenant_id",
+            "AttributeType": "S"
+          },
+          {
+            "AttributeName": "entity_id",
+            "AttributeType": "S"
+          }
+        ],
+        "KeySchema": [
+          {
+            "AttributeName": "view_id",
+            "KeyType": "HASH"
+          },
+          {
+            "AttributeName": "tenant_id",
+            "KeyType": "RANGE"
+          }
+        ],
+        "GlobalSecondaryIndexes": [
+          {
+            "IndexName": "tenant_id_idx",
+            "KeySchema": [
+              {
+                "AttributeName": "tenant_id",
+                "KeyType": "HASH"
+              },
+              {
+                "AttributeName": "view_id",
+                "KeyType": "RANGE"
+              }
+            ],
+            "Projection": {
+              "ProjectionType": "ALL"
+            },
+            "ProvisionedThroughput": {
+              "ReadCapacityUnits": 10,
+              "WriteCapacityUnits": 10
+            }
+          },
+          {
+            "IndexName": "entity_id_idx",
+            "KeySchema": [
+              {
+                "AttributeName": "entity_id",
+                "KeyType": "HASH"
+              },
+              {
+                "AttributeName": "view_id",
+                "KeyType": "RANGE"
+              }
+            ],
+            "Projection": {
+              "ProjectionType": "ALL"
+            },
+            "ProvisionedThroughput": {
+              "ReadCapacityUnits": 10,
+              "WriteCapacityUnits": 10
+            }
+          }
+        ],
+        "ProvisionedThroughput": {
+          "ReadCapacityUnits": 10,
+          "WriteCapacityUnits": 10
+        },
+        "TableName": "apptemplatecustomviews-dev-CustomViews"
+      }
+    }
+  },
+  "Outputs": {
+    "ServerlessDeploymentBucketName": {
+      "Value": "apptemplate-dev-artifacts-s3bucket",
+      "Export": {
+        "Name": "sls-apptemplatecustomviews-dev-ServerlessDeploymentBucketName"
+      }
+    },
+    "SqlHandlerLambdaLayerQualifiedArn": {
+      "Description": "Current Lambda layer version",
+      "Value": {
+        "Ref": "SqlHandlerLambdaLayer"
+      },
+      "Export": {
+        "Name": "sls-apptemplatecustomviews-dev-SqlHandlerLambdaLayerQualifiedArn"
+      }
+    },
+    "SqlHandlerLambdaLayerHash": {
+      "Description": "Current Lambda layer hash",
+      "Value": "320f5e031e70d1da0b23b2d2fb60a94c87dd8801",
+      "Export": {
+        "Name": "sls-apptemplatecustomviews-dev-SqlHandlerLambdaLayerHash"
+      }
+    },
+    "SqlHandlerLambdaLayerS3Key": {
+      "Description": "Current Lambda layer S3Key",
+      "Value": "serverless/apptemplatecustomviews/dev/1704468207223-2024-01-05T15:23:27.223Z/./../../SqlHandler.zip",
+      "Export": {
+        "Name": "sls-apptemplatecustomviews-dev-SqlHandlerLambdaLayerS3Key"
+      }
+    },
+    "UtilsLambdaLayerQualifiedArn": {
+      "Description": "Current Lambda layer version",
+      "Value": {
+        "Ref": "UtilsLambdaLayer"
+      },
+      "Export": {
+        "Name": "sls-apptemplatecustomviews-dev-UtilsLambdaLayerQualifiedArn"
+      }
+    },
+    "UtilsLambdaLayerHash": {
+      "Description": "Current Lambda layer hash",
+      "Value": "73286387f7be37a97548d5f32a4c1e5a00e1aac2",
+      "Export": {
+        "Name": "sls-apptemplatecustomviews-dev-UtilsLambdaLayerHash"
+      }
+    },
+    "UtilsLambdaLayerS3Key": {
+      "Description": "Current Lambda layer S3Key",
+      "Value": "serverless/apptemplatecustomviews/dev/1704468207223-2024-01-05T15:23:27.223Z/./../../Utils.zip",
+      "Export": {
+        "Name": "sls-apptemplatecustomviews-dev-UtilsLambdaLayerS3Key"
+      }
+    },
+    "CoreUtilsLambdaLayerQualifiedArn": {
+      "Description": "Current Lambda layer version",
+      "Value": {
+        "Ref": "CoreUtilsLambdaLayer"
+      },
+      "Export": {
+        "Name": "sls-apptemplatecustomviews-dev-CoreUtilsLambdaLayerQualifiedArn"
+      }
+    },
+    "CoreUtilsLambdaLayerHash": {
+      "Description": "Current Lambda layer hash",
+      "Value": "08d6a8f4a8881b3a4eae12fa0b9d81f433a29bc5",
+      "Export": {
+        "Name": "sls-apptemplatecustomviews-dev-CoreUtilsLambdaLayerHash"
+      }
+    },
+    "CoreUtilsLambdaLayerS3Key": {
+      "Description": "Current Lambda layer S3Key",
+      "Value": "serverless/apptemplatecustomviews/dev/1704468207223-2024-01-05T15:23:27.223Z/./../../CoreUtils.zip",
+      "Export": {
+        "Name": "sls-apptemplatecustomviews-dev-CoreUtilsLambdaLayerS3Key"
+      }
+    },
+    "PythonRequirementsLambdaLayerQualifiedArn": {
+      "Description": "Current Lambda layer version",
+      "Value": {
+        "Ref": "PythonRequirementsLambdaLayer"
+      },
+      "Export": {
+        "Name": "sls-apptemplatecustomviews-dev-PythonRequirementsLambdaLayerQualifiedArn"
+      }
+    },
+    "PythonRequirementsLambdaLayerHash": {
+      "Description": "Current Lambda layer hash",
+      "Value": "29443152f6ba1f97d36f8c5da9ad4b40ad0bea44",
+      "Export": {
+        "Name": "sls-apptemplatecustomviews-dev-PythonRequirementsLambdaLayerHash"
+      }
+    },
+    "PythonRequirementsLambdaLayerS3Key": {
+      "Description": "Current Lambda layer S3Key",
+      "Value": "serverless/apptemplatecustomviews/dev/1704468207223-2024-01-05T15:23:27.223Z/pythonRequirements.zip",
+      "Export": {
+        "Name": "sls-apptemplatecustomviews-dev-PythonRequirementsLambdaLayerS3Key"
+      }
+    },
+    "ViewsGetLambdaFunctionQualifiedArn": {
+      "Description": "Current Lambda function version",
+      "Value": {
+        "Ref": "ViewsGetLambdaVersion8fhU8yD1FddSs7dxM1GJaMh92gY8gCfXPI5BYPRUtKw"
+      },
+      "Export": {
+        "Name": "sls-apptemplatecustomviews-dev-ViewsGetLambdaFunctionQualifiedArn"
+      }
+    },
+    "ViewElementsGetLambdaFunctionQualifiedArn": {
+      "Description": "Current Lambda function version",
+      "Value": {
+        "Ref": "ViewElementsGetLambdaVersion5gWdjp8EcIlj5KccWNnXXGhENubshg07ZGvBe3RrOs"
+      },
+      "Export": {
+        "Name": "sls-apptemplatecustomviews-dev-ViewElementsGetLambdaFunctionQualifiedArn"
+      }
+    },
+    "ViewGetLambdaFunctionQualifiedArn": {
+      "Description": "Current Lambda function version",
+      "Value": {
+        "Ref": "ViewGetLambdaVersionruvX0fFymoGytYJQwAhRCMqcd9WTiAfKeb36GZ7pp0"
+      },
+      "Export": {
+        "Name": "sls-apptemplatecustomviews-dev-ViewGetLambdaFunctionQualifiedArn"
+      }
+    },
+    "ViewsPutLambdaFunctionQualifiedArn": {
+      "Description": "Current Lambda function version",
+      "Value": {
+        "Ref": "ViewsPutLambdaVersionpQpUzo6CxXhNWsh3GsedR0zpIPNbuLiPzL69Ch4FM"
+      },
+      "Export": {
+        "Name": "sls-apptemplatecustomviews-dev-ViewsPutLambdaFunctionQualifiedArn"
+      }
+    },
+    "ServiceEndpoint": {
+      "Description": "URL of the service endpoint",
+      "Value": {
+        "Fn::Join": [
+          "",
+          [
+            "https://",
+            {
+              "Fn::ImportValue": "apptemplatecoreinfra-dev-ExtApiGatewayRestApiId"
+            },
+            ".execute-api.",
+            {
+              "Ref": "AWS::Region"
+            },
+            ".",
+            {
+              "Ref": "AWS::URLSuffix"
+            },
+            "/dev"
+          ]
+        ]
+      },
+      "Export": {
+        "Name": "sls-apptemplatecustomviews-dev-ServiceEndpoint"
+      }
+    },
+    "AwsDocApiId": {
+      "Description": "API ID",
+      "Value": {
+        "Fn::ImportValue": "apptemplatecoreinfra-dev-ExtApiGatewayRestApiId"
+      },
+      "Export": {
+        "Name": "sls-apptemplatecustomviews-dev-AwsDocApiId"
+      }
+    }
+  }
+}

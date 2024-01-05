@@ -1,0 +1,26 @@
+{
+    "type": "object",
+    "properties": {
+        "entities" : {
+            "type" : "array",
+            "description": "Array of icons",
+            "items": {
+                "type": "object",
+                "properties" :{
+                    "name": {
+                        "type": "string",
+                        "description": "Name of the icon"
+                    },
+                    "description": {
+                        "type": "string",
+                        "description": "Description of the icon"
+                    },
+                    "class": {
+                        "type": "string",
+                        "description": "Class of the icon"
+                    }
+                }
+            }
+        }
+    }
+}

@@ -1,0 +1,51 @@
+{
+    "type": "object",
+    "required": [
+        "name",
+        "column_name",
+        "parent_object_id",
+        "input",
+        "data_type",
+        "max_characters",
+        "dimensions"
+    ],
+    "properties": {
+        "name": {
+            "type": "string",
+            "description": "Name of the field"
+        },
+        "column_name": {
+            "type": "string",
+            "description": "Tenant column name"
+        },
+        "parent_object_id": {
+            "type": "string",
+            "description": "UUID of the parent object"
+        },
+        "input": {
+            "type": "string",
+            "description": "Input type of custom field"
+        },
+        "data_type": {
+            "type": "string",
+            "description": "Data type of custom field"
+        },
+        "max_characters": {
+            "type": "number",
+            "description": "Max quantity of characters"
+        },
+        "dimensions": {
+            "type": "object",
+            "properties": {
+                "height": {
+                    "type": "number",
+                    "description": "Height value on front end input"
+                },
+                "wide": {
+                    "type": "number",
+                    "description": "Wide value on front end input"
+                }
+            }
+        }
+    }
+}

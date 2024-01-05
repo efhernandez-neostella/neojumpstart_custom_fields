@@ -1,0 +1,74 @@
+documentation:
+  info:
+    version: ${file(./../../serverless.apptemplate.common.yml):documentation.info.version}
+    title: ${file(./../../serverless.apptemplate.common.yml):documentation.info.title}
+    description: ${file(./../../serverless.apptemplate.common.yml):documentation.info.description}
+  models:
+    - name: "CustomListGetResponse"
+      description: "Model for get objects of a specific entity data response."
+      contentType: "application/json"
+      schema: ${file(./documentation/models/CustomListGetResponse.json)}
+    - name: "CustomDetailsGetResponse"
+      description: "Model for get a specific object data response."
+      contentType: "application/json"
+      schema: ${file(./documentation/models/CustomDetailsGetResponse.json)}
+    - name: "CustomObjectPostResponse"
+      description: "Model of the response for the creation a specific object."
+      contentType: "application/json"
+      schema: ${file(./documentation/models/CustomObjectPostResponse.json)}
+    - name: "CustomObjectPutResponse"
+      description: "Model of the response for the update of a specific object."
+      contentType: "application/json"
+      schema: ${file(./documentation/models/CustomObjectPutResponse.json)}
+
+functions:
+  CustomListGet:
+    summary: "Get the data of objects"
+    description: "Get List of objects"
+    tags:
+      - "Custom Endpoints"
+    requestHeaders: ${file(./../../open_api_doc/models/RequestHeaders.json)}
+    queryParams:
+      - name: "is_active"
+        description: "true/false value"
+    methodResponses:
+      - statusCode: "200"
+        description: "Get objects success"
+        responseModels:
+          "application/json": "CustomListGetResponse"
+
+  CustomDetailsGet:
+    summary: "Get the data of a specific object"
+    description: "Get object data"
+    tags:
+      - "Custom Endpoints"
+    requestHeaders: ${file(./../../open_api_doc/models/RequestHeaders.json)}
+    methodResponses:
+      - statusCode: "200"
+        description: "Get object success"
+        responseModels:
+          "application/json": "CustomDetailsGetResponse"
+
+  CustomObjectPost:
+    summary: "Creation of a specific object"
+    description: "Creation of an object data"
+    tags:
+      - "Custom Endpoints"
+    requestHeaders: ${file(./../../open_api_doc/models/RequestHeaders.json)}
+    methodResponses:
+      - statusCode: "200"
+        description: "Record creation success"
+        responseModels:
+          "application/json": "CustomObjectPostResponse"
+
+  CustomObjectPut:
+    summary: "Update of a specific object"
+    description: "Update of an object data"
+    tags:
+      - "Custom Endpoints"
+    requestHeaders: ${file(./../../open_api_doc/models/RequestHeaders.json)}
+    methodResponses:
+      - statusCode: "200"
+        description: "Record update success"
+        responseModels:
+          "application/json": "CustomObjectPutResponse"

@@ -1,0 +1,92 @@
+functions:
+  CustomListGet:
+    handler: controllers/CustomListGet.lambda_handler
+    environment:
+      RESOURCE_METHOD: CustomListGet
+    package:
+      patterns:
+        - "./controllers/CustomListGet.py"
+        - "./models/CustomObject.py"
+        - "./process/ListGet.py"
+    events:
+      - http:
+          path: custom/{entity_name}
+          cors: True
+          method: get
+          documentation: ${file(./documentation/serverless.doc.yml):functions.CustomListGet}
+          authorizer:
+            type: COGNITO_USER_POOLS
+            scopes:
+              - aws.cognito.signin.user.admin
+              - apiauthidentifier/json.read
+            authorizerId:
+              "Fn::ImportValue": ${self:custom.common.service}coreinfra-${self:provider.stage}-ApiGatewayAuthorizer
+
+  CustomDetailsGet:
+    handler: controllers/CustomDetailsGet.lambda_handler
+    environment:
+      RESOURCE_METHOD: CustomDetailsGet
+    package:
+      patterns:
+        - "./controllers/CustomDetailsGet.py"
+        - "./models/CustomObject.py"
+        - "./process/DetailsGet.py"
+    events:
+      - http:
+          path: custom/{entity_name}/{id}
+          cors: True
+          method: get
+          documentation: ${file(./documentation/serverless.doc.yml):functions.CustomDetailsGet}
+          authorizer:
+            type: COGNITO_USER_POOLS
+            scopes:
+              - aws.cognito.signin.user.admin
+              - apiauthidentifier/json.read
+            authorizerId:
+              "Fn::ImportValue": ${self:custom.common.service}coreinfra-${self:provider.stage}-ApiGatewayAuthorizer
+
+  CustomObjectPost:
+    handler: controllers/CustomObjectPost.lambda_handler
+    environment:
+      RESOURCE_METHOD: CustomObjectPost
+    package:
+      patterns:
+        - "./controllers/CustomObjectPost.py"
+        - "./models/CustomObject.py"
+        - "./process/ObjectPost.py"
+    events:
+      - http:
+          path: custom/{entity_name}
+          cors: True
+          method: post
+          #documentation: ${file(./documentation/serverless.doc.yml):functions.CustomObjectPost}
+          authorizer:
+            type: COGNITO_USER_POOLS
+            scopes:
+              - aws.cognito.signin.user.admin
+              - apiauthidentifier/json.read
+            authorizerId:
+              "Fn::ImportValue": ${self:custom.common.service}coreinfra-${self:provider.stage}-ApiGatewayAuthorizer
+
+  CustomObjectPut:
+    handler: controllers/CustomObjectPut.lambda_handler
+    environment:
+      RESOURCE_METHOD: CustomObjectPut
+    package:
+      patterns:
+        - "./controllers/CustomObjectPut.py"
+        - "./models/CustomObject.py"
+        - "./process/ObjectPut.py"
+    events:
+      - http:
+          path: custom/{entity_name}/{id}
+          cors: True
+          method: put
+          #documentation: ${file(./documentation/serverless.doc.yml):functions.CustomObjectPut}
+          authorizer:
+            type: COGNITO_USER_POOLS
+            scopes:
+              - aws.cognito.signin.user.admin
+              - apiauthidentifier/json.read
+            authorizerId:
+              "Fn::ImportValue": ${self:custom.common.service}coreinfra-${self:provider.stage}-ApiGatewayAuthorizer

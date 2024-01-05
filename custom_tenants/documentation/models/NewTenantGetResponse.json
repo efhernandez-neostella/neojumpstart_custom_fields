@@ -1,0 +1,58 @@
+{
+    "type": "object",
+    "properties": {
+        "tenant": {
+            "type": "object",
+            "properties" : {
+                "tenant_id": {
+                    "type": "string",
+                    "description": "Unique identifier for the tenant"
+                },
+                "is_active": {
+                    "type": "boolean",
+                    "description": "Indicates whether the tenant is active or inactive"
+                },
+                "tenant_name": {
+                    "type": "string",
+                    "description": "Name of the tenant"
+                },
+                "admin_name": {
+                    "type": "string",
+                    "description": "Tenant admin name"
+                },
+                "subdomain": {
+                    "type": "string",
+                    "description": "Subdomain of tenant"
+                },
+                "activation_date": {
+                    "type": "string",
+                    "description": "Tenant activation date"
+                },
+                "admin_email": {
+                    "type": "string",
+                    "description": "Tenant admin email"
+                },
+                "status": {
+                    "type": "string",
+                    "description": "Status of tenant creation"
+                },
+                "created_by": {
+                    "type": "string",
+                    "description": "Unique identifier for the user who created the tenant"
+                },
+                "updated_by": {
+                    "type": "string",
+                    "description": "Unique identifier for the last user who updated the tenant"
+                },
+                "created_at": {
+                    "type": "string",
+                    "description": "Creation date of the tenant in %Y-%m-%d %H:%M:%S format"
+                },
+                "updated_at": {
+                    "type": "string",
+                    "description": "Last modification date of the tenant in %Y-%m-%d %H:%M:%S format"
+                }
+            }
+        }
+    }
+}

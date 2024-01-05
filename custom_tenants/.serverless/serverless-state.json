@@ -1,0 +1,2160 @@
+{
+  "service": {
+    "service": "apptemplatecustomtenants",
+    "serviceObject": {
+      "name": "apptemplatecustomtenants"
+    },
+    "provider": {
+      "name": "aws",
+      "runtime": "python3.8",
+      "region": "us-east-2",
+      "stage": "dev",
+      "deploymentBucket": "apptemplate-dev-artifacts-s3bucket",
+      "memorySize": 1024,
+      "timeout": 900,
+      "environment": {
+        "CUSTOM_MESSAGE_TRIGGER": "arn:aws:lambda:us-east-2:651364325517:function:apptemplatecoreinfra-dev-custom_email_neostella",
+        "POST_AUTHENTICATION_TRIGGER": "arn:aws:lambda:us-east-2:651364325517:function:apptemplatecoreinfra-dev-CheckUserStatus",
+        "SES_EMAIL_ARN": "arn:aws:ses:us-east-2:651364325517:identity/alejandro.mejia@neostella.com",
+        "SES_EMAIL": "alejandro.mejia@neostella.com",
+        "SERVICE_NAME": "apptemplatecustomtenants-dev",
+        "PROFILE": "AppTemplate",
+        "RESOURCE_METHOD": "CI_SCRIPT",
+        "REGION_NAME": "us-east-2",
+        "STAGE": "dev",
+        "REST_API_ID": {
+          "Fn::ImportValue": "apptemplatecoreinfra-dev-ExtApiGatewayRestApiId"
+        },
+        "DATABASE_NAME": {
+          "Fn::ImportValue": "apptemplatecoreinfra-dev-DatabaseName"
+        },
+        "DB_CLUSTER_ARN": {
+          "Fn::ImportValue": "apptemplatecoreinfra-dev-DbClusterARN"
+        },
+        "CORALOGIX_SECRET": {
+          "Fn::ImportValue": "apptemplatecoreinfra-dev-CoralogixSecret"
+        },
+        "DB_CREDENTIALS_SECRETS_STORE_ARN": {
+          "Fn::ImportValue": "apptemplatecoreinfra-dev-DbCredentialsSecretsStoreARN"
+        },
+        "APPKEY_SECRET_ARN": {
+          "Fn::ImportValue": "apptemplatecoreinfra-dev-AppKeySecretARN"
+        },
+        "SNS_ARN": {
+          "Fn::ImportValue": "apptemplateeventsinfra-dev-snsARN"
+        },
+        "WEBHOOK_LOGS_TABLE": {
+          "Fn::ImportValue": "apptemplateeventsinfra-dev-WebhookLogsTable"
+        },
+        "AUDIT_LOGS_TABLE": {
+          "Fn::ImportValue": "apptemplateeventsinfra-dev-AuditLogsTable"
+        },
+        "GATEWAY_AUTHORIZER_ID": {
+          "Fn::ImportValue": "apptemplatecoreinfra-dev-GatewayAuthorizerId"
+        }
+      },
+      "httpApi": true,
+      "apiGateway": {
+        "restApiId": {
+          "Fn::ImportValue": "apptemplatecoreinfra-dev-ExtApiGatewayRestApiId"
+        },
+        "restApiRootResourceId": {
+          "Fn::ImportValue": "apptemplatecoreinfra-dev-ExtApiGatewayRestApiRootResourceId"
+        }
+      },
+      "iam": {
+        "role": {
+          "managedPolicies": [
+            "arn:aws:iam::aws:policy/AmazonRDSDataFullAccess",
+            "arn:aws:iam::aws:policy/AmazonCognitoPowerUser",
+            "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+            "arn:aws:iam::aws:policy/SecretsManagerReadWrite",
+            "arn:aws:iam::aws:policy/AmazonS3FullAccess",
+            "arn:aws:iam::aws:policy/IAMFullAccess",
+            "arn:aws:iam::aws:policy/AmazonSNSFullAccess",
+            "arn:aws:iam::aws:policy/AmazonRoute53FullAccess",
+            "arn:aws:iam::aws:policy/AmazonRDSFullAccess",
+            "arn:aws:iam::aws:policy/AmazonAPIGatewayAdministrator"
+          ],
+          "statements": [
+            {
+              "Effect": "Allow",
+              "Resource": "*",
+              "Action": [
+                "sqs:SendMessage",
+                "lambda:InvokeFunction",
+                "lambda:InvokeAsync",
+                "ses:SendEmail",
+                "ses:SendRawEmail"
+              ]
+            }
+          ]
+        }
+      },
+      "layers": [
+        {
+          "Ref": "PythonRequirementsLambdaLayer"
+        },
+        {
+          "Ref": "CoreUtilsLambdaLayer"
+        },
+        {
+          "Ref": "SqlHandlerLambdaLayer"
+        },
+        {
+          "Ref": "UtilsLambdaLayer"
+        }
+      ],
+      "versionFunctions": true,
+      "deploymentBucketObject": {
+        "name": "apptemplate-dev-artifacts-s3bucket"
+      },
+      "compiledCloudFormationTemplate": {
+        "AWSTemplateFormatVersion": "2010-09-09",
+        "Description": "The AWS CloudFormation template for this Serverless application",
+        "Resources": {
+          "TenantCreationLogGroup": {
+            "Type": "AWS::Logs::LogGroup",
+            "Properties": {
+              "LogGroupName": "/aws/lambda/apptemplatecustomtenants-dev-TenantCreation"
+            }
+          },
+          "TenantPostLogGroup": {
+            "Type": "AWS::Logs::LogGroup",
+            "Properties": {
+              "LogGroupName": "/aws/lambda/apptemplatecustomtenants-dev-TenantPost"
+            }
+          },
+          "TenantsGetLogGroup": {
+            "Type": "AWS::Logs::LogGroup",
+            "Properties": {
+              "LogGroupName": "/aws/lambda/apptemplatecustomtenants-dev-TenantsGet"
+            }
+          },
+          "TenantGetLogGroup": {
+            "Type": "AWS::Logs::LogGroup",
+            "Properties": {
+              "LogGroupName": "/aws/lambda/apptemplatecustomtenants-dev-TenantGet"
+            }
+          },
+          "TenantPutLogGroup": {
+            "Type": "AWS::Logs::LogGroup",
+            "Properties": {
+              "LogGroupName": "/aws/lambda/apptemplatecustomtenants-dev-TenantPut"
+            }
+          },
+          "IamRoleLambdaExecution": {
+            "Type": "AWS::IAM::Role",
+            "Properties": {
+              "AssumeRolePolicyDocument": {
+                "Version": "2012-10-17",
+                "Statement": [
+                  {
+                    "Effect": "Allow",
+                    "Principal": {
+                      "Service": [
+                        "lambda.amazonaws.com"
+                      ]
+                    },
+                    "Action": [
+                      "sts:AssumeRole"
+                    ]
+                  }
+                ]
+              },
+              "Policies": [
+                {
+                  "PolicyName": {
+                    "Fn::Join": [
+                      "-",
+                      [
+                        "apptemplatecustomtenants",
+                        "dev",
+                        "lambda"
+                      ]
+                    ]
+                  },
+                  "PolicyDocument": {
+                    "Version": "2012-10-17",
+                    "Statement": [
+                      {
+                        "Effect": "Allow",
+                        "Action": [
+                          "logs:CreateLogStream",
+                          "logs:CreateLogGroup"
+                        ],
+                        "Resource": [
+                          {
+                            "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/apptemplatecustomtenants-dev*:*"
+                          }
+                        ]
+                      },
+                      {
+                        "Effect": "Allow",
+                        "Action": [
+                          "logs:PutLogEvents"
+                        ],
+                        "Resource": [
+                          {
+                            "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/apptemplatecustomtenants-dev*:*:*"
+                          }
+                        ]
+                      },
+                      {
+                        "$ref": "$[\"service\"][\"provider\"][\"iam\"][\"role\"][\"statements\"][0]"
+                      }
+                    ]
+                  }
+                }
+              ],
+              "Path": "/",
+              "RoleName": {
+                "Fn::Join": [
+                  "-",
+                  [
+                    "apptemplatecustomtenants",
+                    "dev",
+                    {
+                      "Ref": "AWS::Region"
+                    },
+                    "lambdaRole"
+                  ]
+                ]
+              },
+              "ManagedPolicyArns": [
+                "arn:aws:iam::aws:policy/AmazonRDSDataFullAccess",
+                "arn:aws:iam::aws:policy/AmazonCognitoPowerUser",
+                "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+                "arn:aws:iam::aws:policy/SecretsManagerReadWrite",
+                "arn:aws:iam::aws:policy/AmazonS3FullAccess",
+                "arn:aws:iam::aws:policy/IAMFullAccess",
+                "arn:aws:iam::aws:policy/AmazonSNSFullAccess",
+                "arn:aws:iam::aws:policy/AmazonRoute53FullAccess",
+                "arn:aws:iam::aws:policy/AmazonRDSFullAccess",
+                "arn:aws:iam::aws:policy/AmazonAPIGatewayAdministrator"
+              ]
+            }
+          },
+          "UtilsLambdaLayer": {
+            "Type": "AWS::Lambda::LayerVersion",
+            "Properties": {
+              "Content": {
+                "S3Bucket": "apptemplate-dev-artifacts-s3bucket",
+                "S3Key": "serverless/apptemplatecustomtenants/dev/1702483476091-2023-12-13T16:04:36.091Z/./../../Utils.zip"
+              },
+              "LayerName": "apptemplatecustomtenants-dev-utils"
+            }
+          },
+          "SqlHandlerLambdaLayer": {
+            "Type": "AWS::Lambda::LayerVersion",
+            "Properties": {
+              "Content": {
+                "S3Bucket": "apptemplate-dev-artifacts-s3bucket",
+                "S3Key": "serverless/apptemplatecustomtenants/dev/1702483476091-2023-12-13T16:04:36.091Z/./../../SqlHandler.zip"
+              },
+              "LayerName": "apptemplatecustomtenants-dev-sql-handler"
+            }
+          },
+          "CoreUtilsLambdaLayer": {
+            "Type": "AWS::Lambda::LayerVersion",
+            "Properties": {
+              "Content": {
+                "S3Bucket": "apptemplate-dev-artifacts-s3bucket",
+                "S3Key": "serverless/apptemplatecustomtenants/dev/1702483476091-2023-12-13T16:04:36.091Z/./../../CoreUtils.zip"
+              },
+              "LayerName": "apptemplatecustomtenants-dev-core-utils"
+            }
+          },
+          "PythonRequirementsLambdaLayer": {
+            "Type": "AWS::Lambda::LayerVersion",
+            "Properties": {
+              "Content": {
+                "S3Bucket": "apptemplate-dev-artifacts-s3bucket",
+                "S3Key": "serverless/apptemplatecustomtenants/dev/1702483476091-2023-12-13T16:04:36.091Z/pythonRequirements.zip"
+              },
+              "LayerName": "apptemplatecustomtenants-dev-python-libraries",
+              "Description": "Layer containing the python libraries necessary for project apptemplatecustomtenants",
+              "CompatibleRuntimes": [
+                "python3.8"
+              ]
+            }
+          },
+          "TenantCreationLambdaFunction": {
+            "Type": "AWS::Lambda::Function",
+            "Properties": {
+              "Code": {
+                "S3Bucket": "apptemplate-dev-artifacts-s3bucket",
+                "S3Key": "serverless/apptemplatecustomtenants/dev/1702492588096-2023-12-13T18:36:28.096Z/TenantCreation.zip"
+              },
+              "Handler": "controllers/tenants/TenantCreation.lambda_handler",
+              "Runtime": "python3.8",
+              "FunctionName": "apptemplatecustomtenants-dev-TenantCreation",
+              "MemorySize": 1024,
+              "Timeout": 900,
+              "Environment": {
+                "Variables": {
+                  "CUSTOM_MESSAGE_TRIGGER": "arn:aws:lambda:us-east-2:651364325517:function:apptemplatecoreinfra-dev-custom_email_neostella",
+                  "POST_AUTHENTICATION_TRIGGER": "arn:aws:lambda:us-east-2:651364325517:function:apptemplatecoreinfra-dev-PostAuthenticationEventReplicator",
+                  "SES_EMAIL_ARN": "arn:aws:ses:us-east-2:651364325517:identity/alejandro.mejia@neostella.com",
+                  "SES_EMAIL": "alejandro.mejia@neostella.com",
+                  "SERVICE_NAME": "apptemplatecustomtenants-dev",
+                  "PROFILE": "AppTemplate",
+                  "RESOURCE_METHOD": "TenantCreation",
+                  "REGION_NAME": "us-east-2",
+                  "STAGE": "dev",
+                  "REST_API_ID": {
+                    "$ref": "$[\"service\"][\"provider\"][\"environment\"][\"REST_API_ID\"]"
+                  },
+                  "DATABASE_NAME": {
+                    "$ref": "$[\"service\"][\"provider\"][\"environment\"][\"DATABASE_NAME\"]"
+                  },
+                  "DB_CLUSTER_ARN": {
+                    "$ref": "$[\"service\"][\"provider\"][\"environment\"][\"DB_CLUSTER_ARN\"]"
+                  },
+                  "CORALOGIX_SECRET": {
+                    "$ref": "$[\"service\"][\"provider\"][\"environment\"][\"CORALOGIX_SECRET\"]"
+                  },
+                  "DB_CREDENTIALS_SECRETS_STORE_ARN": {
+                    "$ref": "$[\"service\"][\"provider\"][\"environment\"][\"DB_CREDENTIALS_SECRETS_STORE_ARN\"]"
+                  },
+                  "APPKEY_SECRET_ARN": {
+                    "$ref": "$[\"service\"][\"provider\"][\"environment\"][\"APPKEY_SECRET_ARN\"]"
+                  },
+                  "SNS_ARN": {
+                    "$ref": "$[\"service\"][\"provider\"][\"environment\"][\"SNS_ARN\"]"
+                  },
+                  "WEBHOOK_LOGS_TABLE": {
+                    "$ref": "$[\"service\"][\"provider\"][\"environment\"][\"WEBHOOK_LOGS_TABLE\"]"
+                  },
+                  "AUDIT_LOGS_TABLE": {
+                    "$ref": "$[\"service\"][\"provider\"][\"environment\"][\"AUDIT_LOGS_TABLE\"]"
+                  },
+                  "GATEWAY_AUTHORIZER_ID": {
+                    "$ref": "$[\"service\"][\"provider\"][\"environment\"][\"GATEWAY_AUTHORIZER_ID\"]"
+                  },
+                  "TRANSLATIONS_BUCKET": "apptemplatetranslations-dev-translationsbucket",
+                  "HOSTED_ZONE_ID": "Z03718282V4AFDU1GCLZ5",
+                  "DOMAIN_NAME": "neojumpstart.com"
+                }
+              },
+              "Role": {
+                "Fn::GetAtt": [
+                  "IamRoleLambdaExecution",
+                  "Arn"
+                ]
+              },
+              "Layers": [
+                {
+                  "$ref": "$[\"service\"][\"provider\"][\"layers\"][0]"
+                },
+                {
+                  "$ref": "$[\"service\"][\"provider\"][\"layers\"][1]"
+                },
+                {
+                  "$ref": "$[\"service\"][\"provider\"][\"layers\"][2]"
+                },
+                {
+                  "$ref": "$[\"service\"][\"provider\"][\"layers\"][3]"
+                }
+              ]
+            },
+            "DependsOn": [
+              "TenantCreationLogGroup"
+            ]
+          },
+          "TenantPostLambdaFunction": {
+            "Type": "AWS::Lambda::Function",
+            "Properties": {
+              "Code": {
+                "S3Bucket": "apptemplate-dev-artifacts-s3bucket",
+                "S3Key": "serverless/apptemplatecustomtenants/dev/1702492588096-2023-12-13T18:36:28.096Z/TenantPost.zip"
+              },
+              "Handler": "controllers/tenants/TenantPost.lambda_handler",
+              "Runtime": "python3.8",
+              "FunctionName": "apptemplatecustomtenants-dev-TenantPost",
+              "MemorySize": 1024,
+              "Timeout": 900,
+              "Environment": {
+                "Variables": {
+                  "CUSTOM_MESSAGE_TRIGGER": "arn:aws:lambda:us-east-2:651364325517:function:apptemplatecoreinfra-dev-custom_email_neostella",
+                  "POST_AUTHENTICATION_TRIGGER": "arn:aws:lambda:us-east-2:651364325517:function:apptemplatecoreinfra-dev-CheckUserStatus",
+                  "SES_EMAIL_ARN": "arn:aws:ses:us-east-2:651364325517:identity/alejandro.mejia@neostella.com",
+                  "SES_EMAIL": "alejandro.mejia@neostella.com",
+                  "SERVICE_NAME": "apptemplatecustomtenants-dev",
+                  "PROFILE": "AppTemplate",
+                  "RESOURCE_METHOD": "TenantPost",
+                  "REGION_NAME": "us-east-2",
+                  "STAGE": "dev",
+                  "REST_API_ID": {
+                    "$ref": "$[\"service\"][\"provider\"][\"environment\"][\"REST_API_ID\"]"
+                  },
+                  "DATABASE_NAME": {
+                    "$ref": "$[\"service\"][\"provider\"][\"environment\"][\"DATABASE_NAME\"]"
+                  },
+                  "DB_CLUSTER_ARN": {
+                    "$ref": "$[\"service\"][\"provider\"][\"environment\"][\"DB_CLUSTER_ARN\"]"
+                  },
+                  "CORALOGIX_SECRET": {
+                    "$ref": "$[\"service\"][\"provider\"][\"environment\"][\"CORALOGIX_SECRET\"]"
+                  },
+                  "DB_CREDENTIALS_SECRETS_STORE_ARN": {
+                    "$ref": "$[\"service\"][\"provider\"][\"environment\"][\"DB_CREDENTIALS_SECRETS_STORE_ARN\"]"
+                  },
+                  "APPKEY_SECRET_ARN": {
+                    "$ref": "$[\"service\"][\"provider\"][\"environment\"][\"APPKEY_SECRET_ARN\"]"
+                  },
+                  "SNS_ARN": {
+                    "$ref": "$[\"service\"][\"provider\"][\"environment\"][\"SNS_ARN\"]"
+                  },
+                  "WEBHOOK_LOGS_TABLE": {
+                    "$ref": "$[\"service\"][\"provider\"][\"environment\"][\"WEBHOOK_LOGS_TABLE\"]"
+                  },
+                  "AUDIT_LOGS_TABLE": {
+                    "$ref": "$[\"service\"][\"provider\"][\"environment\"][\"AUDIT_LOGS_TABLE\"]"
+                  },
+                  "GATEWAY_AUTHORIZER_ID": {
+                    "$ref": "$[\"service\"][\"provider\"][\"environment\"][\"GATEWAY_AUTHORIZER_ID\"]"
+                  }
+                }
+              },
+              "Role": {
+                "Fn::GetAtt": [
+                  "IamRoleLambdaExecution",
+                  "Arn"
+                ]
+              },
+              "Layers": [
+                {
+                  "$ref": "$[\"service\"][\"provider\"][\"layers\"][0]"
+                },
+                {
+                  "$ref": "$[\"service\"][\"provider\"][\"layers\"][1]"
+                },
+                {
+                  "$ref": "$[\"service\"][\"provider\"][\"layers\"][2]"
+                },
+                {
+                  "$ref": "$[\"service\"][\"provider\"][\"layers\"][3]"
+                }
+              ]
+            },
+            "DependsOn": [
+              "TenantPostLogGroup"
+            ]
+          },
+          "TenantsGetLambdaFunction": {
+            "Type": "AWS::Lambda::Function",
+            "Properties": {
+              "Code": {
+                "S3Bucket": "apptemplate-dev-artifacts-s3bucket",
+                "S3Key": "serverless/apptemplatecustomtenants/dev/1702492588096-2023-12-13T18:36:28.096Z/TenantsGet.zip"
+              },
+              "Handler": "controllers/tenants/TenantsGet.lambda_handler",
+              "Runtime": "python3.8",
+              "FunctionName": "apptemplatecustomtenants-dev-TenantsGet",
+              "MemorySize": 1024,
+              "Timeout": 900,
+              "Environment": {
+                "Variables": {
+                  "CUSTOM_MESSAGE_TRIGGER": "arn:aws:lambda:us-east-2:651364325517:function:apptemplatecoreinfra-dev-custom_email_neostella",
+                  "POST_AUTHENTICATION_TRIGGER": "arn:aws:lambda:us-east-2:651364325517:function:apptemplatecoreinfra-dev-CheckUserStatus",
+                  "SES_EMAIL_ARN": "arn:aws:ses:us-east-2:651364325517:identity/alejandro.mejia@neostella.com",
+                  "SES_EMAIL": "alejandro.mejia@neostella.com",
+                  "SERVICE_NAME": "apptemplatecustomtenants-dev",
+                  "PROFILE": "AppTemplate",
+                  "RESOURCE_METHOD": "TenantsGet",
+                  "REGION_NAME": "us-east-2",
+                  "STAGE": "dev",
+                  "REST_API_ID": {
+                    "$ref": "$[\"service\"][\"provider\"][\"environment\"][\"REST_API_ID\"]"
+                  },
+                  "DATABASE_NAME": {
+                    "$ref": "$[\"service\"][\"provider\"][\"environment\"][\"DATABASE_NAME\"]"
+                  },
+                  "DB_CLUSTER_ARN": {
+                    "$ref": "$[\"service\"][\"provider\"][\"environment\"][\"DB_CLUSTER_ARN\"]"
+                  },
+                  "CORALOGIX_SECRET": {
+                    "$ref": "$[\"service\"][\"provider\"][\"environment\"][\"CORALOGIX_SECRET\"]"
+                  },
+                  "DB_CREDENTIALS_SECRETS_STORE_ARN": {
+                    "$ref": "$[\"service\"][\"provider\"][\"environment\"][\"DB_CREDENTIALS_SECRETS_STORE_ARN\"]"
+                  },
+                  "APPKEY_SECRET_ARN": {
+                    "$ref": "$[\"service\"][\"provider\"][\"environment\"][\"APPKEY_SECRET_ARN\"]"
+                  },
+                  "SNS_ARN": {
+                    "$ref": "$[\"service\"][\"provider\"][\"environment\"][\"SNS_ARN\"]"
+                  },
+                  "WEBHOOK_LOGS_TABLE": {
+                    "$ref": "$[\"service\"][\"provider\"][\"environment\"][\"WEBHOOK_LOGS_TABLE\"]"
+                  },
+                  "AUDIT_LOGS_TABLE": {
+                    "$ref": "$[\"service\"][\"provider\"][\"environment\"][\"AUDIT_LOGS_TABLE\"]"
+                  },
+                  "GATEWAY_AUTHORIZER_ID": {
+                    "$ref": "$[\"service\"][\"provider\"][\"environment\"][\"GATEWAY_AUTHORIZER_ID\"]"
+                  }
+                }
+              },
+              "Role": {
+                "Fn::GetAtt": [
+                  "IamRoleLambdaExecution",
+                  "Arn"
+                ]
+              },
+              "Layers": [
+                {
+                  "$ref": "$[\"service\"][\"provider\"][\"layers\"][0]"
+                },
+                {
+                  "$ref": "$[\"service\"][\"provider\"][\"layers\"][1]"
+                },
+                {
+                  "$ref": "$[\"service\"][\"provider\"][\"layers\"][2]"
+                },
+                {
+                  "$ref": "$[\"service\"][\"provider\"][\"layers\"][3]"
+                }
+              ]
+            },
+            "DependsOn": [
+              "TenantsGetLogGroup"
+            ]
+          },
+          "TenantGetLambdaFunction": {
+            "Type": "AWS::Lambda::Function",
+            "Properties": {
+              "Code": {
+                "S3Bucket": "apptemplate-dev-artifacts-s3bucket",
+                "S3Key": "serverless/apptemplatecustomtenants/dev/1702492588096-2023-12-13T18:36:28.096Z/TenantGet.zip"
+              },
+              "Handler": "controllers/tenants/TenantGet.lambda_handler",
+              "Runtime": "python3.8",
+              "FunctionName": "apptemplatecustomtenants-dev-TenantGet",
+              "MemorySize": 1024,
+              "Timeout": 900,
+              "Environment": {
+                "Variables": {
+                  "CUSTOM_MESSAGE_TRIGGER": "arn:aws:lambda:us-east-2:651364325517:function:apptemplatecoreinfra-dev-custom_email_neostella",
+                  "POST_AUTHENTICATION_TRIGGER": "arn:aws:lambda:us-east-2:651364325517:function:apptemplatecoreinfra-dev-CheckUserStatus",
+                  "SES_EMAIL_ARN": "arn:aws:ses:us-east-2:651364325517:identity/alejandro.mejia@neostella.com",
+                  "SES_EMAIL": "alejandro.mejia@neostella.com",
+                  "SERVICE_NAME": "apptemplatecustomtenants-dev",
+                  "PROFILE": "AppTemplate",
+                  "RESOURCE_METHOD": "TenantGet",
+                  "REGION_NAME": "us-east-2",
+                  "STAGE": "dev",
+                  "REST_API_ID": {
+                    "$ref": "$[\"service\"][\"provider\"][\"environment\"][\"REST_API_ID\"]"
+                  },
+                  "DATABASE_NAME": {
+                    "$ref": "$[\"service\"][\"provider\"][\"environment\"][\"DATABASE_NAME\"]"
+                  },
+                  "DB_CLUSTER_ARN": {
+                    "$ref": "$[\"service\"][\"provider\"][\"environment\"][\"DB_CLUSTER_ARN\"]"
+                  },
+                  "CORALOGIX_SECRET": {
+                    "$ref": "$[\"service\"][\"provider\"][\"environment\"][\"CORALOGIX_SECRET\"]"
+                  },
+                  "DB_CREDENTIALS_SECRETS_STORE_ARN": {
+                    "$ref": "$[\"service\"][\"provider\"][\"environment\"][\"DB_CREDENTIALS_SECRETS_STORE_ARN\"]"
+                  },
+                  "APPKEY_SECRET_ARN": {
+                    "$ref": "$[\"service\"][\"provider\"][\"environment\"][\"APPKEY_SECRET_ARN\"]"
+                  },
+                  "SNS_ARN": {
+                    "$ref": "$[\"service\"][\"provider\"][\"environment\"][\"SNS_ARN\"]"
+                  },
+                  "WEBHOOK_LOGS_TABLE": {
+                    "$ref": "$[\"service\"][\"provider\"][\"environment\"][\"WEBHOOK_LOGS_TABLE\"]"
+                  },
+                  "AUDIT_LOGS_TABLE": {
+                    "$ref": "$[\"service\"][\"provider\"][\"environment\"][\"AUDIT_LOGS_TABLE\"]"
+                  },
+                  "GATEWAY_AUTHORIZER_ID": {
+                    "$ref": "$[\"service\"][\"provider\"][\"environment\"][\"GATEWAY_AUTHORIZER_ID\"]"
+                  }
+                }
+              },
+              "Role": {
+                "Fn::GetAtt": [
+                  "IamRoleLambdaExecution",
+                  "Arn"
+                ]
+              },
+              "Layers": [
+                {
+                  "$ref": "$[\"service\"][\"provider\"][\"layers\"][0]"
+                },
+                {
+                  "$ref": "$[\"service\"][\"provider\"][\"layers\"][1]"
+                },
+                {
+                  "$ref": "$[\"service\"][\"provider\"][\"layers\"][2]"
+                },
+                {
+                  "$ref": "$[\"service\"][\"provider\"][\"layers\"][3]"
+                }
+              ]
+            },
+            "DependsOn": [
+              "TenantGetLogGroup"
+            ]
+          },
+          "TenantPutLambdaFunction": {
+            "Type": "AWS::Lambda::Function",
+            "Properties": {
+              "Code": {
+                "S3Bucket": "apptemplate-dev-artifacts-s3bucket",
+                "S3Key": "serverless/apptemplatecustomtenants/dev/1702492588096-2023-12-13T18:36:28.096Z/TenantPut.zip"
+              },
+              "Handler": "controllers/tenants/TenantPut.lambda_handler",
+              "Runtime": "python3.8",
+              "FunctionName": "apptemplatecustomtenants-dev-TenantPut",
+              "MemorySize": 1024,
+              "Timeout": 900,
+              "Environment": {
+                "Variables": {
+                  "CUSTOM_MESSAGE_TRIGGER": "arn:aws:lambda:us-east-2:651364325517:function:apptemplatecoreinfra-dev-custom_email_neostella",
+                  "POST_AUTHENTICATION_TRIGGER": "arn:aws:lambda:us-east-2:651364325517:function:apptemplatecoreinfra-dev-CheckUserStatus",
+                  "SES_EMAIL_ARN": "arn:aws:ses:us-east-2:651364325517:identity/alejandro.mejia@neostella.com",
+                  "SES_EMAIL": "alejandro.mejia@neostella.com",
+                  "SERVICE_NAME": "apptemplatecustomtenants-dev",
+                  "PROFILE": "AppTemplate",
+                  "RESOURCE_METHOD": "TenantPut",
+                  "REGION_NAME": "us-east-2",
+                  "STAGE": "dev",
+                  "REST_API_ID": {
+                    "$ref": "$[\"service\"][\"provider\"][\"environment\"][\"REST_API_ID\"]"
+                  },
+                  "DATABASE_NAME": {
+                    "$ref": "$[\"service\"][\"provider\"][\"environment\"][\"DATABASE_NAME\"]"
+                  },
+                  "DB_CLUSTER_ARN": {
+                    "$ref": "$[\"service\"][\"provider\"][\"environment\"][\"DB_CLUSTER_ARN\"]"
+                  },
+                  "CORALOGIX_SECRET": {
+                    "$ref": "$[\"service\"][\"provider\"][\"environment\"][\"CORALOGIX_SECRET\"]"
+                  },
+                  "DB_CREDENTIALS_SECRETS_STORE_ARN": {
+                    "$ref": "$[\"service\"][\"provider\"][\"environment\"][\"DB_CREDENTIALS_SECRETS_STORE_ARN\"]"
+                  },
+                  "APPKEY_SECRET_ARN": {
+                    "$ref": "$[\"service\"][\"provider\"][\"environment\"][\"APPKEY_SECRET_ARN\"]"
+                  },
+                  "SNS_ARN": {
+                    "$ref": "$[\"service\"][\"provider\"][\"environment\"][\"SNS_ARN\"]"
+                  },
+                  "WEBHOOK_LOGS_TABLE": {
+                    "$ref": "$[\"service\"][\"provider\"][\"environment\"][\"WEBHOOK_LOGS_TABLE\"]"
+                  },
+                  "AUDIT_LOGS_TABLE": {
+                    "$ref": "$[\"service\"][\"provider\"][\"environment\"][\"AUDIT_LOGS_TABLE\"]"
+                  },
+                  "GATEWAY_AUTHORIZER_ID": {
+                    "$ref": "$[\"service\"][\"provider\"][\"environment\"][\"GATEWAY_AUTHORIZER_ID\"]"
+                  }
+                }
+              },
+              "Role": {
+                "Fn::GetAtt": [
+                  "IamRoleLambdaExecution",
+                  "Arn"
+                ]
+              },
+              "Layers": [
+                {
+                  "$ref": "$[\"service\"][\"provider\"][\"layers\"][0]"
+                },
+                {
+                  "$ref": "$[\"service\"][\"provider\"][\"layers\"][1]"
+                },
+                {
+                  "$ref": "$[\"service\"][\"provider\"][\"layers\"][2]"
+                },
+                {
+                  "$ref": "$[\"service\"][\"provider\"][\"layers\"][3]"
+                }
+              ]
+            },
+            "DependsOn": [
+              "TenantPutLogGroup"
+            ]
+          },
+          "TenantPostLambdaVersionZSLXydkQsGcA2YpApnaJ1ZyuHOEDnZhuNWjAV71gHXc": {
+            "Type": "AWS::Lambda::Version",
+            "DeletionPolicy": "Retain",
+            "Properties": {
+              "FunctionName": {
+                "Ref": "TenantPostLambdaFunction"
+              },
+              "CodeSha256": "9maPYgrk1GPRi4bEO36VX/d2F3DrdE9Nq8F5qW9b3FA="
+            }
+          },
+          "TenantsGetLambdaVersionHGknO4CnB8qa3omPn9QBAImmyNDUkDZq2id7KIzUg": {
+            "Type": "AWS::Lambda::Version",
+            "DeletionPolicy": "Retain",
+            "Properties": {
+              "FunctionName": {
+                "Ref": "TenantsGetLambdaFunction"
+              },
+              "CodeSha256": "9maPYgrk1GPRi4bEO36VX/d2F3DrdE9Nq8F5qW9b3FA="
+            }
+          },
+          "TenantGetLambdaVersionZJAzGCIURKRPZOf7L3IwIQS3PwiPfff3Z53wGvkpWc": {
+            "Type": "AWS::Lambda::Version",
+            "DeletionPolicy": "Retain",
+            "Properties": {
+              "FunctionName": {
+                "Ref": "TenantGetLambdaFunction"
+              },
+              "CodeSha256": "9maPYgrk1GPRi4bEO36VX/d2F3DrdE9Nq8F5qW9b3FA="
+            }
+          },
+          "TenantCreationLambdaVersiongLcSmidsmVyE53L5NYYjfoypzf4UYopsaOiZOfgPuzk": {
+            "Type": "AWS::Lambda::Version",
+            "DeletionPolicy": "Retain",
+            "Properties": {
+              "FunctionName": {
+                "Ref": "TenantCreationLambdaFunction"
+              },
+              "CodeSha256": "9maPYgrk1GPRi4bEO36VX/d2F3DrdE9Nq8F5qW9b3FA="
+            }
+          },
+          "TenantPutLambdaVersioneu8WyJcv4qRRDT9C4BlU8LIUO5V0evS8dIC7I5eo": {
+            "Type": "AWS::Lambda::Version",
+            "DeletionPolicy": "Retain",
+            "Properties": {
+              "FunctionName": {
+                "Ref": "TenantPutLambdaFunction"
+              },
+              "CodeSha256": "9maPYgrk1GPRi4bEO36VX/d2F3DrdE9Nq8F5qW9b3FA="
+            }
+          },
+          "ApiGatewayResourceNewtenants": {
+            "Type": "AWS::ApiGateway::Resource",
+            "Properties": {
+              "ParentId": {
+                "Fn::ImportValue": "apptemplatecoreinfra-dev-ExtApiGatewayRestApiRootResourceId"
+              },
+              "PathPart": "newtenants",
+              "RestApiId": {
+                "Fn::ImportValue": "apptemplatecoreinfra-dev-ExtApiGatewayRestApiId"
+              }
+            }
+          },
+          "ApiGatewayResourceNewtenantsTenantidVar": {
+            "Type": "AWS::ApiGateway::Resource",
+            "Properties": {
+              "ParentId": {
+                "Ref": "ApiGatewayResourceNewtenants"
+              },
+              "PathPart": "{tenant_id}",
+              "RestApiId": {
+                "Fn::ImportValue": "apptemplatecoreinfra-dev-ExtApiGatewayRestApiId"
+              }
+            }
+          },
+          "ApiGatewayMethodNewtenantsOptions": {
+            "Type": "AWS::ApiGateway::Method",
+            "Properties": {
+              "AuthorizationType": "NONE",
+              "HttpMethod": "OPTIONS",
+              "MethodResponses": [
+                {
+                  "StatusCode": "200",
+                  "ResponseParameters": {
+                    "method.response.header.Access-Control-Allow-Origin": true,
+                    "method.response.header.Access-Control-Allow-Headers": true,
+                    "method.response.header.Access-Control-Allow-Methods": true
+                  },
+                  "ResponseModels": {}
+                }
+              ],
+              "RequestParameters": {},
+              "Integration": {
+                "Type": "MOCK",
+                "RequestTemplates": {
+                  "application/json": "{statusCode:200}"
+                },
+                "ContentHandling": "CONVERT_TO_TEXT",
+                "IntegrationResponses": [
+                  {
+                    "StatusCode": "200",
+                    "ResponseParameters": {
+                      "method.response.header.Access-Control-Allow-Origin": "'*'",
+                      "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,X-Amz-User-Agent,X-Amzn-Trace-Id'",
+                      "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,PUT,GET,POST'"
+                    },
+                    "ResponseTemplates": {
+                      "application/json": ""
+                    }
+                  }
+                ]
+              },
+              "ResourceId": {
+                "Ref": "ApiGatewayResourceNewtenants"
+              },
+              "RestApiId": {
+                "Fn::ImportValue": "apptemplatecoreinfra-dev-ExtApiGatewayRestApiId"
+              }
+            }
+          },
+          "ApiGatewayMethodNewtenantsTenantidVarOptions": {
+            "Type": "AWS::ApiGateway::Method",
+            "Properties": {
+              "AuthorizationType": "NONE",
+              "HttpMethod": "OPTIONS",
+              "MethodResponses": [
+                {
+                  "StatusCode": "200",
+                  "ResponseParameters": {
+                    "method.response.header.Access-Control-Allow-Origin": true,
+                    "method.response.header.Access-Control-Allow-Headers": true,
+                    "method.response.header.Access-Control-Allow-Methods": true
+                  },
+                  "ResponseModels": {}
+                }
+              ],
+              "RequestParameters": {},
+              "Integration": {
+                "Type": "MOCK",
+                "RequestTemplates": {
+                  "application/json": "{statusCode:200}"
+                },
+                "ContentHandling": "CONVERT_TO_TEXT",
+                "IntegrationResponses": [
+                  {
+                    "StatusCode": "200",
+                    "ResponseParameters": {
+                      "method.response.header.Access-Control-Allow-Origin": "'*'",
+                      "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,X-Amz-User-Agent,X-Amzn-Trace-Id'",
+                      "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,GET'"
+                    },
+                    "ResponseTemplates": {
+                      "application/json": ""
+                    }
+                  }
+                ]
+              },
+              "ResourceId": {
+                "Ref": "ApiGatewayResourceNewtenantsTenantidVar"
+              },
+              "RestApiId": {
+                "Fn::ImportValue": "apptemplatecoreinfra-dev-ExtApiGatewayRestApiId"
+              }
+            }
+          },
+          "ApiGatewayMethodNewtenantsPost": {
+            "Type": "AWS::ApiGateway::Method",
+            "Properties": {
+              "HttpMethod": "POST",
+              "RequestParameters": {},
+              "ResourceId": {
+                "Ref": "ApiGatewayResourceNewtenants"
+              },
+              "RestApiId": {
+                "Fn::ImportValue": "apptemplatecoreinfra-dev-ExtApiGatewayRestApiId"
+              },
+              "ApiKeyRequired": false,
+              "AuthorizationType": "COGNITO_USER_POOLS",
+              "AuthorizerId": {
+                "Fn::ImportValue": "apptemplatecoreinfra-dev-ApiGatewayAuthorizer"
+              },
+              "AuthorizationScopes": [
+                "aws.cognito.signin.user.admin",
+                "apiauthidentifier/json.read"
+              ],
+              "Integration": {
+                "IntegrationHttpMethod": "POST",
+                "Type": "AWS_PROXY",
+                "Uri": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition"
+                      },
+                      ":apigateway:",
+                      {
+                        "Ref": "AWS::Region"
+                      },
+                      ":lambda:path/2015-03-31/functions/",
+                      {
+                        "Fn::GetAtt": [
+                          "TenantPostLambdaFunction",
+                          "Arn"
+                        ]
+                      },
+                      "/invocations"
+                    ]
+                  ]
+                }
+              },
+              "MethodResponses": []
+            },
+            "DependsOn": [
+              "TenantPostLambdaPermissionApiGateway"
+            ]
+          },
+          "ApiGatewayMethodNewtenantsGet": {
+            "Type": "AWS::ApiGateway::Method",
+            "Properties": {
+              "HttpMethod": "GET",
+              "RequestParameters": {},
+              "ResourceId": {
+                "Ref": "ApiGatewayResourceNewtenants"
+              },
+              "RestApiId": {
+                "Fn::ImportValue": "apptemplatecoreinfra-dev-ExtApiGatewayRestApiId"
+              },
+              "ApiKeyRequired": false,
+              "AuthorizationType": "COGNITO_USER_POOLS",
+              "AuthorizerId": {
+                "Fn::ImportValue": "apptemplatecoreinfra-dev-ApiGatewayAuthorizer"
+              },
+              "AuthorizationScopes": [
+                "aws.cognito.signin.user.admin",
+                "apiauthidentifier/json.read"
+              ],
+              "Integration": {
+                "IntegrationHttpMethod": "POST",
+                "Type": "AWS_PROXY",
+                "Uri": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition"
+                      },
+                      ":apigateway:",
+                      {
+                        "Ref": "AWS::Region"
+                      },
+                      ":lambda:path/2015-03-31/functions/",
+                      {
+                        "Fn::GetAtt": [
+                          "TenantsGetLambdaFunction",
+                          "Arn"
+                        ]
+                      },
+                      "/invocations"
+                    ]
+                  ]
+                }
+              },
+              "MethodResponses": []
+            },
+            "DependsOn": [
+              "TenantsGetLambdaPermissionApiGateway"
+            ]
+          },
+          "ApiGatewayMethodNewtenantsTenantidVarGet": {
+            "Type": "AWS::ApiGateway::Method",
+            "Properties": {
+              "HttpMethod": "GET",
+              "RequestParameters": {
+                "method.request.path.tenant_id": true
+              },
+              "ResourceId": {
+                "Ref": "ApiGatewayResourceNewtenantsTenantidVar"
+              },
+              "RestApiId": {
+                "Fn::ImportValue": "apptemplatecoreinfra-dev-ExtApiGatewayRestApiId"
+              },
+              "ApiKeyRequired": false,
+              "AuthorizationType": "COGNITO_USER_POOLS",
+              "AuthorizerId": {
+                "Fn::ImportValue": "apptemplatecoreinfra-dev-ApiGatewayAuthorizer"
+              },
+              "AuthorizationScopes": [
+                "aws.cognito.signin.user.admin",
+                "apiauthidentifier/json.read"
+              ],
+              "Integration": {
+                "IntegrationHttpMethod": "POST",
+                "Type": "AWS_PROXY",
+                "Uri": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition"
+                      },
+                      ":apigateway:",
+                      {
+                        "Ref": "AWS::Region"
+                      },
+                      ":lambda:path/2015-03-31/functions/",
+                      {
+                        "Fn::GetAtt": [
+                          "TenantGetLambdaFunction",
+                          "Arn"
+                        ]
+                      },
+                      "/invocations"
+                    ]
+                  ]
+                }
+              },
+              "MethodResponses": [],
+              "RequestValidatorId": {
+                "Ref": "ApiGatewayApptemplatecustomtenantsRequestValidator"
+              }
+            },
+            "DependsOn": [
+              "TenantGetLambdaPermissionApiGateway"
+            ]
+          },
+          "ApiGatewayMethodNewtenantsPut": {
+            "Type": "AWS::ApiGateway::Method",
+            "Properties": {
+              "HttpMethod": "PUT",
+              "RequestParameters": {},
+              "ResourceId": {
+                "Ref": "ApiGatewayResourceNewtenants"
+              },
+              "RestApiId": {
+                "Fn::ImportValue": "apptemplatecoreinfra-dev-ExtApiGatewayRestApiId"
+              },
+              "ApiKeyRequired": false,
+              "AuthorizationType": "COGNITO_USER_POOLS",
+              "AuthorizerId": {
+                "Fn::ImportValue": "apptemplatecoreinfra-dev-ApiGatewayAuthorizer"
+              },
+              "AuthorizationScopes": [
+                "aws.cognito.signin.user.admin",
+                "apiauthidentifier/json.read"
+              ],
+              "Integration": {
+                "IntegrationHttpMethod": "POST",
+                "Type": "AWS_PROXY",
+                "Uri": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition"
+                      },
+                      ":apigateway:",
+                      {
+                        "Ref": "AWS::Region"
+                      },
+                      ":lambda:path/2015-03-31/functions/",
+                      {
+                        "Fn::GetAtt": [
+                          "TenantPutLambdaFunction",
+                          "Arn"
+                        ]
+                      },
+                      "/invocations"
+                    ]
+                  ]
+                }
+              },
+              "MethodResponses": []
+            },
+            "DependsOn": [
+              "TenantPutLambdaPermissionApiGateway"
+            ]
+          },
+          "ApiGatewayApptemplatecustomtenantsRequestValidator": {
+            "Type": "AWS::ApiGateway::RequestValidator",
+            "Properties": {
+              "RestApiId": {
+                "$ref": "$[\"service\"][\"provider\"][\"apiGateway\"][\"restApiId\"]"
+              },
+              "ValidateRequestBody": true,
+              "ValidateRequestParameters": true,
+              "Name": "apptemplatecustomtenants-dev | Validate request body and querystring parameters"
+            }
+          },
+          "ApiGatewayDeployment1702492516059": {
+            "Type": "AWS::ApiGateway::Deployment",
+            "Properties": {
+              "RestApiId": {
+                "Fn::ImportValue": "apptemplatecoreinfra-dev-ExtApiGatewayRestApiId"
+              },
+              "StageName": "dev"
+            },
+            "DependsOn": [
+              "ApiGatewayMethodNewtenantsOptions",
+              "ApiGatewayMethodNewtenantsTenantidVarOptions",
+              "ApiGatewayMethodNewtenantsPost",
+              "ApiGatewayMethodNewtenantsGet",
+              "ApiGatewayMethodNewtenantsTenantidVarGet",
+              "ApiGatewayMethodNewtenantsPut"
+            ]
+          },
+          "TenantPostLambdaPermissionApiGateway": {
+            "Type": "AWS::Lambda::Permission",
+            "Properties": {
+              "FunctionName": {
+                "Fn::GetAtt": [
+                  "TenantPostLambdaFunction",
+                  "Arn"
+                ]
+              },
+              "Action": "lambda:InvokeFunction",
+              "Principal": "apigateway.amazonaws.com",
+              "SourceArn": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:",
+                    {
+                      "Ref": "AWS::Partition"
+                    },
+                    ":execute-api:",
+                    {
+                      "Ref": "AWS::Region"
+                    },
+                    ":",
+                    {
+                      "Ref": "AWS::AccountId"
+                    },
+                    ":",
+                    {
+                      "$ref": "$[\"service\"][\"provider\"][\"apiGateway\"][\"restApiId\"]"
+                    },
+                    "/*/*"
+                  ]
+                ]
+              }
+            }
+          },
+          "TenantsGetLambdaPermissionApiGateway": {
+            "Type": "AWS::Lambda::Permission",
+            "Properties": {
+              "FunctionName": {
+                "Fn::GetAtt": [
+                  "TenantsGetLambdaFunction",
+                  "Arn"
+                ]
+              },
+              "Action": "lambda:InvokeFunction",
+              "Principal": "apigateway.amazonaws.com",
+              "SourceArn": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:",
+                    {
+                      "Ref": "AWS::Partition"
+                    },
+                    ":execute-api:",
+                    {
+                      "Ref": "AWS::Region"
+                    },
+                    ":",
+                    {
+                      "Ref": "AWS::AccountId"
+                    },
+                    ":",
+                    {
+                      "$ref": "$[\"service\"][\"provider\"][\"apiGateway\"][\"restApiId\"]"
+                    },
+                    "/*/*"
+                  ]
+                ]
+              }
+            }
+          },
+          "TenantGetLambdaPermissionApiGateway": {
+            "Type": "AWS::Lambda::Permission",
+            "Properties": {
+              "FunctionName": {
+                "Fn::GetAtt": [
+                  "TenantGetLambdaFunction",
+                  "Arn"
+                ]
+              },
+              "Action": "lambda:InvokeFunction",
+              "Principal": "apigateway.amazonaws.com",
+              "SourceArn": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:",
+                    {
+                      "Ref": "AWS::Partition"
+                    },
+                    ":execute-api:",
+                    {
+                      "Ref": "AWS::Region"
+                    },
+                    ":",
+                    {
+                      "Ref": "AWS::AccountId"
+                    },
+                    ":",
+                    {
+                      "$ref": "$[\"service\"][\"provider\"][\"apiGateway\"][\"restApiId\"]"
+                    },
+                    "/*/*"
+                  ]
+                ]
+              }
+            }
+          },
+          "TenantPutLambdaPermissionApiGateway": {
+            "Type": "AWS::Lambda::Permission",
+            "Properties": {
+              "FunctionName": {
+                "Fn::GetAtt": [
+                  "TenantPutLambdaFunction",
+                  "Arn"
+                ]
+              },
+              "Action": "lambda:InvokeFunction",
+              "Principal": "apigateway.amazonaws.com",
+              "SourceArn": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:",
+                    {
+                      "Ref": "AWS::Partition"
+                    },
+                    ":execute-api:",
+                    {
+                      "Ref": "AWS::Region"
+                    },
+                    ":",
+                    {
+                      "Ref": "AWS::AccountId"
+                    },
+                    ":",
+                    {
+                      "$ref": "$[\"service\"][\"provider\"][\"apiGateway\"][\"restApiId\"]"
+                    },
+                    "/*/*"
+                  ]
+                ]
+              }
+            }
+          },
+          "CognitoCustomMessage": {
+            "Type": "AWS::Lambda::Permission",
+            "Properties": {
+              "Action": "lambda:InvokeFunction",
+              "FunctionName": "arn:aws:lambda:us-east-2:651364325517:function:apptemplatecoreinfra-dev-custom_email_neostella",
+              "Principal": "cognito-idp.amazonaws.com",
+              "SourceArn": "arn:aws:cognito-idp:us-east-2:651364325517:userpool/*"
+            }
+          },
+          "CognitoPostAuthenticationPermission": {
+            "Type": "AWS::Lambda::Permission",
+            "Properties": {
+              "Action": "lambda:InvokeFunction",
+              "FunctionName": "arn:aws:lambda:us-east-2:651364325517:function:apptemplatecoreinfra-dev-CheckUserStatus",
+              "Principal": "cognito-idp.amazonaws.com",
+              "SourceArn": "arn:aws:cognito-idp:us-east-2:651364325517:userpool/*"
+            }
+          }
+        },
+        "Outputs": {
+          "ServerlessDeploymentBucketName": {
+            "Value": "apptemplate-dev-artifacts-s3bucket",
+            "Export": {
+              "Name": "sls-apptemplatecustomtenants-dev-ServerlessDeploymentBucketName"
+            }
+          },
+          "UtilsLambdaLayerQualifiedArn": {
+            "Description": "Current Lambda layer version",
+            "Value": {
+              "Ref": "UtilsLambdaLayer"
+            },
+            "Export": {
+              "Name": "sls-apptemplatecustomtenants-dev-UtilsLambdaLayerQualifiedArn"
+            }
+          },
+          "UtilsLambdaLayerHash": {
+            "Description": "Current Lambda layer hash",
+            "Value": "7e33cebd89619914c2a01d6f0cd609ea2031408e",
+            "Export": {
+              "Name": "sls-apptemplatecustomtenants-dev-UtilsLambdaLayerHash"
+            }
+          },
+          "UtilsLambdaLayerS3Key": {
+            "Description": "Current Lambda layer S3Key",
+            "Value": "serverless/apptemplatecustomtenants/dev/1702483476091-2023-12-13T16:04:36.091Z/./../../Utils.zip",
+            "Export": {
+              "Name": "sls-apptemplatecustomtenants-dev-UtilsLambdaLayerS3Key"
+            }
+          },
+          "SqlHandlerLambdaLayerQualifiedArn": {
+            "Description": "Current Lambda layer version",
+            "Value": {
+              "Ref": "SqlHandlerLambdaLayer"
+            },
+            "Export": {
+              "Name": "sls-apptemplatecustomtenants-dev-SqlHandlerLambdaLayerQualifiedArn"
+            }
+          },
+          "SqlHandlerLambdaLayerHash": {
+            "Description": "Current Lambda layer hash",
+            "Value": "9920429e16d42f654b020583a949e13ae9f9bba8",
+            "Export": {
+              "Name": "sls-apptemplatecustomtenants-dev-SqlHandlerLambdaLayerHash"
+            }
+          },
+          "SqlHandlerLambdaLayerS3Key": {
+            "Description": "Current Lambda layer S3Key",
+            "Value": "serverless/apptemplatecustomtenants/dev/1702483476091-2023-12-13T16:04:36.091Z/./../../SqlHandler.zip",
+            "Export": {
+              "Name": "sls-apptemplatecustomtenants-dev-SqlHandlerLambdaLayerS3Key"
+            }
+          },
+          "CoreUtilsLambdaLayerQualifiedArn": {
+            "Description": "Current Lambda layer version",
+            "Value": {
+              "Ref": "CoreUtilsLambdaLayer"
+            },
+            "Export": {
+              "Name": "sls-apptemplatecustomtenants-dev-CoreUtilsLambdaLayerQualifiedArn"
+            }
+          },
+          "CoreUtilsLambdaLayerHash": {
+            "Description": "Current Lambda layer hash",
+            "Value": "54a0bfa1780b1956958caee7596acf1c1158f7e6",
+            "Export": {
+              "Name": "sls-apptemplatecustomtenants-dev-CoreUtilsLambdaLayerHash"
+            }
+          },
+          "CoreUtilsLambdaLayerS3Key": {
+            "Description": "Current Lambda layer S3Key",
+            "Value": "serverless/apptemplatecustomtenants/dev/1702483476091-2023-12-13T16:04:36.091Z/./../../CoreUtils.zip",
+            "Export": {
+              "Name": "sls-apptemplatecustomtenants-dev-CoreUtilsLambdaLayerS3Key"
+            }
+          },
+          "PythonRequirementsLambdaLayerQualifiedArn": {
+            "Description": "Current Lambda layer version",
+            "Value": {
+              "Ref": "PythonRequirementsLambdaLayer"
+            },
+            "Export": {
+              "Name": "sls-apptemplatecustomtenants-dev-PythonRequirementsLambdaLayerQualifiedArn"
+            }
+          },
+          "PythonRequirementsLambdaLayerHash": {
+            "Description": "Current Lambda layer hash",
+            "Value": "f11a73f8f8bd9e03e6f485eb887e49496a680812",
+            "Export": {
+              "Name": "sls-apptemplatecustomtenants-dev-PythonRequirementsLambdaLayerHash"
+            }
+          },
+          "PythonRequirementsLambdaLayerS3Key": {
+            "Description": "Current Lambda layer S3Key",
+            "Value": "serverless/apptemplatecustomtenants/dev/1702483476091-2023-12-13T16:04:36.091Z/pythonRequirements.zip",
+            "Export": {
+              "Name": "sls-apptemplatecustomtenants-dev-PythonRequirementsLambdaLayerS3Key"
+            }
+          },
+          "TenantPostLambdaFunctionQualifiedArn": {
+            "Description": "Current Lambda function version",
+            "Value": {
+              "Ref": "TenantPostLambdaVersionZSLXydkQsGcA2YpApnaJ1ZyuHOEDnZhuNWjAV71gHXc"
+            },
+            "Export": {
+              "Name": "sls-apptemplatecustomtenants-dev-TenantPostLambdaFunctionQualifiedArn"
+            }
+          },
+          "TenantsGetLambdaFunctionQualifiedArn": {
+            "Description": "Current Lambda function version",
+            "Value": {
+              "Ref": "TenantsGetLambdaVersionHGknO4CnB8qa3omPn9QBAImmyNDUkDZq2id7KIzUg"
+            },
+            "Export": {
+              "Name": "sls-apptemplatecustomtenants-dev-TenantsGetLambdaFunctionQualifiedArn"
+            }
+          },
+          "TenantGetLambdaFunctionQualifiedArn": {
+            "Description": "Current Lambda function version",
+            "Value": {
+              "Ref": "TenantGetLambdaVersionZJAzGCIURKRPZOf7L3IwIQS3PwiPfff3Z53wGvkpWc"
+            },
+            "Export": {
+              "Name": "sls-apptemplatecustomtenants-dev-TenantGetLambdaFunctionQualifiedArn"
+            }
+          },
+          "TenantCreationLambdaFunctionQualifiedArn": {
+            "Description": "Current Lambda function version",
+            "Value": {
+              "Ref": "TenantCreationLambdaVersiongLcSmidsmVyE53L5NYYjfoypzf4UYopsaOiZOfgPuzk"
+            },
+            "Export": {
+              "Name": "sls-apptemplatecustomtenants-dev-TenantCreationLambdaFunctionQualifiedArn"
+            }
+          },
+          "TenantPutLambdaFunctionQualifiedArn": {
+            "Description": "Current Lambda function version",
+            "Value": {
+              "Ref": "TenantPutLambdaVersioneu8WyJcv4qRRDT9C4BlU8LIUO5V0evS8dIC7I5eo"
+            },
+            "Export": {
+              "Name": "sls-apptemplatecustomtenants-dev-TenantPutLambdaFunctionQualifiedArn"
+            }
+          },
+          "ServiceEndpoint": {
+            "Description": "URL of the service endpoint",
+            "Value": {
+              "Fn::Join": [
+                "",
+                [
+                  "https://",
+                  {
+                    "Fn::ImportValue": "apptemplatecoreinfra-dev-ExtApiGatewayRestApiId"
+                  },
+                  ".execute-api.",
+                  {
+                    "Ref": "AWS::Region"
+                  },
+                  ".",
+                  {
+                    "Ref": "AWS::URLSuffix"
+                  },
+                  "/dev"
+                ]
+              ]
+            },
+            "Export": {
+              "Name": "sls-apptemplatecustomtenants-dev-ServiceEndpoint"
+            }
+          }
+        }
+      },
+      "vpc": {}
+    },
+    "custom": {
+      "common": {
+        "frameworkVersion": "3",
+        "service": "apptemplate",
+        "domain": "neojumpstart.com",
+        "provider": {
+          "name": "aws",
+          "runtime": "python3.8",
+          "region": "us-east-2",
+          "stage": "dev",
+          "profile": "AppTemplate",
+          "hostedZoneId": "Z03718282V4AFDU1GCLZ5",
+          "memorySize": 1024,
+          "timeout": 30,
+          "environment": {
+            "CLOUD_FRONT_URL": "https://dev.neojumpstart.com/",
+            "RESOURCE_METHOD": "CI_SCRIPT",
+            "PROJECT": "Neojumpstart",
+            "COMPANY": "Neostella",
+            "URL_COMPANY": "https://www.neostella.com/",
+            "LOGO": "https://s3.us-east-2.amazonaws.com/neojumpstart.src.com/PNG_NeoJS_Black1.png",
+            "SES_EMAIL": "alejandro.mejia@neostella.com",
+            "SES_DOMAIN": "alejandro.mejia@neostella.com"
+          }
+        },
+        "layers": {
+          "core_utils": "./../../CoreUtils.zip",
+          "sql_handler": "./../../SqlHandler.zip",
+          "utils": "./../../Utils.zip"
+        },
+        "init_data": {
+          "USER_EMAIL": "alejandro.mejia@neostella.com",
+          "USER_FIRST_NAME": "Alejandro",
+          "USER_LAST_NAME": "Mejia",
+          "TENANT_NAME": "neostella"
+        },
+        "package": {
+          "individually": true,
+          "patterns": [
+            "!./core_utils/**",
+            "!./sql_handler/**",
+            "!./utils/**",
+            "!./documentation/**",
+            "!./unit/**",
+            "!./email_templates/**",
+            "!./tenant_resources/**",
+            "!./**.(json|env|md|txt|yml)",
+            "./controllers/**",
+            "./models/**",
+            "./process/**"
+          ]
+        },
+        "custom": {
+          "pythonRequirements": {
+            "dockerizePip": true,
+            "layer": {
+              "name": "apptemplatecustomtenants-dev-python-libraries",
+              "description": "Layer containing the python libraries necessary for project apptemplatecustomtenants",
+              "compatibleRuntimes": [
+                "python3.8"
+              ]
+            }
+          },
+          "export-env": {
+            "filename": "aws_data.env",
+            "overwrite": true
+          },
+          "prune": {
+            "automatic": true,
+            "includeLayers": true,
+            "number": 5
+          }
+        },
+        "documentation": {
+          "info": {
+            "version": "0.0.1",
+            "title": "Neojumpstart API",
+            "description": "This is the API for the Neojumpstart backend"
+          }
+        }
+      },
+      "pythonRequirements": {
+        "dockerizePip": true,
+        "layer": {
+          "name": "apptemplatecustomtenants-dev-python-libraries",
+          "description": "Layer containing the python libraries necessary for project apptemplatecustomtenants",
+          "compatibleRuntimes": {
+            "$ref": "$[\"service\"][\"provider\"][\"compiledCloudFormationTemplate\"][\"Resources\"][\"PythonRequirementsLambdaLayer\"][\"Properties\"][\"CompatibleRuntimes\"]"
+          }
+        }
+      },
+      "export-env": {
+        "filename": "aws_data.env",
+        "overwrite": true
+      },
+      "prune": {
+        "automatic": true,
+        "includeLayers": true,
+        "number": 5
+      }
+    },
+    "plugins": [
+      "serverless-python-requirements",
+      "serverless-aws-documentation",
+      "serverless-export-env",
+      "serverless-prune-plugin",
+      "serverless-offline",
+      "serverless-deployment-bucket"
+    ],
+    "pluginsData": {},
+    "functions": {
+      "TenantCreation": {
+        "handler": "controllers/tenants/TenantCreation.lambda_handler",
+        "environment": {
+          "CUSTOM_MESSAGE_TRIGGER": "arn:aws:lambda:us-east-2:651364325517:function:apptemplatecoreinfra-dev-custom_email_neostella",
+          "POST_AUTHENTICATION_TRIGGER": "arn:aws:lambda:us-east-2:651364325517:function:apptemplatecoreinfra-dev-PostAuthenticationEventReplicator",
+          "TRANSLATIONS_BUCKET": "apptemplatetranslations-dev-translationsbucket",
+          "SES_EMAIL_ARN": "arn:aws:ses:us-east-2:651364325517:identity/alejandro.mejia@neostella.com",
+          "SES_EMAIL": "alejandro.mejia@neostella.com",
+          "RESOURCE_METHOD": "TenantCreation",
+          "HOSTED_ZONE_ID": "Z03718282V4AFDU1GCLZ5",
+          "DOMAIN_NAME": "neojumpstart.com"
+        },
+        "package": {
+          "patterns": [
+            "./controllers/tenants/TenantCreation.py",
+            "./models/Tenant.py",
+            "./process/tenants/TenantPost.py"
+          ],
+          "artifact": "C:\\Users\\efrain.hernandez\\Documents\\custom_fields\\web-app-backend-template\\services\\custom_tenants\\.serverless\\TenantCreation.zip"
+        },
+        "events": [],
+        "name": "apptemplatecustomtenants-dev-TenantCreation",
+        "module": ".",
+        "memory": 1024,
+        "timeout": 900,
+        "runtime": "python3.8",
+        "vpc": {},
+        "versionLogicalId": "TenantCreationLambdaVersiongLcSmidsmVyE53L5NYYjfoypzf4UYopsaOiZOfgPuzk"
+      },
+      "TenantPost": {
+        "handler": "controllers/tenants/TenantPost.lambda_handler",
+        "environment": {
+          "RESOURCE_METHOD": "TenantPost"
+        },
+        "package": {
+          "patterns": [
+            "./controllers/tenants/TenantCreation.py",
+            "./controllers/tenants/TenantPost.py",
+            "./models/Tenant.py",
+            "./process/tenants/TenantPost.py"
+          ],
+          "artifact": "C:\\Users\\efrain.hernandez\\Documents\\custom_fields\\web-app-backend-template\\services\\custom_tenants\\.serverless\\TenantPost.zip"
+        },
+        "events": [
+          {
+            "http": {
+              "path": "newtenants",
+              "cors": {
+                "origin": "*",
+                "methods": [
+                  "OPTIONS",
+                  "POST"
+                ],
+                "headers": [
+                  "Content-Type",
+                  "X-Amz-Date",
+                  "Authorization",
+                  "X-Api-Key",
+                  "X-Amz-Security-Token",
+                  "X-Amz-User-Agent",
+                  "X-Amzn-Trace-Id"
+                ],
+                "allowCredentials": false
+              },
+              "method": "post",
+              "documentation": {
+                "summary": "Create tenant",
+                "description": "Creates a new tenant",
+                "tags": [
+                  "Tenants"
+                ],
+                "requestHeaders": [
+                  {
+                    "name": "Authorization",
+                    "required": "true",
+                    "type": "string",
+                    "description": "Enter access token"
+                  },
+                  {
+                    "name": "Content-Type",
+                    "required": "true",
+                    "type": "string",
+                    "description": "application/json"
+                  },
+                  {
+                    "name": "App-Key",
+                    "required": "false",
+                    "type": "string",
+                    "description": "You must provide an application key or a tenant key unless you are using the aws.cognito.signin.user.admin scope"
+                  },
+                  {
+                    "name": "Tenant-Key",
+                    "required": "false",
+                    "type": "string",
+                    "description": "You must provide an application key or a tenant key unless you are using the aws.cognito.signin.user.admin scope"
+                  },
+                  {
+                    "name": "tenant_id",
+                    "required": "false",
+                    "type": "string",
+                    "description": "You must specify a tenant id if you are using an application key"
+                  },
+                  {
+                    "name": "version",
+                    "required": "false",
+                    "type": "string",
+                    "description": "You may specify with a negative integer a previous version of the API to be executed"
+                  }
+                ],
+                "requestModels": {
+                  "application/json": "NewTenantsPostRequest"
+                },
+                "methodResponses": [
+                  {
+                    "statusCode": "200",
+                    "description": "Tenant created"
+                  }
+                ]
+              },
+              "authorizer": {
+                "type": "COGNITO_USER_POOLS",
+                "managedExternally": false,
+                "authorizerId": {
+                  "Fn::ImportValue": "apptemplatecoreinfra-dev-ApiGatewayAuthorizer"
+                },
+                "resultTtlInSeconds": 300,
+                "identitySource": "method.request.header.Authorization",
+                "claims": [],
+                "scopes": [
+                  "aws.cognito.signin.user.admin",
+                  "apiauthidentifier/json.read"
+                ]
+              },
+              "integration": "AWS_PROXY"
+            }
+          }
+        ],
+        "name": "apptemplatecustomtenants-dev-TenantPost",
+        "module": ".",
+        "memory": 1024,
+        "timeout": 900,
+        "runtime": "python3.8",
+        "vpc": {},
+        "versionLogicalId": "TenantPostLambdaVersionZSLXydkQsGcA2YpApnaJ1ZyuHOEDnZhuNWjAV71gHXc"
+      },
+      "TenantsGet": {
+        "handler": "controllers/tenants/TenantsGet.lambda_handler",
+        "environment": {
+          "RESOURCE_METHOD": "TenantsGet"
+        },
+        "package": {
+          "patterns": [
+            "./controllers/tenants/TenantsGet.py",
+            "./models/Tenant.py",
+            "./process/tenants/TenantsGet.py"
+          ],
+          "artifact": "C:\\Users\\efrain.hernandez\\Documents\\custom_fields\\web-app-backend-template\\services\\custom_tenants\\.serverless\\TenantsGet.zip"
+        },
+        "events": [
+          {
+            "http": {
+              "path": "newtenants",
+              "cors": {
+                "origin": "*",
+                "methods": [
+                  "OPTIONS",
+                  "GET"
+                ],
+                "headers": [
+                  "Content-Type",
+                  "X-Amz-Date",
+                  "Authorization",
+                  "X-Api-Key",
+                  "X-Amz-Security-Token",
+                  "X-Amz-User-Agent",
+                  "X-Amzn-Trace-Id"
+                ],
+                "allowCredentials": false
+              },
+              "method": "get",
+              "documentation": {
+                "summary": "Get data of tenants",
+                "description": "Get List of tenants ",
+                "tags": [
+                  "Tenants"
+                ],
+                "requestHeaders": [
+                  {
+                    "name": "Authorization",
+                    "required": "true",
+                    "type": "string",
+                    "description": "Enter access token"
+                  },
+                  {
+                    "name": "Content-Type",
+                    "required": "true",
+                    "type": "string",
+                    "description": "application/json"
+                  },
+                  {
+                    "name": "App-Key",
+                    "required": "false",
+                    "type": "string",
+                    "description": "You must provide an application key or a tenant key unless you are using the aws.cognito.signin.user.admin scope"
+                  },
+                  {
+                    "name": "Tenant-Key",
+                    "required": "false",
+                    "type": "string",
+                    "description": "You must provide an application key or a tenant key unless you are using the aws.cognito.signin.user.admin scope"
+                  },
+                  {
+                    "name": "tenant_id",
+                    "required": "false",
+                    "type": "string",
+                    "description": "You must specify a tenant id if you are using an application key"
+                  },
+                  {
+                    "name": "version",
+                    "required": "false",
+                    "type": "string",
+                    "description": "You may specify with a negative integer a previous version of the API to be executed"
+                  }
+                ],
+                "queryParams": [
+                  {
+                    "name": "is_active",
+                    "description": "true/false value"
+                  }
+                ],
+                "methodResponses": [
+                  {
+                    "statusCode": "200",
+                    "description": "Tenant data returned",
+                    "responseModels": {
+                      "application/json": "NewTenantsGetResponse"
+                    }
+                  }
+                ]
+              },
+              "authorizer": {
+                "type": "COGNITO_USER_POOLS",
+                "managedExternally": false,
+                "authorizerId": {
+                  "Fn::ImportValue": "apptemplatecoreinfra-dev-ApiGatewayAuthorizer"
+                },
+                "resultTtlInSeconds": 300,
+                "identitySource": "method.request.header.Authorization",
+                "claims": [],
+                "scopes": [
+                  "aws.cognito.signin.user.admin",
+                  "apiauthidentifier/json.read"
+                ]
+              },
+              "integration": "AWS_PROXY"
+            }
+          }
+        ],
+        "name": "apptemplatecustomtenants-dev-TenantsGet",
+        "module": ".",
+        "memory": 1024,
+        "timeout": 900,
+        "runtime": "python3.8",
+        "vpc": {},
+        "versionLogicalId": "TenantsGetLambdaVersionHGknO4CnB8qa3omPn9QBAImmyNDUkDZq2id7KIzUg"
+      },
+      "TenantGet": {
+        "handler": "controllers/tenants/TenantGet.lambda_handler",
+        "environment": {
+          "RESOURCE_METHOD": "TenantGet"
+        },
+        "package": {
+          "patterns": [
+            "./controllers/tenants/TenantGet.py",
+            "./models/Tenant.py",
+            "./process/tenants/TenantGet.py"
+          ],
+          "artifact": "C:\\Users\\efrain.hernandez\\Documents\\custom_fields\\web-app-backend-template\\services\\custom_tenants\\.serverless\\TenantGet.zip"
+        },
+        "events": [
+          {
+            "http": {
+              "path": "newtenants/{tenant_id}",
+              "cors": {
+                "origin": "*",
+                "methods": [
+                  "OPTIONS",
+                  "GET"
+                ],
+                "headers": [
+                  "Content-Type",
+                  "X-Amz-Date",
+                  "Authorization",
+                  "X-Api-Key",
+                  "X-Amz-Security-Token",
+                  "X-Amz-User-Agent",
+                  "X-Amzn-Trace-Id"
+                ],
+                "allowCredentials": false
+              },
+              "method": "get",
+              "request": {
+                "parameters": {
+                  "method.request.path.tenant_id": true
+                }
+              },
+              "documentation": {
+                "summary": "Get data of tenant",
+                "description": "Get tenant ",
+                "tags": [
+                  "Tenants"
+                ],
+                "requestHeaders": [
+                  {
+                    "name": "Authorization",
+                    "required": "true",
+                    "type": "string",
+                    "description": "Enter access token"
+                  },
+                  {
+                    "name": "Content-Type",
+                    "required": "true",
+                    "type": "string",
+                    "description": "application/json"
+                  },
+                  {
+                    "name": "App-Key",
+                    "required": "false",
+                    "type": "string",
+                    "description": "You must provide an application key or a tenant key unless you are using the aws.cognito.signin.user.admin scope"
+                  },
+                  {
+                    "name": "Tenant-Key",
+                    "required": "false",
+                    "type": "string",
+                    "description": "You must provide an application key or a tenant key unless you are using the aws.cognito.signin.user.admin scope"
+                  },
+                  {
+                    "name": "tenant_id",
+                    "required": "false",
+                    "type": "string",
+                    "description": "You must specify a tenant id if you are using an application key"
+                  },
+                  {
+                    "name": "version",
+                    "required": "false",
+                    "type": "string",
+                    "description": "You may specify with a negative integer a previous version of the API to be executed"
+                  }
+                ],
+                "pathParams": [
+                  {
+                    "name": "tenant_id",
+                    "description": "UUID of the specific tenant"
+                  }
+                ],
+                "methodResponses": [
+                  {
+                    "statusCode": "200",
+                    "description": "Tenant data returned",
+                    "responseModels": {
+                      "application/json": "NewTenantsGetResponse"
+                    }
+                  }
+                ]
+              },
+              "authorizer": {
+                "type": "COGNITO_USER_POOLS",
+                "managedExternally": false,
+                "authorizerId": {
+                  "Fn::ImportValue": "apptemplatecoreinfra-dev-ApiGatewayAuthorizer"
+                },
+                "resultTtlInSeconds": 300,
+                "identitySource": "method.request.header.Authorization",
+                "claims": [],
+                "scopes": [
+                  "aws.cognito.signin.user.admin",
+                  "apiauthidentifier/json.read"
+                ]
+              },
+              "integration": "AWS_PROXY"
+            }
+          }
+        ],
+        "name": "apptemplatecustomtenants-dev-TenantGet",
+        "module": ".",
+        "memory": 1024,
+        "timeout": 900,
+        "runtime": "python3.8",
+        "vpc": {},
+        "versionLogicalId": "TenantGetLambdaVersionZJAzGCIURKRPZOf7L3IwIQS3PwiPfff3Z53wGvkpWc"
+      },
+      "TenantPut": {
+        "handler": "controllers/tenants/TenantPut.lambda_handler",
+        "environment": {
+          "RESOURCE_METHOD": "TenantPut"
+        },
+        "package": {
+          "patterns": [
+            "./controllers/tenants/TenantPut.py",
+            "./models/Tenant.py",
+            "./process/tenants/TenantPut.py"
+          ],
+          "artifact": "C:\\Users\\efrain.hernandez\\Documents\\custom_fields\\web-app-backend-template\\services\\custom_tenants\\.serverless\\TenantPut.zip"
+        },
+        "events": [
+          {
+            "http": {
+              "path": "newtenants",
+              "cors": {
+                "origin": "*",
+                "methods": [
+                  "OPTIONS",
+                  "PUT"
+                ],
+                "headers": [
+                  "Content-Type",
+                  "X-Amz-Date",
+                  "Authorization",
+                  "X-Api-Key",
+                  "X-Amz-Security-Token",
+                  "X-Amz-User-Agent",
+                  "X-Amzn-Trace-Id"
+                ],
+                "allowCredentials": false
+              },
+              "method": "put",
+              "documentation": {
+                "summary": "Update tenant",
+                "description": "Update a new tenant",
+                "tags": [
+                  "Tenants"
+                ],
+                "requestHeaders": [
+                  {
+                    "name": "Authorization",
+                    "required": "true",
+                    "type": "string",
+                    "description": "Enter access token"
+                  },
+                  {
+                    "name": "Content-Type",
+                    "required": "true",
+                    "type": "string",
+                    "description": "application/json"
+                  },
+                  {
+                    "name": "App-Key",
+                    "required": "false",
+                    "type": "string",
+                    "description": "You must provide an application key or a tenant key unless you are using the aws.cognito.signin.user.admin scope"
+                  },
+                  {
+                    "name": "Tenant-Key",
+                    "required": "false",
+                    "type": "string",
+                    "description": "You must provide an application key or a tenant key unless you are using the aws.cognito.signin.user.admin scope"
+                  },
+                  {
+                    "name": "tenant_id",
+                    "required": "false",
+                    "type": "string",
+                    "description": "You must specify a tenant id if you are using an application key"
+                  },
+                  {
+                    "name": "version",
+                    "required": "false",
+                    "type": "string",
+                    "description": "You may specify with a negative integer a previous version of the API to be executed"
+                  }
+                ],
+                "requestModels": {
+                  "application/json": "NewTenantsPutRequest"
+                },
+                "methodResponses": [
+                  {
+                    "statusCode": "200",
+                    "description": "Tenant updated"
+                  }
+                ]
+              },
+              "authorizer": {
+                "type": "COGNITO_USER_POOLS",
+                "managedExternally": false,
+                "authorizerId": {
+                  "Fn::ImportValue": "apptemplatecoreinfra-dev-ApiGatewayAuthorizer"
+                },
+                "resultTtlInSeconds": 300,
+                "identitySource": "method.request.header.Authorization",
+                "claims": [],
+                "scopes": [
+                  "aws.cognito.signin.user.admin",
+                  "apiauthidentifier/json.read"
+                ]
+              },
+              "integration": "AWS_PROXY"
+            }
+          }
+        ],
+        "name": "apptemplatecustomtenants-dev-TenantPut",
+        "module": ".",
+        "memory": 1024,
+        "timeout": 900,
+        "runtime": "python3.8",
+        "vpc": {},
+        "versionLogicalId": "TenantPutLambdaVersioneu8WyJcv4qRRDT9C4BlU8LIUO5V0evS8dIC7I5eo"
+      }
+    },
+    "resources": {
+      "Resources": {
+        "CognitoCustomMessage": {
+          "Type": "AWS::Lambda::Permission",
+          "Properties": {
+            "Action": "lambda:InvokeFunction",
+            "FunctionName": "arn:aws:lambda:us-east-2:651364325517:function:apptemplatecoreinfra-dev-custom_email_neostella",
+            "Principal": "cognito-idp.amazonaws.com",
+            "SourceArn": "arn:aws:cognito-idp:us-east-2:651364325517:userpool/*"
+          }
+        },
+        "CognitoPostAuthenticationPermission": {
+          "Type": "AWS::Lambda::Permission",
+          "Properties": {
+            "Action": "lambda:InvokeFunction",
+            "FunctionName": "arn:aws:lambda:us-east-2:651364325517:function:apptemplatecoreinfra-dev-CheckUserStatus",
+            "Principal": "cognito-idp.amazonaws.com",
+            "SourceArn": "arn:aws:cognito-idp:us-east-2:651364325517:userpool/*"
+          }
+        }
+      },
+      "Outputs": {}
+    },
+    "configValidationMode": "warn",
+    "serviceFilename": "serverless.yml",
+    "initialServerlessConfig": {
+      "service": "apptemplatecustomtenants",
+      "frameworkVersion": "3",
+      "plugins": {
+        "$ref": "$[\"service\"][\"plugins\"]"
+      },
+      "provider": {
+        "$ref": "$[\"service\"][\"provider\"]"
+      },
+      "package": {
+        "individually": true,
+        "patterns": [
+          "!./core_utils/**",
+          "!./sql_handler/**",
+          "!./utils/**",
+          "!./documentation/**",
+          "!./unit/**",
+          "!./email_templates/**",
+          "!./tenant_resources/**",
+          "!./**.(json|env|md|txt|yml)",
+          "./controllers/**",
+          "./models/**",
+          "./process/**"
+        ],
+        "artifactsS3KeyDirname": "serverless/apptemplatecustomtenants/dev/code-artifacts",
+        "deploymentBucket": "apptemplate-dev-artifacts-s3bucket",
+        "artifactDirectoryName": "serverless/apptemplatecustomtenants/dev/1702492588096-2023-12-13T18:36:28.096Z"
+      },
+      "layers": {
+        "CoreUtils": {
+          "name": "apptemplatecustomtenants-dev-core-utils",
+          "package": {
+            "artifact": "./../../CoreUtils.zip"
+          },
+          "artifactAlreadyUploaded": true
+        },
+        "SqlHandler": {
+          "name": "apptemplatecustomtenants-dev-sql-handler",
+          "package": {
+            "artifact": "./../../SqlHandler.zip"
+          },
+          "artifactAlreadyUploaded": true
+        },
+        "Utils": {
+          "name": "apptemplatecustomtenants-dev-utils",
+          "package": {
+            "artifact": "./../../Utils.zip"
+          },
+          "artifactAlreadyUploaded": true
+        },
+        "pythonRequirements": {
+          "artifact": ".serverless\\pythonRequirements.zip",
+          "name": "apptemplatecustomtenants-dev-python-libraries",
+          "description": "Layer containing the python libraries necessary for project apptemplatecustomtenants",
+          "compatibleRuntimes": {
+            "$ref": "$[\"service\"][\"provider\"][\"compiledCloudFormationTemplate\"][\"Resources\"][\"PythonRequirementsLambdaLayer\"][\"Properties\"][\"CompatibleRuntimes\"]"
+          },
+          "package": {},
+          "artifactAlreadyUploaded": true
+        }
+      },
+      "functions": {
+        "$ref": "$[\"service\"][\"functions\"]"
+      },
+      "resources": {
+        "$ref": "$[\"service\"][\"resources\"]"
+      },
+      "custom": {
+        "$ref": "$[\"service\"][\"custom\"]"
+      }
+    },
+    "layers": {
+      "$ref": "$[\"service\"][\"initialServerlessConfig\"][\"layers\"]"
+    },
+    "isDashboardMonitoringPreconfigured": false
+  },
+  "package": {
+    "individually": true,
+    "artifactDirectoryName": "serverless/apptemplatecustomtenants/dev/1702492588096-2023-12-13T18:36:28.096Z",
+    "artifact": ""
+  }
+}

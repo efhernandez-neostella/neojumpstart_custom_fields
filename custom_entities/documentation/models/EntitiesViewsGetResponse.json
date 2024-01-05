@@ -1,0 +1,59 @@
+{
+    "type": "object",
+    "properties": {
+        "entities" : {
+            "type" : "array",
+            "description": "Array of entities",
+            "items": {
+                "type": "object",
+                "properties" :{
+                    "entity_id": {
+                        "type": "string",
+                        "description": "Unique identifier for the entity"
+                    },
+                    "name": {
+                        "type": "string",
+                        "description": "Name of the entity"
+                    },
+                    "is_child": {
+                        "type": "boolean",
+                        "description": "Check if the entity is a child of other entity"
+                    },
+                    "in_drawer": {
+                        "type": "boolean",
+                        "description": "Check if the entity has an icon in the drawer"
+                    },
+                    "parent_entity_id": {
+                        "type": "string",
+                        "description": "UUID of the parent entity"
+                    },
+                    "icon_name": {
+                        "type": "string",
+                        "description": "Name of the entity icon in the UI"
+                    },
+                    "views": {
+                        "type": "array",
+                        "description": "Array of entitiy views",
+                        "items": {
+                            "type": "object",
+                            "properties" :{
+                                "view_id": {
+                                    "type": "string",
+                                    "description": "Unique identifier for the view"
+                                },
+                                "view_name": {
+                                    "type": "string",
+                                    "description": "Name of the view"
+                                },
+                                "view_route": {
+                                    "type": "string",
+                                    "description": "View's route"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

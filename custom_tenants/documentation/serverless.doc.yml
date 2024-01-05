@@ -1,0 +1,77 @@
+documentation:
+  info:
+    version: ${file(./../../serverless.apptemplate.common.yml):documentation.info.version}
+    title: ${file(./../../serverless.apptemplate.common.yml):documentation.info.title}
+    description: ${file(./../../serverless.apptemplate.common.yml):documentation.info.description}
+  models:
+    - name: "NewTenantsGetResponse"
+      description: "Model for get tenant data response."
+      contentType: "application/json"
+      schema: ${file(./documentation/models/NewTenantsGetResponse.json)}
+    - name: "NewTenantGetResponse"
+      description: "Model for get tenant data response."
+      contentType: "application/json"
+      schema: ${file(./documentation/models/NewTenantGetResponse.json)}
+    - name: "NewTenantsPostRequest"
+      description: "Model for creating a new tenant"
+      contentType: "application/json"
+      schema: ${file(./documentation/models/NewTenantsPostRequest.json)}
+    - name: "NewTenantsPutRequest"
+      description: "Model for update a new tenant"
+      contentType: "application/json"
+      schema: ${file(./documentation/models/NewTenantsPutRequest.json)}
+
+functions:
+  NewTenantsGet:
+    summary: "Get data of tenants"
+    description: "Get List of tenants "
+    tags:
+      - "Tenants"
+    requestHeaders: ${file(./../../open_api_doc/models/RequestHeaders.json)}
+    queryParams:
+      - name: "is_active"
+        description: "true/false value"
+    methodResponses:
+      - statusCode: "200"
+        description: "Tenant data returned"
+        responseModels:
+          "application/json": "NewTenantsGetResponse"
+
+  NewTenantGet:
+    summary: "Get data of tenant"
+    description: "Get tenant "
+    tags:
+      - "Tenants"
+    requestHeaders: ${file(./../../open_api_doc/models/RequestHeaders.json)}
+    pathParams:
+      - name: "tenant_id"
+        description: "UUID of the specific tenant"
+    methodResponses:
+      - statusCode: "200"
+        description: "Tenant data returned"
+        responseModels:
+          "application/json": "NewTenantsGetResponse"
+
+  NewTenantsPost:
+    summary: "Create tenant"
+    description: "Creates a new tenant"
+    tags:
+      - "Tenants"
+    requestHeaders: ${file(./../../open_api_doc/models/RequestHeaders.json)}
+    requestModels:
+      "application/json": "NewTenantsPostRequest"
+    methodResponses:
+      - statusCode: "200"
+        description: "Tenant created"
+
+  NewTenantsPut:
+    summary: "Update tenant"
+    description: "Update a new tenant"
+    tags:
+      - "Tenants"
+    requestHeaders: ${file(./../../open_api_doc/models/RequestHeaders.json)}
+    requestModels:
+      "application/json": "NewTenantsPutRequest"
+    methodResponses:
+      - statusCode: "200"
+        description: "Tenant updated"

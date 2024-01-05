@@ -1,0 +1,32 @@
+{
+    "type": "object",
+    "required": [
+        "tenant_id",
+        "admin_email",
+        "admin_first_name",
+        "admin_last_name",
+        "tenant_name"
+    ],
+    "properties": {
+        "tenant_id": {
+            "type": "string",
+            "description": "UUID of the tenant"
+        },
+        "admin_email": {
+            "type": "string",
+            "description": "Admin tenant email"
+        },
+        "admin_first_name": {
+            "type": "string",
+            "description": "Admin tenant first name"
+        },
+        "admin_last_name": {
+            "type": "string",
+            "description": "Admin tenant last name"
+        },
+        "tenant_name": {
+            "type": "string",
+            "description": "Tenant name"
+        }
+    }
+}

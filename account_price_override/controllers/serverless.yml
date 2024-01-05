@@ -1,0 +1,19 @@
+functions:
+  #Account Price Override
+  AccountPriceOverridePost:
+    handler: controllers/AccountPriceOverridePost.lambda_handler
+    environment:
+      RESOURCE_METHOD: AccountPriceOverridePost
+    events:
+      - http:
+          path: accounts-price-override
+          cors: True
+          method: post
+          documentation: ${file(./documentation/serverless.doc.yml):functions.AccountPriceOverridePost}
+          authorizer:
+            type: COGNITO_USER_POOLS
+            scopes:
+              - aws.cognito.signin.user.admin
+              - apiauthidentifier/json.read
+            authorizerId:
+              "Fn::ImportValue": ${self:custom.common.service}coreinfra-${self:provider.stage}-ApiGatewayAuthorizer

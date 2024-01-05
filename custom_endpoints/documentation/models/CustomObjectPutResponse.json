@@ -1,0 +1,17 @@
+{
+    "type": "object",
+    "properties": {
+        "correlation_id": {
+            "type": "string",
+            "description": "UUID of the process"
+        },
+        "result": {
+            "type": "string",
+            "description": "Result message"
+        },
+        "{primary key}": {
+            "type": "string",
+            "description": "Id of the record updated"
+        }
+    }
+}

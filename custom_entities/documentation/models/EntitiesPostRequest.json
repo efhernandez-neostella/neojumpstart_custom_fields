@@ -1,0 +1,66 @@
+{
+    "type": "object",
+    "required": [
+        "name",
+        "database_name",
+        "translation_reference",
+        "api_name",
+        "can_edit_fields",
+        "can_edit_views",
+        "can_remove",
+        "can_soft_delete",
+        "is_child",
+        "has_file_storage"
+    ],
+    "properties": {
+        "name": {
+            "type": "string",
+            "description": "Name of the entity"
+        },
+        "database_name": {
+            "type": "string",
+            "description": "Entity table data base name"
+        },
+        "translation_reference": {
+            "type": "string",
+            "description": "Friendly name column"
+        },
+        "api_name": {
+            "type": "string",
+            "description": "Api rest name"
+        },
+        "properties":{
+            "type":"object",
+            "properties":{
+                "can_edit_fields": {
+                    "type": "boolean",
+                    "description": "Check if the entity can edit fields"
+                },
+                "can_edit_views": {
+                    "type": "boolean",
+                    "description": "Check if the entity can edit views"
+                },
+                "can_remove": {
+                    "type": "boolean",
+                    "description": "Check if the entity can be removed"
+                },
+                "can_soft_delete": {
+                    "type": "boolean",
+                    "description": "Check if the entity can be soft deleted"
+                },
+                "is_child": {
+                    "type": "boolean",
+                    "description": "Check if the entity is a child of other entity"
+                },
+                "has_file_storage": {
+                    "type": "boolean",
+                    "description": "Check if the entity has a folder on S3"
+                },
+                "parent_entity_id": {
+                    "type": "string",
+                    "description": "Uuid of the parent entity"
+                }
+            }
+        }        
+    }
+}

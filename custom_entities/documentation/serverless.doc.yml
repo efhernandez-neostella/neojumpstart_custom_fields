@@ -1,0 +1,109 @@
+documentation:
+  info:
+    version: ${file(./../../serverless.apptemplate.common.yml):documentation.info.version}
+    title: ${file(./../../serverless.apptemplate.common.yml):documentation.info.title}
+    description: ${file(./../../serverless.apptemplate.common.yml):documentation.info.description}
+  models:
+    - name: "EntitiesGetResponse"
+      description: "Model for get entities data response."
+      contentType: "application/json"
+      schema: ${file(./documentation/models/EntitiesGetResponse.json)}
+    - name: "EntitiesViewsGetResponse"
+      description: "Model for get entities views data response."
+      contentType: "application/json"
+      schema: ${file(./documentation/models/EntitiesViewsGetResponse.json)}
+    - name: "EntityGetResponse"
+      description: "Model for get entity data response."
+      contentType: "application/json"
+      schema: ${file(./documentation/models/EntityGetResponse.json)}
+    - name: "EntitiesPostRequest"
+      description: "Model for creating a new entity"
+      contentType: "application/json"
+      schema: ${file(./documentation/models/EntitiesPostRequest.json)}
+    - name: "IconsGetResponse"
+      description: "Model for get icons data response."
+      contentType: "application/json"
+      schema: ${file(./documentation/models/IconsGetResponse.json)}
+    - name: "EntityPutRequest"
+      description: "Model for updating an entity"
+      contentType: "application/json"
+      schema: ${file(./documentation/models/EntityPutRequest.json)}
+
+functions:
+  EntitiesViewsGet:
+    summary: "Get data of entities views"
+    description: "Get List of entities views "
+    tags:
+      - "Entities"
+    requestHeaders: ${file(./../../open_api_doc/models/RequestHeaders.json)}
+    methodResponses:
+      - statusCode: "200"
+        description: "Entities data returned"
+        responseModels:
+          "application/json": "EntitiesViewsGetResponse"
+
+  EntitiesGet:
+    summary: "Get data of entities"
+    description: "Get List of entities "
+    tags:
+      - "Entities"
+    requestHeaders: ${file(./../../open_api_doc/models/RequestHeaders.json)}
+    queryParams:
+      - name: "is_active"
+        description: "true/false value"
+    methodResponses:
+      - statusCode: "200"
+        description: "Entities data returned"
+        responseModels:
+          "application/json": "EntitiesGetResponse"
+
+  EntityGet:
+    summary: "Get data of entity"
+    description: "Get entity"
+    tags:
+      - "Entities"
+    requestHeaders: ${file(./../../open_api_doc/models/RequestHeaders.json)}
+    pathParams:
+      - name: "entity_id"
+        description: "UUID of the specific entity"
+    methodResponses:
+      - statusCode: "200"
+        description: "Entity data returned"
+        responseModels:
+          "application/json": "EntityGetResponse"
+
+  EntitiesPost:
+    summary: "Create entity"
+    description: "Creates a new entity"
+    tags:
+      - "Entities"
+    requestHeaders: ${file(./../../open_api_doc/models/RequestHeaders.json)}
+    requestModels:
+      "application/json": "EntitiesPostRequest"
+    methodResponses:
+      - statusCode: "200"
+        description: "Entity created"
+  
+  IconsGet:
+    summary: "Get data of icons"
+    description: "Get List of icons"
+    tags:
+      - "Entities"
+    requestHeaders: ${file(./../../open_api_doc/models/RequestHeaders.json)}
+    methodResponses:
+      - statusCode: "200"
+        description: "Get icons success"
+        responseModels:
+          "application/json": "IconsGetResponse"
+
+  EntityPut:
+    summary: "Update entity"
+    description: "Updates an entity"
+    tags:
+      - "Entities"
+    requestHeaders: ${file(./../../open_api_doc/models/RequestHeaders.json)}
+    requestModels:
+      "application/json": "EntityPutRequest"
+    methodResponses:
+      - statusCode: "200"
+        description: "Entity updated"

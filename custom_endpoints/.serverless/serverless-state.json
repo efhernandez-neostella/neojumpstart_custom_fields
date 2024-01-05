@@ -1,0 +1,2026 @@
+{
+  "service": {
+    "service": "apptemplatecustomendpoints",
+    "serviceObject": {
+      "name": "apptemplatecustomendpoints"
+    },
+    "provider": {
+      "name": "aws",
+      "runtime": "python3.8",
+      "region": "us-east-2",
+      "stage": "dev",
+      "deploymentBucket": "apptemplate-dev-artifacts-s3bucket",
+      "memorySize": 1024,
+      "timeout": 30,
+      "environment": {
+        "SERVICE_NAME": "apptemplatecustomendpoints-dev",
+        "PROFILE": "AppTemplate",
+        "RESOURCE_METHOD": "CI_SCRIPT",
+        "REGION_NAME": "us-east-2",
+        "STAGE": "dev",
+        "REST_API_ID": {
+          "Fn::ImportValue": "apptemplatecoreinfra-dev-ExtApiGatewayRestApiId"
+        },
+        "FIELDS_TABLE": {
+          "Fn::ImportValue": "apptemplatecustomfields-dev-CustomFields"
+        },
+        "DATABASE_NAME": {
+          "Fn::ImportValue": "apptemplatecoreinfra-dev-DatabaseName"
+        },
+        "DB_CLUSTER_ARN": {
+          "Fn::ImportValue": "apptemplatecoreinfra-dev-DbClusterARN"
+        },
+        "CORALOGIX_SECRET": {
+          "Fn::ImportValue": "apptemplatecoreinfra-dev-CoralogixSecret"
+        },
+        "DB_CREDENTIALS_SECRETS_STORE_ARN": {
+          "Fn::ImportValue": "apptemplatecoreinfra-dev-DbCredentialsSecretsStoreARN"
+        },
+        "APPKEY_SECRET_ARN": {
+          "Fn::ImportValue": "apptemplatecoreinfra-dev-AppKeySecretARN"
+        },
+        "SNS_ARN": {
+          "Fn::ImportValue": "apptemplateeventsinfra-dev-snsARN"
+        },
+        "WEBHOOK_LOGS_TABLE": {
+          "Fn::ImportValue": "apptemplateeventsinfra-dev-WebhookLogsTable"
+        },
+        "AUDIT_LOGS_TABLE": {
+          "Fn::ImportValue": "apptemplateeventsinfra-dev-AuditLogsTable"
+        },
+        "GATEWAY_AUTHORIZER_ID": {
+          "Fn::ImportValue": "apptemplatecoreinfra-dev-GatewayAuthorizerId"
+        },
+        "TENANTS_BUCKET": "apptemplatecoreinfra-dev-tenants"
+      },
+      "httpApi": true,
+      "apiGateway": {
+        "restApiId": {
+          "Fn::ImportValue": "apptemplatecoreinfra-dev-ExtApiGatewayRestApiId"
+        },
+        "restApiRootResourceId": {
+          "Fn::ImportValue": "apptemplatecoreinfra-dev-ExtApiGatewayRestApiRootResourceId"
+        }
+      },
+      "iam": {
+        "role": {
+          "managedPolicies": [
+            "arn:aws:iam::aws:policy/AmazonRDSDataFullAccess",
+            "arn:aws:iam::aws:policy/AmazonCognitoPowerUser",
+            "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+            "arn:aws:iam::aws:policy/SecretsManagerReadWrite",
+            "arn:aws:iam::aws:policy/AmazonS3FullAccess",
+            "arn:aws:iam::aws:policy/IAMFullAccess",
+            "arn:aws:iam::aws:policy/AmazonSNSFullAccess",
+            "arn:aws:iam::aws:policy/AmazonRoute53FullAccess",
+            "arn:aws:iam::aws:policy/AmazonRDSFullAccess",
+            "arn:aws:iam::aws:policy/AmazonAPIGatewayAdministrator"
+          ],
+          "statements": [
+            {
+              "Effect": "Allow",
+              "Resource": "*",
+              "Action": [
+                "sqs:SendMessage",
+                "lambda:InvokeFunction",
+                "lambda:InvokeAsync",
+                "lambda:GetFunction",
+                "dynamodb:PartiQLSelect"
+              ]
+            }
+          ]
+        }
+      },
+      "layers": [
+        {
+          "Ref": "PythonRequirementsLambdaLayer"
+        },
+        {
+          "Ref": "CoreUtilsLambdaLayer"
+        },
+        {
+          "Ref": "SqlHandlerLambdaLayer"
+        },
+        {
+          "Ref": "UtilsLambdaLayer"
+        }
+      ],
+      "versionFunctions": true,
+      "deploymentBucketObject": {
+        "name": "apptemplate-dev-artifacts-s3bucket"
+      },
+      "compiledCloudFormationTemplate": {
+        "AWSTemplateFormatVersion": "2010-09-09",
+        "Description": "The AWS CloudFormation template for this Serverless application",
+        "Resources": {
+          "CustomListGetLogGroup": {
+            "Type": "AWS::Logs::LogGroup",
+            "Properties": {
+              "LogGroupName": "/aws/lambda/apptemplatecustomendpoints-dev-CustomListGet"
+            }
+          },
+          "CustomDetailsGetLogGroup": {
+            "Type": "AWS::Logs::LogGroup",
+            "Properties": {
+              "LogGroupName": "/aws/lambda/apptemplatecustomendpoints-dev-CustomDetailsGet"
+            }
+          },
+          "CustomObjectPostLogGroup": {
+            "Type": "AWS::Logs::LogGroup",
+            "Properties": {
+              "LogGroupName": "/aws/lambda/apptemplatecustomendpoints-dev-CustomObjectPost"
+            }
+          },
+          "CustomObjectPutLogGroup": {
+            "Type": "AWS::Logs::LogGroup",
+            "Properties": {
+              "LogGroupName": "/aws/lambda/apptemplatecustomendpoints-dev-CustomObjectPut"
+            }
+          },
+          "IamRoleLambdaExecution": {
+            "Type": "AWS::IAM::Role",
+            "Properties": {
+              "AssumeRolePolicyDocument": {
+                "Version": "2012-10-17",
+                "Statement": [
+                  {
+                    "Effect": "Allow",
+                    "Principal": {
+                      "Service": [
+                        "lambda.amazonaws.com"
+                      ]
+                    },
+                    "Action": [
+                      "sts:AssumeRole"
+                    ]
+                  }
+                ]
+              },
+              "Policies": [
+                {
+                  "PolicyName": {
+                    "Fn::Join": [
+                      "-",
+                      [
+                        "apptemplatecustomendpoints",
+                        "dev",
+                        "lambda"
+                      ]
+                    ]
+                  },
+                  "PolicyDocument": {
+                    "Version": "2012-10-17",
+                    "Statement": [
+                      {
+                        "Effect": "Allow",
+                        "Action": [
+                          "logs:CreateLogStream",
+                          "logs:CreateLogGroup"
+                        ],
+                        "Resource": [
+                          {
+                            "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/apptemplatecustomendpoints-dev*:*"
+                          }
+                        ]
+                      },
+                      {
+                        "Effect": "Allow",
+                        "Action": [
+                          "logs:PutLogEvents"
+                        ],
+                        "Resource": [
+                          {
+                            "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/apptemplatecustomendpoints-dev*:*:*"
+                          }
+                        ]
+                      },
+                      {
+                        "$ref": "$[\"service\"][\"provider\"][\"iam\"][\"role\"][\"statements\"][0]"
+                      }
+                    ]
+                  }
+                }
+              ],
+              "Path": "/",
+              "RoleName": {
+                "Fn::Join": [
+                  "-",
+                  [
+                    "apptemplatecustomendpoints",
+                    "dev",
+                    {
+                      "Ref": "AWS::Region"
+                    },
+                    "lambdaRole"
+                  ]
+                ]
+              },
+              "ManagedPolicyArns": [
+                "arn:aws:iam::aws:policy/AmazonRDSDataFullAccess",
+                "arn:aws:iam::aws:policy/AmazonCognitoPowerUser",
+                "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+                "arn:aws:iam::aws:policy/SecretsManagerReadWrite",
+                "arn:aws:iam::aws:policy/AmazonS3FullAccess",
+                "arn:aws:iam::aws:policy/IAMFullAccess",
+                "arn:aws:iam::aws:policy/AmazonSNSFullAccess",
+                "arn:aws:iam::aws:policy/AmazonRoute53FullAccess",
+                "arn:aws:iam::aws:policy/AmazonRDSFullAccess",
+                "arn:aws:iam::aws:policy/AmazonAPIGatewayAdministrator"
+              ]
+            }
+          },
+          "CoreUtilsLambdaLayer": {
+            "Type": "AWS::Lambda::LayerVersion",
+            "Properties": {
+              "Content": {
+                "S3Bucket": "apptemplate-dev-artifacts-s3bucket",
+                "S3Key": "serverless/apptemplatecustomendpoints/dev/1704380245541-2024-01-04T14:57:25.541Z/./../../CoreUtils.zip"
+              },
+              "LayerName": "apptemplatecustomendpoints-dev-core-utils"
+            }
+          },
+          "SqlHandlerLambdaLayer": {
+            "Type": "AWS::Lambda::LayerVersion",
+            "Properties": {
+              "Content": {
+                "S3Bucket": "apptemplate-dev-artifacts-s3bucket",
+                "S3Key": "serverless/apptemplatecustomendpoints/dev/1704380245541-2024-01-04T14:57:25.541Z/./../../SqlHandler.zip"
+              },
+              "LayerName": "apptemplatecustomendpoints-dev-sql-handler"
+            }
+          },
+          "UtilsLambdaLayer": {
+            "Type": "AWS::Lambda::LayerVersion",
+            "Properties": {
+              "Content": {
+                "S3Bucket": "apptemplate-dev-artifacts-s3bucket",
+                "S3Key": "serverless/apptemplatecustomendpoints/dev/1704380245541-2024-01-04T14:57:25.541Z/./../../Utils.zip"
+              },
+              "LayerName": "apptemplatecustomendpoints-dev-utils"
+            }
+          },
+          "PythonRequirementsLambdaLayer": {
+            "Type": "AWS::Lambda::LayerVersion",
+            "Properties": {
+              "Content": {
+                "S3Bucket": "apptemplate-dev-artifacts-s3bucket",
+                "S3Key": "serverless/apptemplatecustomendpoints/dev/1704380245541-2024-01-04T14:57:25.541Z/pythonRequirements.zip"
+              },
+              "LayerName": "apptemplatecustomendpoints-dev-python-libraries",
+              "Description": "Layer containing the python libraries necessary for project apptemplatecustomendpoints",
+              "CompatibleRuntimes": [
+                "python3.8"
+              ]
+            }
+          },
+          "CustomListGetLambdaFunction": {
+            "Type": "AWS::Lambda::Function",
+            "Properties": {
+              "Code": {
+                "S3Bucket": "apptemplate-dev-artifacts-s3bucket",
+                "S3Key": "serverless/apptemplatecustomendpoints/dev/1704380245541-2024-01-04T14:57:25.541Z/CustomListGet.zip"
+              },
+              "Handler": "controllers/CustomListGet.lambda_handler",
+              "Runtime": "python3.8",
+              "FunctionName": "apptemplatecustomendpoints-dev-CustomListGet",
+              "MemorySize": 1024,
+              "Timeout": 30,
+              "Environment": {
+                "Variables": {
+                  "SERVICE_NAME": "apptemplatecustomendpoints-dev",
+                  "PROFILE": "AppTemplate",
+                  "RESOURCE_METHOD": "CustomListGet",
+                  "REGION_NAME": "us-east-2",
+                  "STAGE": "dev",
+                  "REST_API_ID": {
+                    "$ref": "$[\"service\"][\"provider\"][\"environment\"][\"REST_API_ID\"]"
+                  },
+                  "FIELDS_TABLE": {
+                    "$ref": "$[\"service\"][\"provider\"][\"environment\"][\"FIELDS_TABLE\"]"
+                  },
+                  "DATABASE_NAME": {
+                    "$ref": "$[\"service\"][\"provider\"][\"environment\"][\"DATABASE_NAME\"]"
+                  },
+                  "DB_CLUSTER_ARN": {
+                    "$ref": "$[\"service\"][\"provider\"][\"environment\"][\"DB_CLUSTER_ARN\"]"
+                  },
+                  "CORALOGIX_SECRET": {
+                    "$ref": "$[\"service\"][\"provider\"][\"environment\"][\"CORALOGIX_SECRET\"]"
+                  },
+                  "DB_CREDENTIALS_SECRETS_STORE_ARN": {
+                    "$ref": "$[\"service\"][\"provider\"][\"environment\"][\"DB_CREDENTIALS_SECRETS_STORE_ARN\"]"
+                  },
+                  "APPKEY_SECRET_ARN": {
+                    "$ref": "$[\"service\"][\"provider\"][\"environment\"][\"APPKEY_SECRET_ARN\"]"
+                  },
+                  "SNS_ARN": {
+                    "$ref": "$[\"service\"][\"provider\"][\"environment\"][\"SNS_ARN\"]"
+                  },
+                  "WEBHOOK_LOGS_TABLE": {
+                    "$ref": "$[\"service\"][\"provider\"][\"environment\"][\"WEBHOOK_LOGS_TABLE\"]"
+                  },
+                  "AUDIT_LOGS_TABLE": {
+                    "$ref": "$[\"service\"][\"provider\"][\"environment\"][\"AUDIT_LOGS_TABLE\"]"
+                  },
+                  "GATEWAY_AUTHORIZER_ID": {
+                    "$ref": "$[\"service\"][\"provider\"][\"environment\"][\"GATEWAY_AUTHORIZER_ID\"]"
+                  },
+                  "TENANTS_BUCKET": "apptemplatecoreinfra-dev-tenants"
+                }
+              },
+              "Role": {
+                "Fn::GetAtt": [
+                  "IamRoleLambdaExecution",
+                  "Arn"
+                ]
+              },
+              "Layers": [
+                {
+                  "$ref": "$[\"service\"][\"provider\"][\"layers\"][0]"
+                },
+                {
+                  "$ref": "$[\"service\"][\"provider\"][\"layers\"][1]"
+                },
+                {
+                  "$ref": "$[\"service\"][\"provider\"][\"layers\"][2]"
+                },
+                {
+                  "$ref": "$[\"service\"][\"provider\"][\"layers\"][3]"
+                }
+              ]
+            },
+            "DependsOn": [
+              "CustomListGetLogGroup"
+            ]
+          },
+          "CustomDetailsGetLambdaFunction": {
+            "Type": "AWS::Lambda::Function",
+            "Properties": {
+              "Code": {
+                "S3Bucket": "apptemplate-dev-artifacts-s3bucket",
+                "S3Key": "serverless/apptemplatecustomendpoints/dev/1704380245541-2024-01-04T14:57:25.541Z/CustomDetailsGet.zip"
+              },
+              "Handler": "controllers/CustomDetailsGet.lambda_handler",
+              "Runtime": "python3.8",
+              "FunctionName": "apptemplatecustomendpoints-dev-CustomDetailsGet",
+              "MemorySize": 1024,
+              "Timeout": 30,
+              "Environment": {
+                "Variables": {
+                  "SERVICE_NAME": "apptemplatecustomendpoints-dev",
+                  "PROFILE": "AppTemplate",
+                  "RESOURCE_METHOD": "CustomDetailsGet",
+                  "REGION_NAME": "us-east-2",
+                  "STAGE": "dev",
+                  "REST_API_ID": {
+                    "$ref": "$[\"service\"][\"provider\"][\"environment\"][\"REST_API_ID\"]"
+                  },
+                  "FIELDS_TABLE": {
+                    "$ref": "$[\"service\"][\"provider\"][\"environment\"][\"FIELDS_TABLE\"]"
+                  },
+                  "DATABASE_NAME": {
+                    "$ref": "$[\"service\"][\"provider\"][\"environment\"][\"DATABASE_NAME\"]"
+                  },
+                  "DB_CLUSTER_ARN": {
+                    "$ref": "$[\"service\"][\"provider\"][\"environment\"][\"DB_CLUSTER_ARN\"]"
+                  },
+                  "CORALOGIX_SECRET": {
+                    "$ref": "$[\"service\"][\"provider\"][\"environment\"][\"CORALOGIX_SECRET\"]"
+                  },
+                  "DB_CREDENTIALS_SECRETS_STORE_ARN": {
+                    "$ref": "$[\"service\"][\"provider\"][\"environment\"][\"DB_CREDENTIALS_SECRETS_STORE_ARN\"]"
+                  },
+                  "APPKEY_SECRET_ARN": {
+                    "$ref": "$[\"service\"][\"provider\"][\"environment\"][\"APPKEY_SECRET_ARN\"]"
+                  },
+                  "SNS_ARN": {
+                    "$ref": "$[\"service\"][\"provider\"][\"environment\"][\"SNS_ARN\"]"
+                  },
+                  "WEBHOOK_LOGS_TABLE": {
+                    "$ref": "$[\"service\"][\"provider\"][\"environment\"][\"WEBHOOK_LOGS_TABLE\"]"
+                  },
+                  "AUDIT_LOGS_TABLE": {
+                    "$ref": "$[\"service\"][\"provider\"][\"environment\"][\"AUDIT_LOGS_TABLE\"]"
+                  },
+                  "GATEWAY_AUTHORIZER_ID": {
+                    "$ref": "$[\"service\"][\"provider\"][\"environment\"][\"GATEWAY_AUTHORIZER_ID\"]"
+                  },
+                  "TENANTS_BUCKET": "apptemplatecoreinfra-dev-tenants"
+                }
+              },
+              "Role": {
+                "Fn::GetAtt": [
+                  "IamRoleLambdaExecution",
+                  "Arn"
+                ]
+              },
+              "Layers": [
+                {
+                  "$ref": "$[\"service\"][\"provider\"][\"layers\"][0]"
+                },
+                {
+                  "$ref": "$[\"service\"][\"provider\"][\"layers\"][1]"
+                },
+                {
+                  "$ref": "$[\"service\"][\"provider\"][\"layers\"][2]"
+                },
+                {
+                  "$ref": "$[\"service\"][\"provider\"][\"layers\"][3]"
+                }
+              ]
+            },
+            "DependsOn": [
+              "CustomDetailsGetLogGroup"
+            ]
+          },
+          "CustomObjectPostLambdaFunction": {
+            "Type": "AWS::Lambda::Function",
+            "Properties": {
+              "Code": {
+                "S3Bucket": "apptemplate-dev-artifacts-s3bucket",
+                "S3Key": "serverless/apptemplatecustomendpoints/dev/1704380245541-2024-01-04T14:57:25.541Z/CustomObjectPost.zip"
+              },
+              "Handler": "controllers/CustomObjectPost.lambda_handler",
+              "Runtime": "python3.8",
+              "FunctionName": "apptemplatecustomendpoints-dev-CustomObjectPost",
+              "MemorySize": 1024,
+              "Timeout": 30,
+              "Environment": {
+                "Variables": {
+                  "SERVICE_NAME": "apptemplatecustomendpoints-dev",
+                  "PROFILE": "AppTemplate",
+                  "RESOURCE_METHOD": "CustomObjectPost",
+                  "REGION_NAME": "us-east-2",
+                  "STAGE": "dev",
+                  "REST_API_ID": {
+                    "$ref": "$[\"service\"][\"provider\"][\"environment\"][\"REST_API_ID\"]"
+                  },
+                  "FIELDS_TABLE": {
+                    "$ref": "$[\"service\"][\"provider\"][\"environment\"][\"FIELDS_TABLE\"]"
+                  },
+                  "DATABASE_NAME": {
+                    "$ref": "$[\"service\"][\"provider\"][\"environment\"][\"DATABASE_NAME\"]"
+                  },
+                  "DB_CLUSTER_ARN": {
+                    "$ref": "$[\"service\"][\"provider\"][\"environment\"][\"DB_CLUSTER_ARN\"]"
+                  },
+                  "CORALOGIX_SECRET": {
+                    "$ref": "$[\"service\"][\"provider\"][\"environment\"][\"CORALOGIX_SECRET\"]"
+                  },
+                  "DB_CREDENTIALS_SECRETS_STORE_ARN": {
+                    "$ref": "$[\"service\"][\"provider\"][\"environment\"][\"DB_CREDENTIALS_SECRETS_STORE_ARN\"]"
+                  },
+                  "APPKEY_SECRET_ARN": {
+                    "$ref": "$[\"service\"][\"provider\"][\"environment\"][\"APPKEY_SECRET_ARN\"]"
+                  },
+                  "SNS_ARN": {
+                    "$ref": "$[\"service\"][\"provider\"][\"environment\"][\"SNS_ARN\"]"
+                  },
+                  "WEBHOOK_LOGS_TABLE": {
+                    "$ref": "$[\"service\"][\"provider\"][\"environment\"][\"WEBHOOK_LOGS_TABLE\"]"
+                  },
+                  "AUDIT_LOGS_TABLE": {
+                    "$ref": "$[\"service\"][\"provider\"][\"environment\"][\"AUDIT_LOGS_TABLE\"]"
+                  },
+                  "GATEWAY_AUTHORIZER_ID": {
+                    "$ref": "$[\"service\"][\"provider\"][\"environment\"][\"GATEWAY_AUTHORIZER_ID\"]"
+                  },
+                  "TENANTS_BUCKET": "apptemplatecoreinfra-dev-tenants"
+                }
+              },
+              "Role": {
+                "Fn::GetAtt": [
+                  "IamRoleLambdaExecution",
+                  "Arn"
+                ]
+              },
+              "Layers": [
+                {
+                  "$ref": "$[\"service\"][\"provider\"][\"layers\"][0]"
+                },
+                {
+                  "$ref": "$[\"service\"][\"provider\"][\"layers\"][1]"
+                },
+                {
+                  "$ref": "$[\"service\"][\"provider\"][\"layers\"][2]"
+                },
+                {
+                  "$ref": "$[\"service\"][\"provider\"][\"layers\"][3]"
+                }
+              ]
+            },
+            "DependsOn": [
+              "CustomObjectPostLogGroup"
+            ]
+          },
+          "CustomObjectPutLambdaFunction": {
+            "Type": "AWS::Lambda::Function",
+            "Properties": {
+              "Code": {
+                "S3Bucket": "apptemplate-dev-artifacts-s3bucket",
+                "S3Key": "serverless/apptemplatecustomendpoints/dev/1704380245541-2024-01-04T14:57:25.541Z/CustomObjectPut.zip"
+              },
+              "Handler": "controllers/CustomObjectPut.lambda_handler",
+              "Runtime": "python3.8",
+              "FunctionName": "apptemplatecustomendpoints-dev-CustomObjectPut",
+              "MemorySize": 1024,
+              "Timeout": 30,
+              "Environment": {
+                "Variables": {
+                  "SERVICE_NAME": "apptemplatecustomendpoints-dev",
+                  "PROFILE": "AppTemplate",
+                  "RESOURCE_METHOD": "CustomObjectPut",
+                  "REGION_NAME": "us-east-2",
+                  "STAGE": "dev",
+                  "REST_API_ID": {
+                    "$ref": "$[\"service\"][\"provider\"][\"environment\"][\"REST_API_ID\"]"
+                  },
+                  "FIELDS_TABLE": {
+                    "$ref": "$[\"service\"][\"provider\"][\"environment\"][\"FIELDS_TABLE\"]"
+                  },
+                  "DATABASE_NAME": {
+                    "$ref": "$[\"service\"][\"provider\"][\"environment\"][\"DATABASE_NAME\"]"
+                  },
+                  "DB_CLUSTER_ARN": {
+                    "$ref": "$[\"service\"][\"provider\"][\"environment\"][\"DB_CLUSTER_ARN\"]"
+                  },
+                  "CORALOGIX_SECRET": {
+                    "$ref": "$[\"service\"][\"provider\"][\"environment\"][\"CORALOGIX_SECRET\"]"
+                  },
+                  "DB_CREDENTIALS_SECRETS_STORE_ARN": {
+                    "$ref": "$[\"service\"][\"provider\"][\"environment\"][\"DB_CREDENTIALS_SECRETS_STORE_ARN\"]"
+                  },
+                  "APPKEY_SECRET_ARN": {
+                    "$ref": "$[\"service\"][\"provider\"][\"environment\"][\"APPKEY_SECRET_ARN\"]"
+                  },
+                  "SNS_ARN": {
+                    "$ref": "$[\"service\"][\"provider\"][\"environment\"][\"SNS_ARN\"]"
+                  },
+                  "WEBHOOK_LOGS_TABLE": {
+                    "$ref": "$[\"service\"][\"provider\"][\"environment\"][\"WEBHOOK_LOGS_TABLE\"]"
+                  },
+                  "AUDIT_LOGS_TABLE": {
+                    "$ref": "$[\"service\"][\"provider\"][\"environment\"][\"AUDIT_LOGS_TABLE\"]"
+                  },
+                  "GATEWAY_AUTHORIZER_ID": {
+                    "$ref": "$[\"service\"][\"provider\"][\"environment\"][\"GATEWAY_AUTHORIZER_ID\"]"
+                  },
+                  "TENANTS_BUCKET": "apptemplatecoreinfra-dev-tenants"
+                }
+              },
+              "Role": {
+                "Fn::GetAtt": [
+                  "IamRoleLambdaExecution",
+                  "Arn"
+                ]
+              },
+              "Layers": [
+                {
+                  "$ref": "$[\"service\"][\"provider\"][\"layers\"][0]"
+                },
+                {
+                  "$ref": "$[\"service\"][\"provider\"][\"layers\"][1]"
+                },
+                {
+                  "$ref": "$[\"service\"][\"provider\"][\"layers\"][2]"
+                },
+                {
+                  "$ref": "$[\"service\"][\"provider\"][\"layers\"][3]"
+                }
+              ]
+            },
+            "DependsOn": [
+              "CustomObjectPutLogGroup"
+            ]
+          },
+          "CustomObjectPostLambdaVersion7Z1utZFc4LJr1pzxHKyEkG9iWpwtf2oajgEXJ7oQ": {
+            "Type": "AWS::Lambda::Version",
+            "DeletionPolicy": "Retain",
+            "Properties": {
+              "FunctionName": {
+                "Ref": "CustomObjectPostLambdaFunction"
+              },
+              "CodeSha256": "BdXq9GVZhwQIUyMeIbTBybQUYuw4D0ihU8PSYrWIdAI="
+            }
+          },
+          "CustomObjectPutLambdaVersionRXq95uiuchcRwsB5LLtMdpBPGEag3r0iWy131d2cebI": {
+            "Type": "AWS::Lambda::Version",
+            "DeletionPolicy": "Retain",
+            "Properties": {
+              "FunctionName": {
+                "Ref": "CustomObjectPutLambdaFunction"
+              },
+              "CodeSha256": "BdXq9GVZhwQIUyMeIbTBybQUYuw4D0ihU8PSYrWIdAI="
+            }
+          },
+          "CustomDetailsGetLambdaVersionV5Kgtqau1fumKv9O5fsOoJ1kwma5lvZUXctltsaNtY": {
+            "Type": "AWS::Lambda::Version",
+            "DeletionPolicy": "Retain",
+            "Properties": {
+              "FunctionName": {
+                "Ref": "CustomDetailsGetLambdaFunction"
+              },
+              "CodeSha256": "BdXq9GVZhwQIUyMeIbTBybQUYuw4D0ihU8PSYrWIdAI="
+            }
+          },
+          "CustomListGetLambdaVersionDAmwka4z7vsXO61o4hrBZbz9nexe9tZecZYCktiipA": {
+            "Type": "AWS::Lambda::Version",
+            "DeletionPolicy": "Retain",
+            "Properties": {
+              "FunctionName": {
+                "Ref": "CustomListGetLambdaFunction"
+              },
+              "CodeSha256": "BdXq9GVZhwQIUyMeIbTBybQUYuw4D0ihU8PSYrWIdAI="
+            }
+          },
+          "ApiGatewayResourceCustom": {
+            "Type": "AWS::ApiGateway::Resource",
+            "Properties": {
+              "ParentId": {
+                "Fn::ImportValue": "apptemplatecoreinfra-dev-ExtApiGatewayRestApiRootResourceId"
+              },
+              "PathPart": "custom",
+              "RestApiId": {
+                "Fn::ImportValue": "apptemplatecoreinfra-dev-ExtApiGatewayRestApiId"
+              }
+            }
+          },
+          "ApiGatewayResourceCustomEntitynameVar": {
+            "Type": "AWS::ApiGateway::Resource",
+            "Properties": {
+              "ParentId": {
+                "Ref": "ApiGatewayResourceCustom"
+              },
+              "PathPart": "{entity_name}",
+              "RestApiId": {
+                "Fn::ImportValue": "apptemplatecoreinfra-dev-ExtApiGatewayRestApiId"
+              }
+            }
+          },
+          "ApiGatewayResourceCustomEntitynameVarIdVar": {
+            "Type": "AWS::ApiGateway::Resource",
+            "Properties": {
+              "ParentId": {
+                "Ref": "ApiGatewayResourceCustomEntitynameVar"
+              },
+              "PathPart": "{id}",
+              "RestApiId": {
+                "Fn::ImportValue": "apptemplatecoreinfra-dev-ExtApiGatewayRestApiId"
+              }
+            }
+          },
+          "ApiGatewayMethodCustomEntitynameVarOptions": {
+            "Type": "AWS::ApiGateway::Method",
+            "Properties": {
+              "AuthorizationType": "NONE",
+              "HttpMethod": "OPTIONS",
+              "MethodResponses": [
+                {
+                  "StatusCode": "200",
+                  "ResponseParameters": {
+                    "method.response.header.Access-Control-Allow-Origin": true,
+                    "method.response.header.Access-Control-Allow-Headers": true,
+                    "method.response.header.Access-Control-Allow-Methods": true
+                  },
+                  "ResponseModels": {}
+                }
+              ],
+              "RequestParameters": {},
+              "Integration": {
+                "Type": "MOCK",
+                "RequestTemplates": {
+                  "application/json": "{statusCode:200}"
+                },
+                "ContentHandling": "CONVERT_TO_TEXT",
+                "IntegrationResponses": [
+                  {
+                    "StatusCode": "200",
+                    "ResponseParameters": {
+                      "method.response.header.Access-Control-Allow-Origin": "'*'",
+                      "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,X-Amz-User-Agent,X-Amzn-Trace-Id'",
+                      "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,POST,GET'"
+                    },
+                    "ResponseTemplates": {
+                      "application/json": ""
+                    }
+                  }
+                ]
+              },
+              "ResourceId": {
+                "Ref": "ApiGatewayResourceCustomEntitynameVar"
+              },
+              "RestApiId": {
+                "Fn::ImportValue": "apptemplatecoreinfra-dev-ExtApiGatewayRestApiId"
+              }
+            }
+          },
+          "ApiGatewayMethodCustomEntitynameVarIdVarOptions": {
+            "Type": "AWS::ApiGateway::Method",
+            "Properties": {
+              "AuthorizationType": "NONE",
+              "HttpMethod": "OPTIONS",
+              "MethodResponses": [
+                {
+                  "StatusCode": "200",
+                  "ResponseParameters": {
+                    "method.response.header.Access-Control-Allow-Origin": true,
+                    "method.response.header.Access-Control-Allow-Headers": true,
+                    "method.response.header.Access-Control-Allow-Methods": true
+                  },
+                  "ResponseModels": {}
+                }
+              ],
+              "RequestParameters": {},
+              "Integration": {
+                "Type": "MOCK",
+                "RequestTemplates": {
+                  "application/json": "{statusCode:200}"
+                },
+                "ContentHandling": "CONVERT_TO_TEXT",
+                "IntegrationResponses": [
+                  {
+                    "StatusCode": "200",
+                    "ResponseParameters": {
+                      "method.response.header.Access-Control-Allow-Origin": "'*'",
+                      "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,X-Amz-User-Agent,X-Amzn-Trace-Id'",
+                      "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,PUT,GET'"
+                    },
+                    "ResponseTemplates": {
+                      "application/json": ""
+                    }
+                  }
+                ]
+              },
+              "ResourceId": {
+                "Ref": "ApiGatewayResourceCustomEntitynameVarIdVar"
+              },
+              "RestApiId": {
+                "Fn::ImportValue": "apptemplatecoreinfra-dev-ExtApiGatewayRestApiId"
+              }
+            }
+          },
+          "ApiGatewayMethodCustomEntitynameVarGet": {
+            "Type": "AWS::ApiGateway::Method",
+            "Properties": {
+              "HttpMethod": "GET",
+              "RequestParameters": {
+                "method.request.header.Authorization": "true",
+                "method.request.header.Content-Type": "true",
+                "method.request.header.App-Key": "false",
+                "method.request.header.Tenant-Key": "false",
+                "method.request.header.tenant_id": "false",
+                "method.request.header.version": "false",
+                "method.request.querystring.is_active": false
+              },
+              "ResourceId": {
+                "Ref": "ApiGatewayResourceCustomEntitynameVar"
+              },
+              "RestApiId": {
+                "Fn::ImportValue": "apptemplatecoreinfra-dev-ExtApiGatewayRestApiId"
+              },
+              "ApiKeyRequired": false,
+              "AuthorizationType": "COGNITO_USER_POOLS",
+              "AuthorizerId": {
+                "Fn::ImportValue": "apptemplatecoreinfra-dev-ApiGatewayAuthorizer"
+              },
+              "AuthorizationScopes": [
+                "aws.cognito.signin.user.admin",
+                "apiauthidentifier/json.read"
+              ],
+              "Integration": {
+                "IntegrationHttpMethod": "POST",
+                "Type": "AWS_PROXY",
+                "Uri": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition"
+                      },
+                      ":apigateway:",
+                      {
+                        "Ref": "AWS::Region"
+                      },
+                      ":lambda:path/2015-03-31/functions/",
+                      {
+                        "Fn::GetAtt": [
+                          "CustomListGetLambdaFunction",
+                          "Arn"
+                        ]
+                      },
+                      "/invocations"
+                    ]
+                  ]
+                }
+              },
+              "MethodResponses": [
+                {
+                  "StatusCode": "200",
+                  "ResponseModels": {
+                    "application/json": "CustomListGetResponse"
+                  }
+                }
+              ]
+            },
+            "DependsOn": [
+              "CustomListGetResponseModel"
+            ]
+          },
+          "ApiGatewayMethodCustomEntitynameVarIdVarGet": {
+            "Type": "AWS::ApiGateway::Method",
+            "Properties": {
+              "HttpMethod": "GET",
+              "RequestParameters": {
+                "method.request.header.Authorization": "true",
+                "method.request.header.Content-Type": "true",
+                "method.request.header.App-Key": "false",
+                "method.request.header.Tenant-Key": "false",
+                "method.request.header.tenant_id": "false",
+                "method.request.header.version": "false"
+              },
+              "ResourceId": {
+                "Ref": "ApiGatewayResourceCustomEntitynameVarIdVar"
+              },
+              "RestApiId": {
+                "Fn::ImportValue": "apptemplatecoreinfra-dev-ExtApiGatewayRestApiId"
+              },
+              "ApiKeyRequired": false,
+              "AuthorizationType": "COGNITO_USER_POOLS",
+              "AuthorizerId": {
+                "Fn::ImportValue": "apptemplatecoreinfra-dev-ApiGatewayAuthorizer"
+              },
+              "AuthorizationScopes": [
+                "aws.cognito.signin.user.admin",
+                "apiauthidentifier/json.read"
+              ],
+              "Integration": {
+                "IntegrationHttpMethod": "POST",
+                "Type": "AWS_PROXY",
+                "Uri": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition"
+                      },
+                      ":apigateway:",
+                      {
+                        "Ref": "AWS::Region"
+                      },
+                      ":lambda:path/2015-03-31/functions/",
+                      {
+                        "Fn::GetAtt": [
+                          "CustomDetailsGetLambdaFunction",
+                          "Arn"
+                        ]
+                      },
+                      "/invocations"
+                    ]
+                  ]
+                }
+              },
+              "MethodResponses": [
+                {
+                  "StatusCode": "200",
+                  "ResponseModels": {
+                    "application/json": "CustomDetailsGetResponse"
+                  }
+                }
+              ]
+            },
+            "DependsOn": [
+              "CustomDetailsGetResponseModel"
+            ]
+          },
+          "ApiGatewayMethodCustomEntitynameVarPost": {
+            "Type": "AWS::ApiGateway::Method",
+            "Properties": {
+              "HttpMethod": "POST",
+              "RequestParameters": {},
+              "ResourceId": {
+                "Ref": "ApiGatewayResourceCustomEntitynameVar"
+              },
+              "RestApiId": {
+                "Fn::ImportValue": "apptemplatecoreinfra-dev-ExtApiGatewayRestApiId"
+              },
+              "ApiKeyRequired": false,
+              "AuthorizationType": "COGNITO_USER_POOLS",
+              "AuthorizerId": {
+                "Fn::ImportValue": "apptemplatecoreinfra-dev-ApiGatewayAuthorizer"
+              },
+              "AuthorizationScopes": [
+                "aws.cognito.signin.user.admin",
+                "apiauthidentifier/json.read"
+              ],
+              "Integration": {
+                "IntegrationHttpMethod": "POST",
+                "Type": "AWS_PROXY",
+                "Uri": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition"
+                      },
+                      ":apigateway:",
+                      {
+                        "Ref": "AWS::Region"
+                      },
+                      ":lambda:path/2015-03-31/functions/",
+                      {
+                        "Fn::GetAtt": [
+                          "CustomObjectPostLambdaFunction",
+                          "Arn"
+                        ]
+                      },
+                      "/invocations"
+                    ]
+                  ]
+                }
+              },
+              "MethodResponses": []
+            },
+            "DependsOn": [
+              "CustomObjectPostLambdaPermissionApiGateway"
+            ]
+          },
+          "ApiGatewayMethodCustomEntitynameVarIdVarPut": {
+            "Type": "AWS::ApiGateway::Method",
+            "Properties": {
+              "HttpMethod": "PUT",
+              "RequestParameters": {},
+              "ResourceId": {
+                "Ref": "ApiGatewayResourceCustomEntitynameVarIdVar"
+              },
+              "RestApiId": {
+                "Fn::ImportValue": "apptemplatecoreinfra-dev-ExtApiGatewayRestApiId"
+              },
+              "ApiKeyRequired": false,
+              "AuthorizationType": "COGNITO_USER_POOLS",
+              "AuthorizerId": {
+                "Fn::ImportValue": "apptemplatecoreinfra-dev-ApiGatewayAuthorizer"
+              },
+              "AuthorizationScopes": [
+                "aws.cognito.signin.user.admin",
+                "apiauthidentifier/json.read"
+              ],
+              "Integration": {
+                "IntegrationHttpMethod": "POST",
+                "Type": "AWS_PROXY",
+                "Uri": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition"
+                      },
+                      ":apigateway:",
+                      {
+                        "Ref": "AWS::Region"
+                      },
+                      ":lambda:path/2015-03-31/functions/",
+                      {
+                        "Fn::GetAtt": [
+                          "CustomObjectPutLambdaFunction",
+                          "Arn"
+                        ]
+                      },
+                      "/invocations"
+                    ]
+                  ]
+                }
+              },
+              "MethodResponses": []
+            },
+            "DependsOn": [
+              "CustomObjectPutLambdaPermissionApiGateway"
+            ]
+          },
+          "ApiGatewayDeployment1704380222744": {
+            "Type": "AWS::ApiGateway::Deployment",
+            "Properties": {
+              "RestApiId": {
+                "Fn::ImportValue": "apptemplatecoreinfra-dev-ExtApiGatewayRestApiId"
+              },
+              "StageName": "dev"
+            },
+            "DependsOn": [
+              "ApiGatewayMethodCustomEntitynameVarOptions",
+              "ApiGatewayMethodCustomEntitynameVarIdVarOptions",
+              "ApiGatewayMethodCustomEntitynameVarGet",
+              "ApiGatewayMethodCustomEntitynameVarIdVarGet",
+              "ApiGatewayMethodCustomEntitynameVarPost",
+              "ApiGatewayMethodCustomEntitynameVarIdVarPut"
+            ]
+          },
+          "CustomListGetLambdaPermissionApiGateway": {
+            "Type": "AWS::Lambda::Permission",
+            "Properties": {
+              "FunctionName": {
+                "Fn::GetAtt": [
+                  "CustomListGetLambdaFunction",
+                  "Arn"
+                ]
+              },
+              "Action": "lambda:InvokeFunction",
+              "Principal": "apigateway.amazonaws.com",
+              "SourceArn": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:",
+                    {
+                      "Ref": "AWS::Partition"
+                    },
+                    ":execute-api:",
+                    {
+                      "Ref": "AWS::Region"
+                    },
+                    ":",
+                    {
+                      "Ref": "AWS::AccountId"
+                    },
+                    ":",
+                    {
+                      "$ref": "$[\"service\"][\"provider\"][\"apiGateway\"][\"restApiId\"]"
+                    },
+                    "/*/*"
+                  ]
+                ]
+              }
+            }
+          },
+          "CustomDetailsGetLambdaPermissionApiGateway": {
+            "Type": "AWS::Lambda::Permission",
+            "Properties": {
+              "FunctionName": {
+                "Fn::GetAtt": [
+                  "CustomDetailsGetLambdaFunction",
+                  "Arn"
+                ]
+              },
+              "Action": "lambda:InvokeFunction",
+              "Principal": "apigateway.amazonaws.com",
+              "SourceArn": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:",
+                    {
+                      "Ref": "AWS::Partition"
+                    },
+                    ":execute-api:",
+                    {
+                      "Ref": "AWS::Region"
+                    },
+                    ":",
+                    {
+                      "Ref": "AWS::AccountId"
+                    },
+                    ":",
+                    {
+                      "$ref": "$[\"service\"][\"provider\"][\"apiGateway\"][\"restApiId\"]"
+                    },
+                    "/*/*"
+                  ]
+                ]
+              }
+            }
+          },
+          "CustomObjectPostLambdaPermissionApiGateway": {
+            "Type": "AWS::Lambda::Permission",
+            "Properties": {
+              "FunctionName": {
+                "Fn::GetAtt": [
+                  "CustomObjectPostLambdaFunction",
+                  "Arn"
+                ]
+              },
+              "Action": "lambda:InvokeFunction",
+              "Principal": "apigateway.amazonaws.com",
+              "SourceArn": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:",
+                    {
+                      "Ref": "AWS::Partition"
+                    },
+                    ":execute-api:",
+                    {
+                      "Ref": "AWS::Region"
+                    },
+                    ":",
+                    {
+                      "Ref": "AWS::AccountId"
+                    },
+                    ":",
+                    {
+                      "$ref": "$[\"service\"][\"provider\"][\"apiGateway\"][\"restApiId\"]"
+                    },
+                    "/*/*"
+                  ]
+                ]
+              }
+            }
+          },
+          "CustomObjectPutLambdaPermissionApiGateway": {
+            "Type": "AWS::Lambda::Permission",
+            "Properties": {
+              "FunctionName": {
+                "Fn::GetAtt": [
+                  "CustomObjectPutLambdaFunction",
+                  "Arn"
+                ]
+              },
+              "Action": "lambda:InvokeFunction",
+              "Principal": "apigateway.amazonaws.com",
+              "SourceArn": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:",
+                    {
+                      "Ref": "AWS::Partition"
+                    },
+                    ":execute-api:",
+                    {
+                      "Ref": "AWS::Region"
+                    },
+                    ":",
+                    {
+                      "Ref": "AWS::AccountId"
+                    },
+                    ":",
+                    {
+                      "$ref": "$[\"service\"][\"provider\"][\"apiGateway\"][\"restApiId\"]"
+                    },
+                    "/*/*"
+                  ]
+                ]
+              }
+            }
+          },
+          "CustomListGetResponseModel": {
+            "Type": "AWS::ApiGateway::Model",
+            "Properties": {
+              "RestApiId": {
+                "$ref": "$[\"service\"][\"provider\"][\"apiGateway\"][\"restApiId\"]"
+              },
+              "ContentType": "application/json",
+              "Name": "CustomListGetResponse",
+              "Schema": {
+                "type": "object",
+                "properties": {
+                  "objects": {
+                    "type": "array",
+                    "description": "Array of objects",
+                    "items": {
+                      "type": "object",
+                      "properties": {}
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "CustomDetailsGetResponseModel": {
+            "Type": "AWS::ApiGateway::Model",
+            "Properties": {
+              "RestApiId": {
+                "$ref": "$[\"service\"][\"provider\"][\"apiGateway\"][\"restApiId\"]"
+              },
+              "ContentType": "application/json",
+              "Name": "CustomDetailsGetResponse",
+              "Schema": {
+                "type": "object",
+                "properties": {
+                  "items": {
+                    "type": "object",
+                    "properties": {}
+                  }
+                }
+              }
+            }
+          },
+          "CustomObjectPostResponseModel": {
+            "Type": "AWS::ApiGateway::Model",
+            "Properties": {
+              "RestApiId": {
+                "$ref": "$[\"service\"][\"provider\"][\"apiGateway\"][\"restApiId\"]"
+              },
+              "ContentType": "application/json",
+              "Name": "CustomObjectPostResponse",
+              "Schema": {
+                "type": "object",
+                "properties": {
+                  "correlation_id": {
+                    "type": "string",
+                    "description": "UUID of the process"
+                  },
+                  "result": {
+                    "type": "string",
+                    "description": "Result message"
+                  },
+                  "{primary key}": {
+                    "type": "string",
+                    "description": "Id of the record created"
+                  }
+                }
+              }
+            }
+          },
+          "CustomObjectPutResponseModel": {
+            "Type": "AWS::ApiGateway::Model",
+            "Properties": {
+              "RestApiId": {
+                "$ref": "$[\"service\"][\"provider\"][\"apiGateway\"][\"restApiId\"]"
+              },
+              "ContentType": "application/json",
+              "Name": "CustomObjectPutResponse",
+              "Schema": {
+                "type": "object",
+                "properties": {
+                  "correlation_id": {
+                    "type": "string",
+                    "description": "UUID of the process"
+                  },
+                  "result": {
+                    "type": "string",
+                    "description": "Result message"
+                  },
+                  "{primary key}": {
+                    "type": "string",
+                    "description": "Id of the record updated"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "Outputs": {
+          "ServerlessDeploymentBucketName": {
+            "Value": "apptemplate-dev-artifacts-s3bucket",
+            "Export": {
+              "Name": "sls-apptemplatecustomendpoints-dev-ServerlessDeploymentBucketName"
+            }
+          },
+          "CoreUtilsLambdaLayerQualifiedArn": {
+            "Description": "Current Lambda layer version",
+            "Value": {
+              "Ref": "CoreUtilsLambdaLayer"
+            },
+            "Export": {
+              "Name": "sls-apptemplatecustomendpoints-dev-CoreUtilsLambdaLayerQualifiedArn"
+            }
+          },
+          "CoreUtilsLambdaLayerHash": {
+            "Description": "Current Lambda layer hash",
+            "Value": "ae766cd0fd1bbe1a5b676bc240d71bed880a385a",
+            "Export": {
+              "Name": "sls-apptemplatecustomendpoints-dev-CoreUtilsLambdaLayerHash"
+            }
+          },
+          "CoreUtilsLambdaLayerS3Key": {
+            "Description": "Current Lambda layer S3Key",
+            "Value": "serverless/apptemplatecustomendpoints/dev/1704380245541-2024-01-04T14:57:25.541Z/./../../CoreUtils.zip",
+            "Export": {
+              "Name": "sls-apptemplatecustomendpoints-dev-CoreUtilsLambdaLayerS3Key"
+            }
+          },
+          "SqlHandlerLambdaLayerQualifiedArn": {
+            "Description": "Current Lambda layer version",
+            "Value": {
+              "Ref": "SqlHandlerLambdaLayer"
+            },
+            "Export": {
+              "Name": "sls-apptemplatecustomendpoints-dev-SqlHandlerLambdaLayerQualifiedArn"
+            }
+          },
+          "SqlHandlerLambdaLayerHash": {
+            "Description": "Current Lambda layer hash",
+            "Value": "ce979d81fd14f52442da64f0dbd78c42e767ccb0",
+            "Export": {
+              "Name": "sls-apptemplatecustomendpoints-dev-SqlHandlerLambdaLayerHash"
+            }
+          },
+          "SqlHandlerLambdaLayerS3Key": {
+            "Description": "Current Lambda layer S3Key",
+            "Value": "serverless/apptemplatecustomendpoints/dev/1704380245541-2024-01-04T14:57:25.541Z/./../../SqlHandler.zip",
+            "Export": {
+              "Name": "sls-apptemplatecustomendpoints-dev-SqlHandlerLambdaLayerS3Key"
+            }
+          },
+          "UtilsLambdaLayerQualifiedArn": {
+            "Description": "Current Lambda layer version",
+            "Value": {
+              "Ref": "UtilsLambdaLayer"
+            },
+            "Export": {
+              "Name": "sls-apptemplatecustomendpoints-dev-UtilsLambdaLayerQualifiedArn"
+            }
+          },
+          "UtilsLambdaLayerHash": {
+            "Description": "Current Lambda layer hash",
+            "Value": "070230d8a4658890c91bcd5acc92a2eab8432d0c",
+            "Export": {
+              "Name": "sls-apptemplatecustomendpoints-dev-UtilsLambdaLayerHash"
+            }
+          },
+          "UtilsLambdaLayerS3Key": {
+            "Description": "Current Lambda layer S3Key",
+            "Value": "serverless/apptemplatecustomendpoints/dev/1704380245541-2024-01-04T14:57:25.541Z/./../../Utils.zip",
+            "Export": {
+              "Name": "sls-apptemplatecustomendpoints-dev-UtilsLambdaLayerS3Key"
+            }
+          },
+          "PythonRequirementsLambdaLayerQualifiedArn": {
+            "Description": "Current Lambda layer version",
+            "Value": {
+              "Ref": "PythonRequirementsLambdaLayer"
+            },
+            "Export": {
+              "Name": "sls-apptemplatecustomendpoints-dev-PythonRequirementsLambdaLayerQualifiedArn"
+            }
+          },
+          "PythonRequirementsLambdaLayerHash": {
+            "Description": "Current Lambda layer hash",
+            "Value": "8634d59584fda52490c910bcd6baea43d73f63e7",
+            "Export": {
+              "Name": "sls-apptemplatecustomendpoints-dev-PythonRequirementsLambdaLayerHash"
+            }
+          },
+          "PythonRequirementsLambdaLayerS3Key": {
+            "Description": "Current Lambda layer S3Key",
+            "Value": "serverless/apptemplatecustomendpoints/dev/1704380245541-2024-01-04T14:57:25.541Z/pythonRequirements.zip",
+            "Export": {
+              "Name": "sls-apptemplatecustomendpoints-dev-PythonRequirementsLambdaLayerS3Key"
+            }
+          },
+          "CustomObjectPostLambdaFunctionQualifiedArn": {
+            "Description": "Current Lambda function version",
+            "Value": {
+              "Ref": "CustomObjectPostLambdaVersion7Z1utZFc4LJr1pzxHKyEkG9iWpwtf2oajgEXJ7oQ"
+            },
+            "Export": {
+              "Name": "sls-apptemplatecustomendpoints-dev-CustomObjectPostLambdaFunctionQualifiedArn"
+            }
+          },
+          "CustomObjectPutLambdaFunctionQualifiedArn": {
+            "Description": "Current Lambda function version",
+            "Value": {
+              "Ref": "CustomObjectPutLambdaVersionRXq95uiuchcRwsB5LLtMdpBPGEag3r0iWy131d2cebI"
+            },
+            "Export": {
+              "Name": "sls-apptemplatecustomendpoints-dev-CustomObjectPutLambdaFunctionQualifiedArn"
+            }
+          },
+          "CustomDetailsGetLambdaFunctionQualifiedArn": {
+            "Description": "Current Lambda function version",
+            "Value": {
+              "Ref": "CustomDetailsGetLambdaVersionV5Kgtqau1fumKv9O5fsOoJ1kwma5lvZUXctltsaNtY"
+            },
+            "Export": {
+              "Name": "sls-apptemplatecustomendpoints-dev-CustomDetailsGetLambdaFunctionQualifiedArn"
+            }
+          },
+          "CustomListGetLambdaFunctionQualifiedArn": {
+            "Description": "Current Lambda function version",
+            "Value": {
+              "Ref": "CustomListGetLambdaVersionDAmwka4z7vsXO61o4hrBZbz9nexe9tZecZYCktiipA"
+            },
+            "Export": {
+              "Name": "sls-apptemplatecustomendpoints-dev-CustomListGetLambdaFunctionQualifiedArn"
+            }
+          },
+          "ServiceEndpoint": {
+            "Description": "URL of the service endpoint",
+            "Value": {
+              "Fn::Join": [
+                "",
+                [
+                  "https://",
+                  {
+                    "Fn::ImportValue": "apptemplatecoreinfra-dev-ExtApiGatewayRestApiId"
+                  },
+                  ".execute-api.",
+                  {
+                    "Ref": "AWS::Region"
+                  },
+                  ".",
+                  {
+                    "Ref": "AWS::URLSuffix"
+                  },
+                  "/dev"
+                ]
+              ]
+            },
+            "Export": {
+              "Name": "sls-apptemplatecustomendpoints-dev-ServiceEndpoint"
+            }
+          },
+          "AwsDocApiId": {
+            "Description": "API ID",
+            "Value": {
+              "$ref": "$[\"service\"][\"provider\"][\"apiGateway\"][\"restApiId\"]"
+            },
+            "Export": {
+              "Name": "sls-apptemplatecustomendpoints-dev-AwsDocApiId"
+            }
+          }
+        }
+      },
+      "vpc": {}
+    },
+    "custom": {
+      "common": {
+        "frameworkVersion": "3",
+        "service": "apptemplate",
+        "domain": "neojumpstart.com",
+        "provider": {
+          "name": "aws",
+          "runtime": "python3.8",
+          "region": "us-east-2",
+          "stage": "dev",
+          "profile": "AppTemplate",
+          "hostedZoneId": "Z03718282V4AFDU1GCLZ5",
+          "memorySize": 1024,
+          "timeout": 30,
+          "environment": {
+            "CLOUD_FRONT_URL": "https://dev.neojumpstart.com/",
+            "RESOURCE_METHOD": "CI_SCRIPT",
+            "PROJECT": "Neojumpstart",
+            "COMPANY": "Neostella",
+            "URL_COMPANY": "https://www.neostella.com/",
+            "LOGO": "https://s3.us-east-2.amazonaws.com/neojumpstart.src.com/PNG_NeoJS_Black1.png",
+            "SES_EMAIL": "alejandro.mejia@neostella.com",
+            "SES_DOMAIN": "alejandro.mejia@neostella.com"
+          }
+        },
+        "layers": {
+          "core_utils": "./../../CoreUtils.zip",
+          "sql_handler": "./../../SqlHandler.zip",
+          "utils": "./../../Utils.zip"
+        },
+        "init_data": {
+          "USER_EMAIL": "alejandro.mejia@neostella.com",
+          "USER_FIRST_NAME": "Alejandro",
+          "USER_LAST_NAME": "Mejia",
+          "TENANT_NAME": "neostella"
+        },
+        "package": {
+          "individually": true,
+          "patterns": [
+            "!./core_utils/**",
+            "!./sql_handler/**",
+            "!./utils/**",
+            "!./documentation/**",
+            "!./unit/**",
+            "!./email_templates/**",
+            "!./tenant_resources/**",
+            "!./**.(json|env|md|txt|yml)",
+            "./controllers/**",
+            "./models/**",
+            "./process/**"
+          ]
+        },
+        "custom": {
+          "pythonRequirements": {
+            "dockerizePip": true,
+            "layer": {
+              "name": "apptemplatecustomendpoints-dev-python-libraries",
+              "description": "Layer containing the python libraries necessary for project apptemplatecustomendpoints",
+              "compatibleRuntimes": [
+                "python3.8"
+              ]
+            }
+          },
+          "export-env": {
+            "filename": "aws_data.env",
+            "overwrite": true
+          },
+          "prune": {
+            "automatic": true,
+            "includeLayers": true,
+            "number": 5
+          }
+        },
+        "documentation": {
+          "info": {
+            "version": "0.0.1",
+            "title": "Neojumpstart API",
+            "description": "This is the API for the Neojumpstart backend"
+          }
+        }
+      },
+      "pythonRequirements": {
+        "dockerizePip": true,
+        "layer": {
+          "name": "apptemplatecustomendpoints-dev-python-libraries",
+          "description": "Layer containing the python libraries necessary for project apptemplatecustomendpoints",
+          "compatibleRuntimes": {
+            "$ref": "$[\"service\"][\"provider\"][\"compiledCloudFormationTemplate\"][\"Resources\"][\"PythonRequirementsLambdaLayer\"][\"Properties\"][\"CompatibleRuntimes\"]"
+          }
+        }
+      },
+      "documentation": {
+        "info": {
+          "version": "0.0.1",
+          "title": "Neojumpstart API",
+          "description": "This is the API for the Neojumpstart backend"
+        },
+        "models": [
+          {
+            "name": "CustomListGetResponse",
+            "description": "Model for get objects of a specific entity data response.",
+            "contentType": "application/json",
+            "schema": {
+              "$ref": "$[\"service\"][\"provider\"][\"compiledCloudFormationTemplate\"][\"Resources\"][\"CustomListGetResponseModel\"][\"Properties\"][\"Schema\"]"
+            }
+          },
+          {
+            "name": "CustomDetailsGetResponse",
+            "description": "Model for get a specific object data response.",
+            "contentType": "application/json",
+            "schema": {
+              "$ref": "$[\"service\"][\"provider\"][\"compiledCloudFormationTemplate\"][\"Resources\"][\"CustomDetailsGetResponseModel\"][\"Properties\"][\"Schema\"]"
+            }
+          },
+          {
+            "name": "CustomObjectPostResponse",
+            "description": "Model of the response for the creation a specific object.",
+            "contentType": "application/json",
+            "schema": {
+              "$ref": "$[\"service\"][\"provider\"][\"compiledCloudFormationTemplate\"][\"Resources\"][\"CustomObjectPostResponseModel\"][\"Properties\"][\"Schema\"]"
+            }
+          },
+          {
+            "name": "CustomObjectPutResponse",
+            "description": "Model of the response for the update of a specific object.",
+            "contentType": "application/json",
+            "schema": {
+              "$ref": "$[\"service\"][\"provider\"][\"compiledCloudFormationTemplate\"][\"Resources\"][\"CustomObjectPutResponseModel\"][\"Properties\"][\"Schema\"]"
+            }
+          }
+        ]
+      },
+      "export-env": {
+        "filename": "aws_data.env",
+        "overwrite": true
+      },
+      "prune": {
+        "automatic": true,
+        "includeLayers": true,
+        "number": 5
+      }
+    },
+    "plugins": [
+      "serverless-python-requirements",
+      "serverless-aws-documentation",
+      "serverless-export-env",
+      "serverless-prune-plugin",
+      "serverless-offline",
+      "serverless-deployment-bucket"
+    ],
+    "pluginsData": {},
+    "functions": {
+      "CustomListGet": {
+        "handler": "controllers/CustomListGet.lambda_handler",
+        "environment": {
+          "RESOURCE_METHOD": "CustomListGet"
+        },
+        "package": {
+          "patterns": [
+            "./controllers/CustomListGet.py",
+            "./models/CustomObject.py",
+            "./process/ListGet.py"
+          ],
+          "artifact": "C:\\Users\\efrain.hernandez\\Documents\\custom_fields\\web-app-backend-template\\services\\custom_endpoints\\.serverless\\CustomListGet.zip"
+        },
+        "events": [
+          {
+            "http": {
+              "path": "custom/{entity_name}",
+              "cors": {
+                "origin": "*",
+                "methods": [
+                  "OPTIONS",
+                  "GET"
+                ],
+                "headers": [
+                  "Content-Type",
+                  "X-Amz-Date",
+                  "Authorization",
+                  "X-Api-Key",
+                  "X-Amz-Security-Token",
+                  "X-Amz-User-Agent",
+                  "X-Amzn-Trace-Id"
+                ],
+                "allowCredentials": false
+              },
+              "method": "get",
+              "documentation": {
+                "summary": "Get the data of objects",
+                "description": "Get List of objects",
+                "tags": [
+                  "Custom Endpoints"
+                ],
+                "requestHeaders": [
+                  {
+                    "name": "Authorization",
+                    "required": "true",
+                    "type": "string",
+                    "description": "Enter access token"
+                  },
+                  {
+                    "name": "Content-Type",
+                    "required": "true",
+                    "type": "string",
+                    "description": "application/json"
+                  },
+                  {
+                    "name": "App-Key",
+                    "required": "false",
+                    "type": "string",
+                    "description": "You must provide an application key or a tenant key unless you are using the aws.cognito.signin.user.admin scope"
+                  },
+                  {
+                    "name": "Tenant-Key",
+                    "required": "false",
+                    "type": "string",
+                    "description": "You must provide an application key or a tenant key unless you are using the aws.cognito.signin.user.admin scope"
+                  },
+                  {
+                    "name": "tenant_id",
+                    "required": "false",
+                    "type": "string",
+                    "description": "You must specify a tenant id if you are using an application key"
+                  },
+                  {
+                    "name": "version",
+                    "required": "false",
+                    "type": "string",
+                    "description": "You may specify with a negative integer a previous version of the API to be executed"
+                  }
+                ],
+                "queryParams": [
+                  {
+                    "name": "is_active",
+                    "description": "true/false value"
+                  }
+                ],
+                "methodResponses": [
+                  {
+                    "statusCode": "200",
+                    "description": "Get objects success",
+                    "responseModels": {
+                      "$ref": "$[\"service\"][\"provider\"][\"compiledCloudFormationTemplate\"][\"Resources\"][\"ApiGatewayMethodCustomEntitynameVarGet\"][\"Properties\"][\"MethodResponses\"][0][\"ResponseModels\"]"
+                    }
+                  }
+                ]
+              },
+              "authorizer": {
+                "type": "COGNITO_USER_POOLS",
+                "managedExternally": false,
+                "authorizerId": {
+                  "Fn::ImportValue": "apptemplatecoreinfra-dev-ApiGatewayAuthorizer"
+                },
+                "resultTtlInSeconds": 300,
+                "identitySource": "method.request.header.Authorization",
+                "claims": [],
+                "scopes": [
+                  "aws.cognito.signin.user.admin",
+                  "apiauthidentifier/json.read"
+                ]
+              },
+              "integration": "AWS_PROXY"
+            }
+          }
+        ],
+        "name": "apptemplatecustomendpoints-dev-CustomListGet",
+        "module": ".",
+        "memory": 1024,
+        "timeout": 30,
+        "runtime": "python3.8",
+        "vpc": {},
+        "versionLogicalId": "CustomListGetLambdaVersionDAmwka4z7vsXO61o4hrBZbz9nexe9tZecZYCktiipA"
+      },
+      "CustomDetailsGet": {
+        "handler": "controllers/CustomDetailsGet.lambda_handler",
+        "environment": {
+          "RESOURCE_METHOD": "CustomDetailsGet"
+        },
+        "package": {
+          "patterns": [
+            "./controllers/CustomDetailsGet.py",
+            "./models/CustomObject.py",
+            "./process/DetailsGet.py"
+          ],
+          "artifact": "C:\\Users\\efrain.hernandez\\Documents\\custom_fields\\web-app-backend-template\\services\\custom_endpoints\\.serverless\\CustomDetailsGet.zip"
+        },
+        "events": [
+          {
+            "http": {
+              "path": "custom/{entity_name}/{id}",
+              "cors": {
+                "origin": "*",
+                "methods": [
+                  "OPTIONS",
+                  "GET"
+                ],
+                "headers": [
+                  "Content-Type",
+                  "X-Amz-Date",
+                  "Authorization",
+                  "X-Api-Key",
+                  "X-Amz-Security-Token",
+                  "X-Amz-User-Agent",
+                  "X-Amzn-Trace-Id"
+                ],
+                "allowCredentials": false
+              },
+              "method": "get",
+              "documentation": {
+                "summary": "Get the data of a specific object",
+                "description": "Get object data",
+                "tags": [
+                  "Custom Endpoints"
+                ],
+                "requestHeaders": [
+                  {
+                    "name": "Authorization",
+                    "required": "true",
+                    "type": "string",
+                    "description": "Enter access token"
+                  },
+                  {
+                    "name": "Content-Type",
+                    "required": "true",
+                    "type": "string",
+                    "description": "application/json"
+                  },
+                  {
+                    "name": "App-Key",
+                    "required": "false",
+                    "type": "string",
+                    "description": "You must provide an application key or a tenant key unless you are using the aws.cognito.signin.user.admin scope"
+                  },
+                  {
+                    "name": "Tenant-Key",
+                    "required": "false",
+                    "type": "string",
+                    "description": "You must provide an application key or a tenant key unless you are using the aws.cognito.signin.user.admin scope"
+                  },
+                  {
+                    "name": "tenant_id",
+                    "required": "false",
+                    "type": "string",
+                    "description": "You must specify a tenant id if you are using an application key"
+                  },
+                  {
+                    "name": "version",
+                    "required": "false",
+                    "type": "string",
+                    "description": "You may specify with a negative integer a previous version of the API to be executed"
+                  }
+                ],
+                "methodResponses": [
+                  {
+                    "statusCode": "200",
+                    "description": "Get object success",
+                    "responseModels": {
+                      "$ref": "$[\"service\"][\"provider\"][\"compiledCloudFormationTemplate\"][\"Resources\"][\"ApiGatewayMethodCustomEntitynameVarIdVarGet\"][\"Properties\"][\"MethodResponses\"][0][\"ResponseModels\"]"
+                    }
+                  }
+                ]
+              },
+              "authorizer": {
+                "type": "COGNITO_USER_POOLS",
+                "managedExternally": false,
+                "authorizerId": {
+                  "Fn::ImportValue": "apptemplatecoreinfra-dev-ApiGatewayAuthorizer"
+                },
+                "resultTtlInSeconds": 300,
+                "identitySource": "method.request.header.Authorization",
+                "claims": [],
+                "scopes": [
+                  "aws.cognito.signin.user.admin",
+                  "apiauthidentifier/json.read"
+                ]
+              },
+              "integration": "AWS_PROXY"
+            }
+          }
+        ],
+        "name": "apptemplatecustomendpoints-dev-CustomDetailsGet",
+        "module": ".",
+        "memory": 1024,
+        "timeout": 30,
+        "runtime": "python3.8",
+        "vpc": {},
+        "versionLogicalId": "CustomDetailsGetLambdaVersionV5Kgtqau1fumKv9O5fsOoJ1kwma5lvZUXctltsaNtY"
+      },
+      "CustomObjectPost": {
+        "handler": "controllers/CustomObjectPost.lambda_handler",
+        "environment": {
+          "RESOURCE_METHOD": "CustomObjectPost"
+        },
+        "package": {
+          "patterns": [
+            "./controllers/CustomObjectPost.py",
+            "./models/CustomObject.py",
+            "./process/ObjectPost.py"
+          ],
+          "artifact": "C:\\Users\\efrain.hernandez\\Documents\\custom_fields\\web-app-backend-template\\services\\custom_endpoints\\.serverless\\CustomObjectPost.zip"
+        },
+        "events": [
+          {
+            "http": {
+              "path": "custom/{entity_name}",
+              "cors": {
+                "origin": "*",
+                "methods": [
+                  "OPTIONS",
+                  "POST"
+                ],
+                "headers": [
+                  "Content-Type",
+                  "X-Amz-Date",
+                  "Authorization",
+                  "X-Api-Key",
+                  "X-Amz-Security-Token",
+                  "X-Amz-User-Agent",
+                  "X-Amzn-Trace-Id"
+                ],
+                "allowCredentials": false
+              },
+              "method": "post",
+              "authorizer": {
+                "type": "COGNITO_USER_POOLS",
+                "managedExternally": false,
+                "authorizerId": {
+                  "Fn::ImportValue": "apptemplatecoreinfra-dev-ApiGatewayAuthorizer"
+                },
+                "resultTtlInSeconds": 300,
+                "identitySource": "method.request.header.Authorization",
+                "claims": [],
+                "scopes": [
+                  "aws.cognito.signin.user.admin",
+                  "apiauthidentifier/json.read"
+                ]
+              },
+              "integration": "AWS_PROXY"
+            }
+          }
+        ],
+        "name": "apptemplatecustomendpoints-dev-CustomObjectPost",
+        "module": ".",
+        "memory": 1024,
+        "timeout": 30,
+        "runtime": "python3.8",
+        "vpc": {},
+        "versionLogicalId": "CustomObjectPostLambdaVersion7Z1utZFc4LJr1pzxHKyEkG9iWpwtf2oajgEXJ7oQ"
+      },
+      "CustomObjectPut": {
+        "handler": "controllers/CustomObjectPut.lambda_handler",
+        "environment": {
+          "RESOURCE_METHOD": "CustomObjectPut"
+        },
+        "package": {
+          "patterns": [
+            "./controllers/CustomObjectPut.py",
+            "./models/CustomObject.py",
+            "./process/ObjectPut.py"
+          ],
+          "artifact": "C:\\Users\\efrain.hernandez\\Documents\\custom_fields\\web-app-backend-template\\services\\custom_endpoints\\.serverless\\CustomObjectPut.zip"
+        },
+        "events": [
+          {
+            "http": {
+              "path": "custom/{entity_name}/{id}",
+              "cors": {
+                "origin": "*",
+                "methods": [
+                  "OPTIONS",
+                  "PUT"
+                ],
+                "headers": [
+                  "Content-Type",
+                  "X-Amz-Date",
+                  "Authorization",
+                  "X-Api-Key",
+                  "X-Amz-Security-Token",
+                  "X-Amz-User-Agent",
+                  "X-Amzn-Trace-Id"
+                ],
+                "allowCredentials": false
+              },
+              "method": "put",
+              "authorizer": {
+                "type": "COGNITO_USER_POOLS",
+                "managedExternally": false,
+                "authorizerId": {
+                  "Fn::ImportValue": "apptemplatecoreinfra-dev-ApiGatewayAuthorizer"
+                },
+                "resultTtlInSeconds": 300,
+                "identitySource": "method.request.header.Authorization",
+                "claims": [],
+                "scopes": [
+                  "aws.cognito.signin.user.admin",
+                  "apiauthidentifier/json.read"
+                ]
+              },
+              "integration": "AWS_PROXY"
+            }
+          }
+        ],
+        "name": "apptemplatecustomendpoints-dev-CustomObjectPut",
+        "module": ".",
+        "memory": 1024,
+        "timeout": 30,
+        "runtime": "python3.8",
+        "vpc": {},
+        "versionLogicalId": "CustomObjectPutLambdaVersionRXq95uiuchcRwsB5LLtMdpBPGEag3r0iWy131d2cebI"
+      }
+    },
+    "configValidationMode": "warn",
+    "serviceFilename": "serverless.yml",
+    "initialServerlessConfig": {
+      "service": "apptemplatecustomendpoints",
+      "frameworkVersion": "3",
+      "plugins": {
+        "$ref": "$[\"service\"][\"plugins\"]"
+      },
+      "provider": {
+        "$ref": "$[\"service\"][\"provider\"]"
+      },
+      "package": {
+        "individually": true,
+        "patterns": [
+          "!./core_utils/**",
+          "!./sql_handler/**",
+          "!./utils/**",
+          "!./documentation/**",
+          "!./unit/**",
+          "!./email_templates/**",
+          "!./tenant_resources/**",
+          "!./**.(json|env|md|txt|yml)",
+          "./controllers/**",
+          "./models/**",
+          "./process/**"
+        ],
+        "artifactsS3KeyDirname": "serverless/apptemplatecustomendpoints/dev/code-artifacts",
+        "deploymentBucket": "apptemplate-dev-artifacts-s3bucket",
+        "artifactDirectoryName": "serverless/apptemplatecustomendpoints/dev/1704380245541-2024-01-04T14:57:25.541Z"
+      },
+      "layers": {
+        "CoreUtils": {
+          "name": "apptemplatecustomendpoints-dev-core-utils",
+          "package": {
+            "artifact": "./../../CoreUtils.zip"
+          }
+        },
+        "SqlHandler": {
+          "name": "apptemplatecustomendpoints-dev-sql-handler",
+          "package": {
+            "artifact": "./../../SqlHandler.zip"
+          }
+        },
+        "Utils": {
+          "name": "apptemplatecustomendpoints-dev-utils",
+          "package": {
+            "artifact": "./../../Utils.zip"
+          }
+        },
+        "pythonRequirements": {
+          "artifact": ".serverless\\pythonRequirements.zip",
+          "name": "apptemplatecustomendpoints-dev-python-libraries",
+          "description": "Layer containing the python libraries necessary for project apptemplatecustomendpoints",
+          "compatibleRuntimes": {
+            "$ref": "$[\"service\"][\"provider\"][\"compiledCloudFormationTemplate\"][\"Resources\"][\"PythonRequirementsLambdaLayer\"][\"Properties\"][\"CompatibleRuntimes\"]"
+          },
+          "package": {}
+        }
+      },
+      "functions": {
+        "$ref": "$[\"service\"][\"functions\"]"
+      },
+      "custom": {
+        "$ref": "$[\"service\"][\"custom\"]"
+      }
+    },
+    "layers": {
+      "$ref": "$[\"service\"][\"initialServerlessConfig\"][\"layers\"]"
+    },
+    "isDashboardMonitoringPreconfigured": false
+  },
+  "package": {
+    "individually": true,
+    "artifactDirectoryName": "serverless/apptemplatecustomendpoints/dev/1704380245541-2024-01-04T14:57:25.541Z",
+    "artifact": ""
+  }
+}

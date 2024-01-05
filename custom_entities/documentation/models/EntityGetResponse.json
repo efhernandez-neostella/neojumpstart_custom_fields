@@ -1,0 +1,86 @@
+{
+    "type": "object",
+    "properties": {
+        "entity" : {
+            "type" : "object",
+            "properties": {
+                "entity_id": {
+                    "type": "string",
+                    "description": "Unique identifier for the entity"
+                },
+                "is_active": {
+                    "type": "boolean",
+                    "description": "Indicates whether the entity is active or inactive"
+                },
+                "name": {
+                    "type": "string",
+                    "description": "Name of the entity"
+                },
+                "database_name": {
+                    "type": "string",
+                    "description": "Entity table data base name"
+                },
+                "translation_reference": {
+                    "type": "string",
+                    "description": "Friendly name column"
+                },
+                "api_name": {
+                    "type": "string",
+                    "description": "Api rest name"
+                },
+                "can_edit_fields": {
+                    "type": "boolean",
+                    "description": "Check if the entity can edit fields"
+                },
+                "can_edit_views": {
+                    "type": "boolean",
+                    "description": "Check if the entity can edit views"
+                },
+                "can_remove": {
+                    "type": "boolean",
+                    "description": "Check if the entity can be removed"
+                },
+                "can_soft_delete": {
+                    "type": "boolean",
+                    "description": "Check if the entity can be soft deleted"
+                },
+                "is_child": {
+                    "type": "boolean",
+                    "description": "Check if the entity is a child of other entity"
+                },
+                "linking_table": {
+                    "type": "boolean",
+                    "description": "Check if the entity is a linking table"
+                },
+                "is_base": {
+                    "type": "boolean",
+                    "description": "Check if the entity is a base system entity"
+                },
+                "component_id": {
+                    "type": "string",
+                    "description": "UUID of the component related with the entity"
+                },
+                "entity_parent_id": {
+                    "type": "string",
+                    "description": "UUID of the parent entity (only for is_child entities)"
+                },
+                "created_by": {
+                    "type": "string",
+                    "description": "Unique identifier for the user who created the entity"
+                },
+                "updated_by": {
+                    "type": "string",
+                    "description": "Unique identifier for the last user who updated the entity"
+                },
+                "created_at": {
+                    "type": "string",
+                    "description": "Creation date of the entity in %Y-%m-%d %H:%M:%S format"
+                },
+                "updated_at": {
+                    "type": "string",
+                    "description": "Last modification date of the entity in %Y-%m-%d %H:%M:%S format"
+                }
+            }
+        }
+    }
+}

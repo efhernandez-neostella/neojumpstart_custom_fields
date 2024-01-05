@@ -1,0 +1,122 @@
+documentation:
+  info:
+    version: ${file(./../../serverless.apptemplate.common.yml):documentation.info.version}
+    title: ${file(./../../serverless.apptemplate.common.yml):documentation.info.title}
+    description: ${file(./../../serverless.apptemplate.common.yml):documentation.info.description}
+  models:
+    # - name: "ObjectDeleteResponse"
+    #   description: "Response received after deleting a new user"
+    #   contentType: "application/json"
+    #   schema: ${file(./../../open_api_doc/models/ObjectDeleteResponse.json)}
+    # - name: "ErrorResponse"
+    #   description: "Model for the error response"
+    #   contentType: "application/json"
+    #   schema: ${file(./../../open_api_doc/models/ErrorResponse.json)}
+    # - name: "PermissionDeniedResponse"
+    #   description: "Model for the permission denied response"
+    #   contentType: "application/json"
+    #   schema: ${file(./../../open_api_doc/models/PermissionDeniedResponse.json)}
+    # - name: "ObjectCreationResponse"
+    #   description: "Response received after creating a new object"
+    #   contentType: "application/json"
+    #   schema: ${file(./../../open_api_doc/models/ObjectCreationResponse.json)}
+    # - name: "ObjectEditionResponse"
+    #   description: "Response received after updating an object"
+    #   contentType: "application/json"
+    #   schema: ${file(./../../open_api_doc/models/ObjectEditionResponse.json)}
+    - name: "ContractsGetResponse"
+      description: "Model for get contract data response."
+      contentType: "application/json"
+      schema: ${file(./documentation/models/ContractsGetResponse.json)}
+    - name: "ContractsPostRequest"
+      description: "Model for creating a new contract"
+      contentType: "application/json"
+      schema: ${file(./documentation/models/ContractsPostRequest.json)}
+    - name: "ContractsPutRequest"
+      description: "Model for updating an contract"
+      contentType: "application/json"
+      schema: ${file(./documentation/models/ContractsPutRequest.json)}
+
+functions:
+  ContractsGet:
+    summary: "Get data of contracts"
+    description: "Get List of contracts "
+    tags:
+      - "Contracts"
+    requestHeaders: ${file(./../../open_api_doc/models/RequestHeaders.json)}
+    queryParams:
+      - name: "data"
+        description: "action to be performed by the endpoint. contracts to get data of contracts"
+      - name: "contract_id"
+        description: "UUID of the contract to be searched"
+      - name: "account_id"
+        description: "UUID of the account related to the contract to be searched"
+      - name: "contract_name"
+        description: "Name of the account related to the contract to be searched"
+      - name: "start_date"
+        description: "Start date of the contract in format %Y-%m-%d."
+      - name: "end_date"
+        description: "End date of the contract in format %Y-%m-%d."
+      - name: "is_active"
+        description: "Status of the contract"
+      - name: "limit"
+        description: "Limit of records to be returned"
+      - name: "page"
+        description: "number of page for pagination"
+    methodResponses:
+      - statusCode: "200"
+        description: "Contract data returned"
+        responseModels:
+          "application/json": "ContractsGetResponse"
+      # - statusCode: "403"
+      #   description: "Permission denied"
+      #   responseModels:
+      #     "application/json": "PermissionDeniedResponse"
+      # - statusCode: "500"
+      #   description: "Unexpected error"
+      #   responseModels:
+      #     "application/json": "ErrorResponse"
+
+  ContractsPost:
+    summary: "Create contract"
+    description: "Creates a new contract"
+    tags:
+      - "Contracts"
+    requestHeaders: ${file(./../../open_api_doc/models/RequestHeaders.json)}
+    requestModels:
+      "application/json": "ContractsPostRequest"
+    methodResponses:
+      - statusCode: "200"
+        description: "Contract created"
+      #   responseModels:
+      #     "application/json": "ObjectCreationResponse"
+      # - statusCode: "403"
+      #   description: "Permission denied"
+      #   responseModels:
+      #     "application/json": "PermissionDeniedResponse"
+      # - statusCode: "500"
+      #   description: "Unexpected error"
+      #   responseModels:
+      #     "application/json": "ErrorResponse"
+
+  ContractsPut:
+    summary: "Update contract"
+    description: "Update a contract"
+    tags:
+      - "Contracts"
+    requestHeaders: ${file(./../../open_api_doc/models/RequestHeaders.json)}
+    requestModels:
+      "application/json": "ContractsPutRequest"
+    methodResponses:
+      - statusCode: "200"
+        description: "Contract Edited"
+      #   responseModels:
+      #     "application/json": "ObjectEditionResponse"
+      # - statusCode: "403"
+      #   description: "Permission denied"
+      #   responseModels:
+      #     "application/json": "PermissionDeniedResponse"
+      # - statusCode: "500"
+      #   description: "Unexpected error"
+      #   responseModels:
+      #     "application/json": "ErrorResponse"

@@ -1,0 +1,55 @@
+functions:
+  #Contracts
+  ContractsGet:
+    handler: controllers/ContractsGet.lambda_handler
+    environment:
+      RESOURCE_METHOD: ContractsGet
+    events:
+      - http:
+          path: contracts
+          cors: True
+          method: get
+          documentation: ${file(./documentation/serverless.doc.yml):functions.ContractsGet}
+          authorizer:
+            type: COGNITO_USER_POOLS
+            scopes:
+              - aws.cognito.signin.user.admin
+              - apiauthidentifier/json.read
+            authorizerId:
+              "Fn::ImportValue": ${self:custom.common.service}coreinfra-${self:provider.stage}-ApiGatewayAuthorizer
+
+  ContractsPost:
+    handler: controllers/ContractsPost.lambda_handler
+    environment:
+      RESOURCE_METHOD: ContractsPost
+    events:
+      - http:
+          path: contracts
+          cors: True
+          method: post
+          documentation: ${file(./documentation/serverless.doc.yml):functions.ContractsPost}
+          authorizer:
+            type: COGNITO_USER_POOLS
+            scopes:
+              - aws.cognito.signin.user.admin
+              - apiauthidentifier/json.read
+            authorizerId:
+              "Fn::ImportValue": ${self:custom.common.service}coreinfra-${self:provider.stage}-ApiGatewayAuthorizer
+
+  ContractsPut:
+    handler: controllers/ContractsPut.lambda_handler
+    environment:
+      RESOURCE_METHOD: ContractsPut
+    events:
+      - http:
+          path: contracts
+          cors: True
+          method: put
+          documentation: ${file(./documentation/serverless.doc.yml):functions.ContractsPut}
+          authorizer:
+            type: COGNITO_USER_POOLS
+            scopes:
+              - aws.cognito.signin.user.admin
+              - apiauthidentifier/json.read
+            authorizerId:
+              "Fn::ImportValue": ${self:custom.common.service}coreinfra-${self:provider.stage}-ApiGatewayAuthorizer

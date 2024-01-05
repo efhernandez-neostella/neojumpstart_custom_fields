@@ -1,0 +1,106 @@
+{
+    "type":"object",
+    "required":[
+        "name",
+        "column_name",
+        "parent_object_id",
+        "input",
+        "data_type",
+        "dimensions",
+        "format",
+        "description",
+        "is_active"
+    ],
+    "properties":{
+        "name":{
+            "type":"string",
+            "description":"Name of the field"
+        },
+        "column_name":{
+            "type":"string",
+            "description":"Tenant column name"
+        },
+        "parent_object_id":{
+            "type":"string",
+            "description":"UUID of the parent object"
+        },
+        "description":{
+            "type":"string",
+            "description":"Description of the field"
+        },
+        "is_active":{
+            "type":"boolean",
+            "description":"is or isn't active"
+        },
+        "input":{
+            "type":"string",
+            "description":"Input type of custom field"
+        },
+        "height":{
+            "type":"number",
+            "description":"Height value on front end input"
+        },
+        "wide":{
+            "type":"number",
+            "description":"Wide value on front end input"
+        },
+        "data_source": {
+            "type": "object",
+            "properties": {
+                "property_entity_id": {
+                    "type": "string",
+                    "description": "Id of the entity that has the referenced field"
+                },
+                "property_field_id": {
+                    "type": "string",
+                    "description": "Id of the field that gives the property"
+                }
+            }
+        },
+        "properties": {
+            "type": "object",
+            "properties": {
+                "is_label": {
+                    "type": "boolean",
+                    "description": "Indicates whether the entity can edit views."
+                },
+                "label": {
+                    "type": "string",
+                    "description": "Specifies the label for the entity that can edit fields."
+                },
+                "is_picklist": {
+                    "type": "boolean",
+                    "description": "Indicates whether the entity can be removed."
+                },
+                "is_required": {
+                    "type": "boolean",
+                    "description": "Indicates whether the entity can be soft deleted."
+                },
+                "is_multiple": {
+                    "type": "boolean",
+                    "description": "Indicates whether the entity is a child of another entity."
+                },
+                "is_max_characters": {
+                    "type": "boolean",
+                    "description": "Indicates whether there is a maximum character limit for the entity."
+                },
+                "max_characters": {
+                    "type": "number",
+                    "description": "Specifies the maximum number of characters allowed for the entity."
+                },
+                "is_prefix": {
+                    "type": "boolean",
+                    "description": "Indicates whether the entity uses a prefix."
+                },
+                "prefix": {
+                    "type": "string",
+                    "description": "Specifies the prefix for the entity."
+                },
+                "is_special_characters": {
+                    "type": "boolean",
+                    "description": "Indicates whether the entity allows special characters."
+                }
+            }
+        }         
+    }
+ }

@@ -1,0 +1,51 @@
+{
+    "type": "object",
+    "properties": {
+        "contracts":{
+            "type":"object",
+            "properties": {
+                "count" : {
+                    "type": "integer",
+                    "description": "Number of records without the pagination"
+                },
+                "records": {
+                    "type": "array",
+                    "description": "An array the data of products",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "contract_id": {
+                                "type": "string",
+                                "description": "UUID of the contract"
+                            },
+                            "account_id": {
+                                "type": "string",
+                                "description": "UUID of the account related to the contract"
+                            },
+                            "contract_name": {
+                                "type": "string",
+                                "description": "Name of the contract"
+                            },
+                            "start_date": {
+                                "type": "string",
+                                "description": "Start date of the contract in format %Y-%m-%d."
+                            },
+                            "end_date": {
+                                "type": "string",
+                                "description": "End date of the contract in format %Y-%m-%d."
+                            },
+                            "is_active": {
+                                "type": "boolean",
+                                "description": "Status of the contract"
+                            },
+                            "account_name": {
+                                "type": "string",
+                                "description": "Name of the account related to the contract"
+                            }
+                        }
+                    }
+                }
+            }
+        }    
+    }
+}

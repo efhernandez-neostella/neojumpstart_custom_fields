@@ -1,0 +1,30 @@
+{
+    "type": "object",
+    "required": [
+        "products",
+        "account_id"
+    ],
+    "properties": {
+        "account_id": {
+            "type": "string",
+            "description": "UUID of the account"
+        },
+        "products": {
+            "type": "array",
+            "description": "array with products data",
+            "items": {
+                "type":"object",
+                "properties": {
+                    "product_id": {
+                        "type": "string",
+                        "description": "uuid of the product"
+                    },
+                    "price":{
+                        "type": "number",
+                        "description": "Price override for the product"
+                    }
+                }
+            }
+        }
+    }
+}

@@ -1,0 +1,118 @@
+functions:
+  FieldPost:
+    handler: controllers/fields/FieldPost.lambda_handler
+    environment:
+      RESOURCE_METHOD: FieldPost
+    package:
+      patterns:
+        - "./controllers/fields/FieldPost.py"
+    events:
+      - http:
+          path: fields
+          cors: True
+          method: post
+          documentation: ${file(./documentation/serverless.doc.yml):functions.FieldsPost}
+          authorizer:
+            type: COGNITO_USER_POOLS
+            scopes:
+              - aws.cognito.signin.user.admin
+              - apiauthidentifier/json.read
+            authorizerId:
+              "Fn::ImportValue": ${self:custom.common.service}coreinfra-${self:provider.stage}-ApiGatewayAuthorizer
+
+  FieldsGet:
+    handler: controllers/fields/FieldsGet.lambda_handler
+    environment:
+      RESOURCE_METHOD: FieldsGet
+    package:
+      patterns:
+        - "./controllers/fields/FieldsGet.py"
+        - "./models/Field.py"
+        - "./process/fields/FieldsGet.py"
+    events:
+      - http:
+          path: fields
+          cors: True
+          method: get
+          documentation: ${file(./documentation/serverless.doc.yml):functions.FieldsGet}
+          authorizer:
+            type: COGNITO_USER_POOLS
+            scopes:
+              - aws.cognito.signin.user.admin
+              - apiauthidentifier/json.read
+            authorizerId:
+              "Fn::ImportValue": ${self:custom.common.service}coreinfra-${self:provider.stage}-ApiGatewayAuthorizer
+
+  FieldGet:
+    handler: controllers/fields/FieldGet.lambda_handler
+    environment:
+      RESOURCE_METHOD: FieldGet
+    package:
+      patterns:
+        - "./controllers/fields/FieldGet.py"
+        - "./models/Field.py"
+        - "./process/fields/FieldGet.py"
+    events:
+      - http:
+          path: fields/{custom_field_id}
+          cors: True
+          method: get
+          request:
+            parameters:
+              paths:
+                custom_field_id: true
+          documentation: ${file(./documentation/serverless.doc.yml):functions.FieldGet}
+          authorizer:
+            type: COGNITO_USER_POOLS
+            scopes:
+              - aws.cognito.signin.user.admin
+              - apiauthidentifier/json.read
+            authorizerId:
+              "Fn::ImportValue": ${self:custom.common.service}coreinfra-${self:provider.stage}-ApiGatewayAuthorizer
+
+  FieldTypesGet:
+    handler: controllers/fields/FieldTypesGet.lambda_handler
+    environment:
+      RESOURCE_METHOD: FieldTypesGet
+    package:
+      patterns:
+        - "./controllers/fields/FieldTypesGet.py"
+        - "./models/FieldType.py"
+    events:
+      - http:
+          path: field-types
+          cors: True
+          method: get
+          documentation: ${file(./documentation/serverless.doc.yml):functions.FieldTypesGet}
+          authorizer:
+            type: COGNITO_USER_POOLS
+            scopes:
+              - aws.cognito.signin.user.admin
+              - apiauthidentifier/json.read
+            authorizerId:
+              "Fn::ImportValue": ${self:custom.common.service}coreinfra-${self:provider.stage}-ApiGatewayAuthorizer
+
+  FieldPut:
+    handler: controllers/fields/FieldPut.lambda_handler
+    environment:
+      RESOURCE_METHOD: FieldPut
+    package:
+      patterns:
+        - "./controllers/fields/FieldPut.py"
+    events:
+      - http:
+          path: fields/{custom_field_id}
+          cors: True
+          method: put
+          request:
+            parameters:
+              paths:
+                custom_field_id: true
+          documentation: ${file(./documentation/serverless.doc.yml):functions.FieldPut}
+          authorizer:
+            type: COGNITO_USER_POOLS
+            scopes:
+              - aws.cognito.signin.user.admin
+              - apiauthidentifier/json.read
+            authorizerId:
+              "Fn::ImportValue": ${self:custom.common.service}coreinfra-${self:provider.stage}-ApiGatewayAuthorizer

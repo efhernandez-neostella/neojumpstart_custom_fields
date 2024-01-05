@@ -1,0 +1,53 @@
+documentation:
+  info:
+    version: ${file(./../../serverless.apptemplate.common.yml):documentation.info.version}
+    title: ${file(./../../serverless.apptemplate.common.yml):documentation.info.title}
+    description: ${file(./../../serverless.apptemplate.common.yml):documentation.info.description}
+  models:
+    # - name: "ObjectDeleteResponse"
+    #   description: "Response received after deleting a new user"
+    #   contentType: "application/json"
+    #   schema: ${file(./../../open_api_doc/models/ObjectDeleteResponse.json)}
+    # - name: "ErrorResponse"
+    #   description: "Model for the error response"
+    #   contentType: "application/json"
+    #   schema: ${file(./../../open_api_doc/models/ErrorResponse.json)}
+    # - name: "PermissionDeniedResponse"
+    #   description: "Model for the permission denied response"
+    #   contentType: "application/json"
+    #   schema: ${file(./../../open_api_doc/models/PermissionDeniedResponse.json)}
+    # - name: "ObjectCreationResponse"
+    #   description: "Response received after creating a new object"
+    #   contentType: "application/json"
+    #   schema: ${file(./../../open_api_doc/models/ObjectCreationResponse.json)}
+    # - name: "ObjectEditionResponse"
+    #   description: "Response received after updating an object"
+    #   contentType: "application/json"
+    #   schema: ${file(./../../open_api_doc/models/ObjectEditionResponse.json)}
+    - name: "AccountPriceOverridePostRequest"
+      description: "Model for creating a new product price override for an account"
+      contentType: "application/json"
+      schema: ${file(./documentation/models/AccountPriceOverridePostRequest.json)}
+
+functions:
+  AccountPriceOverridePost:
+    summary: "Create Product Price Override"
+    description: "Creates a new product price override"
+    tags:
+      - "Products"
+    requestHeaders: ${file(./../../open_api_doc/models/RequestHeaders.json)}
+    requestModels:
+      "application/json": "AccountPriceOverridePostRequest"
+    methodResponses:
+      - statusCode: "200"
+        description: "Products Prices Overrode"
+      #   responseModels:
+      #     "application/json": "ObjectCreationResponse"
+      # - statusCode: "403"
+      #   description: "Permission denied"
+      #   responseModels:
+      #     "application/json": "PermissionDeniedResponse"
+      # - statusCode: "500"
+      #   description: "Unexpected error"
+      #   responseModels:
+      #     "application/json": "ErrorResponse"

@@ -1,0 +1,115 @@
+## Tenant Controller
+functions:
+  TenantCreation:
+    handler: controllers/tenants/TenantCreation.lambda_handler
+    environment:
+      CUSTOM_MESSAGE_TRIGGER: arn:aws:lambda:${self:provider.region}:${aws:accountId}:function:${self:custom.common.service}coreinfra-${self:provider.stage}-custom_email_neostella
+      POST_AUTHENTICATION_TRIGGER: arn:aws:lambda:${self:provider.region}:${aws:accountId}:function:${self:custom.common.service}coreinfra-${self:provider.stage}-PostAuthenticationEventReplicator
+      TRANSLATIONS_BUCKET: ${self:custom.common.service}translations-${self:provider.stage}-translationsbucket
+      SES_EMAIL_ARN: arn:aws:ses:${self:provider.region}:${aws:accountId}:identity/${self:custom.common.provider.environment.SES_DOMAIN}
+      SES_EMAIL: ${self:custom.common.provider.environment.SES_EMAIL}
+      RESOURCE_METHOD: TenantCreation
+      HOSTED_ZONE_ID: ${self:custom.common.provider.hostedZoneId}
+      DOMAIN_NAME: ${self:custom.common.domain}
+    package:
+      patterns:
+        - "./controllers/tenants/TenantCreation.py"
+        - "./models/Tenant.py"
+        - "./process/tenants/TenantPost.py"
+
+  TenantPost:
+    handler: controllers/tenants/TenantPost.lambda_handler
+    environment:
+      RESOURCE_METHOD: TenantPost
+    package:
+      patterns:
+        - "./controllers/tenants/TenantCreation.py"
+        - "./controllers/tenants/TenantPost.py"
+        - "./models/Tenant.py"
+        - "./process/tenants/TenantPost.py"
+    events:
+      - http:
+          path: newtenants
+          cors: True
+          method: post
+          documentation: ${file(./documentation/serverless.doc.yml):functions.NewTenantsPost}
+          authorizer:
+            type: COGNITO_USER_POOLS
+            scopes:
+              - aws.cognito.signin.user.admin
+              - apiauthidentifier/json.read
+            authorizerId:
+              "Fn::ImportValue": ${self:custom.common.service}coreinfra-${self:provider.stage}-ApiGatewayAuthorizer
+
+  TenantsGet:
+    handler: controllers/tenants/TenantsGet.lambda_handler
+    environment:
+      RESOURCE_METHOD: TenantsGet
+    package:
+      patterns:
+        - "./controllers/tenants/TenantsGet.py"
+        - "./models/Tenant.py"
+        - "./process/tenants/TenantsGet.py"
+    events:
+      - http:
+          path: newtenants
+          cors: True
+          method: get
+          documentation: ${file(./documentation/serverless.doc.yml):functions.NewTenantsGet}
+          authorizer:
+            type: COGNITO_USER_POOLS
+            scopes:
+              - aws.cognito.signin.user.admin
+              - apiauthidentifier/json.read
+            authorizerId:
+              "Fn::ImportValue": ${self:custom.common.service}coreinfra-${self:provider.stage}-ApiGatewayAuthorizer
+
+  TenantGet:
+    handler: controllers/tenants/TenantGet.lambda_handler
+    environment:
+      RESOURCE_METHOD: TenantGet
+    package:
+      patterns:
+        - "./controllers/tenants/TenantGet.py"
+        - "./models/Tenant.py"
+        - "./process/tenants/TenantGet.py"
+    events:
+      - http:
+          path: newtenants/{tenant_id}
+          cors: True
+          method: get
+          request:
+            parameters:
+              paths:
+                tenant_id: true
+          documentation: ${file(./documentation/serverless.doc.yml):functions.NewTenantGet}
+          authorizer:
+            type: COGNITO_USER_POOLS
+            scopes:
+              - aws.cognito.signin.user.admin
+              - apiauthidentifier/json.read
+            authorizerId:
+              "Fn::ImportValue": ${self:custom.common.service}coreinfra-${self:provider.stage}-ApiGatewayAuthorizer
+
+  TenantPut:
+    handler: controllers/tenants/TenantPut.lambda_handler
+    environment:
+      RESOURCE_METHOD: TenantPut
+    package:
+      patterns:
+        - "./controllers/tenants/TenantPut.py"
+        - "./models/Tenant.py"
+        - "./process/tenants/TenantPut.py"
+    events:
+      - http:
+          path: newtenants
+          cors: True
+          method: put
+          documentation: ${file(./documentation/serverless.doc.yml):functions.NewTenantsPut}
+          authorizer:
+            type: COGNITO_USER_POOLS
+            scopes:
+              - aws.cognito.signin.user.admin
+              - apiauthidentifier/json.read
+            authorizerId:
+              "Fn::ImportValue": ${self:custom.common.service}coreinfra-${self:provider.stage}-ApiGatewayAuthorizer

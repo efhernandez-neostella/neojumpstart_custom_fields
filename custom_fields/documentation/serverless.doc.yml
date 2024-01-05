@@ -1,0 +1,97 @@
+documentation:
+  info:
+    version: ${file(./../../serverless.apptemplate.common.yml):documentation.info.version}
+    title: ${file(./../../serverless.apptemplate.common.yml):documentation.info.title}
+    description: ${file(./../../serverless.apptemplate.common.yml):documentation.info.description}
+  models:
+    - name: "FieldsGetResponse"
+      description: "Model for get fields data response."
+      contentType: "application/json"
+      schema: ${file(./documentation/models/FieldsGetResponse.json)}
+    - name: "FieldGetResponse"
+      description: "Model for get field data response."
+      contentType: "application/json"
+      schema: ${file(./documentation/models/FieldGetResponse.json)}
+    - name: "FieldsPostRequest"
+      description: "Model for creating a new field"
+      contentType: "application/json"
+      schema: ${file(./documentation/models/FieldsPostRequest.json)}
+    - name: "FieldTypesGetResponse"
+      description: "Model for get field types data response."
+      contentType: "application/json"
+      schema: ${file(./documentation/models/FieldTypesGetResponse.json)}
+    - name: "FieldPutRequest"
+      description: "Model for updating a field."
+      contentType: "application/json"
+      schema: ${file(./documentation/models/FieldsPutRequest.json)}
+
+functions:
+  FieldsGet:
+    summary: "Get data of fields"
+    description: "Get List of fields "
+    tags:
+      - "Fields"
+    requestHeaders: ${file(./../../open_api_doc/models/RequestHeaders.json)}
+    queryParams:
+      - name: "is_active"
+        description: "true/false value"
+    methodResponses:
+      - statusCode: "200"
+        description: "Fields data returned"
+        responseModels:
+          "application/json": "FieldsGetResponse"
+
+  FieldGet:
+    summary: "Get data of field"
+    description: "Get field"
+    tags:
+      - "Fields"
+    requestHeaders: ${file(./../../open_api_doc/models/RequestHeaders.json)}
+    pathParams:
+      - name: "field_id"
+        description: "UUID of the specific field"
+    methodResponses:
+      - statusCode: "200"
+        description: "Field data returned"
+        responseModels:
+          "application/json": "FieldGetResponse"
+
+  FieldsPost:
+    summary: "Create field"
+    description: "Creates a new field"
+    tags:
+      - "Fields"
+    requestHeaders: ${file(./../../open_api_doc/models/RequestHeaders.json)}
+    requestModels:
+      "application/json": "FieldsPostRequest"
+    methodResponses:
+      - statusCode: "200"
+        description: "Field created"
+
+  FieldTypesGet:
+    summary: "Get data of all field types"
+    description: "Get List of field types"
+    tags:
+      - "Fields"
+    requestHeaders: ${file(./../../open_api_doc/models/RequestHeaders.json)}
+    queryParams:
+      - name: "is_active"
+        description: "true/false value"
+    methodResponses:
+      - statusCode: "200"
+        description: "Fields data returned"
+        responseModels:
+          "application/json": "FieldTypesGetResponse"
+
+  FieldPut:
+    summary: "Update field"
+    description: "Update a field"
+    tags:
+      - "Fields"
+    requestHeaders: ${file(./../../open_api_doc/models/RequestHeaders.json)}
+    pathParams:
+      - name: "custom_field_id"
+        description: "UUID of the specific field"
+    methodResponses:
+      - statusCode: "200"
+        description: "Field update success"

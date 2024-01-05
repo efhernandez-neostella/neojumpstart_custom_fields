@@ -1,0 +1,30 @@
+{
+    "type": "object",
+    "properties": {
+        "correlation_id": {
+            "type": "string",
+            "description": "UUID of the process"
+        },
+
+        "field_types": {
+            "type": "array",
+            "description": "all field types of custom fields",
+            "items": {
+                "field_type_id": {
+                    "type": "string",
+                    "description": "UUID of the field type"
+                },
+
+                "field_type": {
+                    "type": "string",
+                    "description": "Field type"
+                },
+
+                "data_type": {
+                    "type": "string",
+                    "description": "Type of the field"
+                }
+            }
+        }
+    }
+}

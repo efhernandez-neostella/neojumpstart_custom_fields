@@ -1,0 +1,143 @@
+functions:
+  EntitiesGet:
+    handler: controllers/entities/EntitiesGet.lambda_handler
+    environment:
+      RESOURCE_METHOD: EntitiesGet
+    package:
+      patterns:
+        - "./controllers/entities/EntitiesGet.py"
+        - "./models/Entity.py"
+        - "./process/entities/EntitiesGet.py"
+    events:
+      - http:
+          path: entities
+          cors: True
+          method: get
+          documentation: ${file(./documentation/serverless.doc.yml):functions.EntitiesGet}
+          authorizer:
+            type: COGNITO_USER_POOLS
+            scopes:
+              - aws.cognito.signin.user.admin
+              - apiauthidentifier/json.read
+            authorizerId:
+              "Fn::ImportValue": ${self:custom.common.service}coreinfra-${self:provider.stage}-ApiGatewayAuthorizer
+
+  EntityGet:
+    handler: controllers/entities/EntityGet.lambda_handler
+    environment:
+      RESOURCE_METHOD: EntityGet
+    package:
+      patterns:
+        - "./controllers/entities/EntityGet.py"
+        - "./models/Entity.py"
+        - "./process/entities/EntityGet.py"
+    events:
+      - http:
+          path: entities/{entity_id}
+          cors: True
+          method: get
+          request:
+            parameters:
+              paths:
+                entity_id: true
+          documentation: ${file(./documentation/serverless.doc.yml):functions.EntityGet}
+          authorizer:
+            type: COGNITO_USER_POOLS
+            scopes:
+              - aws.cognito.signin.user.admin
+              - apiauthidentifier/json.read
+            authorizerId:
+              "Fn::ImportValue": ${self:custom.common.service}coreinfra-${self:provider.stage}-ApiGatewayAuthorizer
+
+  EntityPost:
+    handler: controllers/entities/EntityPost.lambda_handler
+    environment:
+      RESOURCE_METHOD: EntityPost
+    package:
+      patterns:
+        - "./controllers/entities/EntityPost.py"
+        - "./models/Entity.py"
+        - "./models/View.py"
+        - "./process/entities/EntityPost.py"
+        - "./process/entities/ViewsPost.py"
+    events:
+      - http:
+          path: entities
+          cors: True
+          method: post
+          documentation: ${file(./documentation/serverless.doc.yml):functions.EntitiesPost}
+          authorizer:
+            type: COGNITO_USER_POOLS
+            scopes:
+              - aws.cognito.signin.user.admin
+              - apiauthidentifier/json.read
+            authorizerId:
+              "Fn::ImportValue": ${self:custom.common.service}coreinfra-${self:provider.stage}-ApiGatewayAuthorizer
+  
+  IconsGet:
+    handler: controllers/entities/IconsGet.lambda_handler
+    environment:
+      RESOURCE_METHOD: IconsGet
+      TENANTS_BUCKET: ${self:custom.common.service}coreinfra-${self:provider.stage}-tenants
+    package:
+      patterns:
+        - "./controllers/entities/IconsGet.py"
+    events:
+      - http:
+          path: icons
+          cors: True
+          method: get
+          documentation: ${file(./documentation/serverless.doc.yml):functions.IconsGet}
+          authorizer:
+            type: COGNITO_USER_POOLS
+            scopes:
+              - aws.cognito.signin.user.admin
+              - apiauthidentifier/json.read
+            authorizerId:
+              "Fn::ImportValue": ${self:custom.common.service}coreinfra-${self:provider.stage}-ApiGatewayAuthorizer
+  
+  EntitiesViewsGet:
+    handler: controllers/entities/EntitiesViewsGet.lambda_handler
+    environment:
+      RESOURCE_METHOD: EntitiesViewsGet
+    package:
+      patterns:
+        - "./controllers/entities/EntitiesViewsGet.py"
+        - "./models/Entity.py"
+        - "./process/entities/EntitiesViewsGet.py"
+    events:
+      - http:
+          path: entities-views
+          cors: True
+          method: get
+          documentation: ${file(./documentation/serverless.doc.yml):functions.EntitiesViewsGet}
+          authorizer:
+            type: COGNITO_USER_POOLS
+            scopes:
+              - aws.cognito.signin.user.admin
+              - apiauthidentifier/json.read
+            authorizerId:
+              "Fn::ImportValue": ${self:custom.common.service}coreinfra-${self:provider.stage}-ApiGatewayAuthorizer
+
+  EntityPut:
+    handler: controllers/entities/EntityPut.lambda_handler
+    environment:
+      RESOURCE_METHOD: EntityPut
+    package:
+      patterns:
+        - "./controllers/entities/EntityPut.py"
+        - "./models/Entity.py"
+        - "./process/entities/EntityPut.py"
+    events:
+      - http:
+          path: entities/{entity_id}
+          cors: True
+          method: put
+          documentation: ${file(./documentation/serverless.doc.yml):functions.EntityPut}
+          authorizer:
+            type: COGNITO_USER_POOLS
+            scopes:
+              - aws.cognito.signin.user.admin
+              - apiauthidentifier/json.read
+            authorizerId:
+              "Fn::ImportValue": ${self:custom.common.service}coreinfra-${self:provider.stage}-ApiGatewayAuthorizer

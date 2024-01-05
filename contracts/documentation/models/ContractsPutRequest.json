@@ -1,0 +1,36 @@
+{
+    "type": "object",
+    "required": [
+        "contract_id",
+        "account_id",
+        "contract_name",
+        "start_date",
+        "end_date"
+    ],
+    "properties": {
+        "contract_id": {
+            "type": "string",
+            "description": "UUID of the contract"
+        },
+        "account_id": {
+            "type": "string",
+            "description": "UUID of the account related to the new contract to be created"
+        },
+        "contract_name": {
+            "type": "string",
+            "description": "Name of the contract"
+        },
+        "start_date": {
+            "type": "string",
+            "description": "Start date of the contract in format %Y-%m-%d."
+        },
+        "end_date": {
+            "type": "string",
+            "description": "End date of the contract in format %Y-%m-%d."
+        },
+        "is_active": {
+            "type": "boolean",
+            "description": "Status of the contract in format"
+        }
+    }
+}
