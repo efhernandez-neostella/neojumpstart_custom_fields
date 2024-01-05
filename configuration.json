@@ -1,0 +1,148 @@
+{
+    "components" : [
+        ["admin","roles","general", "both" ],
+        ["admin","users","general", "both"],
+        ["admin","translations","general", "both"],
+        ["user_settings","users","general", "both"],
+        ["admin","products","general", "both"],
+        ["admin", "webhooks", "general", "both"],
+        ["admin", "webhooks", "logs", "both"],
+        ["admin", "tenant_keys", "general", "both"],
+        ["account","pricing_sheets","general", "both"],
+        ["account","my_account","general", "account"],
+        ["account","contract","general", "both"],
+        ["account","general","general", "both"],
+        ["account","general","name", "both"],
+        ["account","general","currency", "both"],
+        ["account","general","dinvy_id", "both"],
+        ["account","general","salesforce_id", "both"],
+        ["account","order","general", "both"],
+        ["account","users","general", "both"],
+        ["account","order","order_list", "both"],
+        ["account","order","new_order", "account"],
+        ["admin","object_configurations","general", "both"],
+        ["admin","object_configurations","fields", "both"],
+        ["admin","tenants","general", "both"],
+        ["admin","entity_configuration","entity", "both"]
+
+    ],
+    "objects":[
+        ["users_master", 0, "full_name",true, false,null, "admin.users.general"], 
+        ["roles_master",0, "role",true, false,null, "admin.roles.general"],
+        ["accounts_master", 0, "account_name",true, false,null, "account.general.general"],
+        ["orders_master",0, "order_number",true, false,null, "account.order.general"],
+        ["contracts_master",0, "contract_name",true, false,"accounts_master", "account.contract.general"],
+        ["products_master",0, "product_name",true, false,null, "admin.products.general"],
+        ["webhooks_master",0, "webhook_name",false, false,null, null],
+        ["order_products",0, "order_number", false, true,"orders_master", null],
+        ["account_product_price_overrides",0, "account_name", false, true,"accounts_master", null],
+        ["tenants_master",0, "tenant_name",true, false,null, "admin.tenants.general"],
+        ["custom_fields_master",0, "name",true, false,null, "admin.object_configurations.fields"],
+        ["entities_master", 0, "name", true, false, null, "admin.entity_configuration.entity"]
+    ],
+    "entities":[ 
+        {
+            "name": "Users",
+            "api_name": "users",
+            "database_name": "users_master",
+            "entity_limit": 0,
+            "translation_reference": "full_name",
+            "linking_table": false,
+            "component_key": "admin.users.general"
+        },
+        {
+            "name": "Roles",
+            "api_name": "roles",
+            "database_name": "roles_master",
+            "entity_limit": 0,
+            "translation_reference": "role",
+            "linking_table": false,
+            "component_key": "admin.roles.general"
+        },
+        {
+            "name": "Accounts",
+            "api_name": "accounts",
+            "database_name": "accounts_master",
+            "entity_limit": 0,
+            "translation_reference": "account_name",
+            "is_child": false,
+            "linking_table": false,
+            "parent_entity": null,
+            "component_key": "account.general.general"
+        },
+        {
+            "name": "Orders",
+            "api_name": "orders",
+            "database_name": "orders_master",
+            "entity_limit": 0,
+            "translation_reference": "order_number",
+            "linking_table": false,
+            "component_key": "account.order.general"
+        },
+        {
+            "name": "Contracts",
+            "api_name": "contracts",
+            "database_name": "contracts_master",
+            "entity_limit": 0,
+            "translation_reference": "contract_name",
+            "linking_table": false,
+            "component_key": "account.contract.general"
+        },
+        {
+            "name": "Webhooks",
+            "api_name": "webhooks",
+            "database_name": "webhooks_master",
+            "entity_limit": 0,
+            "translation_reference": "webhook_name",
+            "linking_table": false,
+            "component_key": null
+        },
+        {
+            "name": "Order Shopping Cart",
+            "api_name": "orders/shopping_cart",
+            "database_name": "order_products",
+            "entity_limit": 0,
+            "translation_reference": "order_number",
+            "linking_table": true,
+            "component_key": null
+        },
+        {
+            "name": "Product Price Overrides",
+            "api_name": "accounts/price_override",
+            "database_name": "account_product_price_overrides",
+            "entity_limit": 0,
+            "translation_reference": "account_name",
+            "linking_table": true,
+            "component_key": null
+        },
+        {
+            "name": "Tenants",
+            "api_name": "newtenants",
+            "database_name": "tenants_master",
+            "entity_limit": 0,
+            "translation_reference": "tenant_name",
+            "is_child": false,
+            "linking_table": false,
+            "parent_entity": null,
+            "component_key": "admin.tenants.general"
+        },
+        {
+            "name": "Custom Fields",
+            "api_name": "fields",
+            "database_name": "custom_fields_master",
+            "entity_limit": 0,
+            "translation_reference": "name",
+            "linking_table": false,
+            "component_key": "admin.object_configurations.fields"
+        },
+        {
+            "name": "Entities Master",
+            "api_name": "entities",
+            "database_name": "entitites_master",
+            "entity_limit": 0,
+            "translation_reference": "name",
+            "linking_table": false,
+            "component_key": "admin.entity_configuration.entity"
+        }
+    ]
+}
